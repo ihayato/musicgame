@@ -391,8 +391,26 @@ class App {
             
             const chartData = await this.loadChart(chartPath);
             console.log('Chart data loaded:', chartData);
+            console.log('📊 Chart title:', chartData?.title, 'difficulty:', chartData?.difficulty);
             console.log('📊 Chart has', chartData.notes?.length || 0, 'notes');
             console.log('📊 First 5 notes from chart:', chartData.notes?.slice(0, 5));
+            console.log('📊 Chart path used:', chartPath);
+            
+            // Verify chart data structure
+            if (!chartData) {
+                console.error('❌ chartData is null or undefined!');
+                return;
+            }
+            if (!chartData.notes) {
+                console.error('❌ chartData.notes is missing!');
+                return;
+            }
+            if (chartData.notes.length === 0) {
+                console.error('❌ chartData.notes is empty!');
+                return;
+            }
+            
+            console.log('✅ Chart data validation passed');
             
             // Setup game audio and video
             const gameAudio = document.getElementById('gameAudio');
@@ -408,64 +426,9 @@ class App {
             
             this.showScreen('game');
             
-            // Start game after audio is loaded
-            const startGameplay = () => {
-                console.log('Audio loaded, starting gameplay');
-                console.log('Game object:', this.game);
-                console.log('Chart data:', chartData);
-                
-                if (this.game && chartData) {
-                    console.log('Loading chart into game...');
-                    this.game.loadChart(chartData);
-                    
-                    // Enhanced audio loading check with timeout protection
-                    let attempts = 0;
-                    const maxAttempts = 50; // 5 second timeout
-                    
-                    const attemptStart = () => {
-                        attempts++;
-                        console.log(`Audio loading attempt ${attempts}/${maxAttempts}, readyState: ${gameAudio.readyState}, currentTime: ${gameAudio.currentTime}`);
-                        
-                        if (gameAudio.readyState >= 2) { // HAVE_CURRENT_DATA or better
-                            console.log('✅ Audio ready, starting game...');
-                            this.game.start();
-                            console.log('Game.start() called');
-                        } else if (attempts < maxAttempts) {
-                            console.log('⏳ Audio not ready, waiting...');
-                            setTimeout(attemptStart, 100); // Check every 100ms
-                        } else {
-                            console.warn('⚠️  Audio loading timeout, starting anyway...');
-                            this.game.start();
-                            console.log('Game.start() called (timeout fallback)');
-                        }
-                    };
-                    
-                    // Start checking immediately
-                    attemptStart();
-                    
-                } else {
-                    console.error('Game or chart data missing:', { 
-                        game: this.game, 
-                        gameType: typeof this.game,
-                        chartData: chartData,
-                        chartType: typeof chartData
-                    });
-                    alert('ゲームまたは譜面データが見つかりません。コンソールを確認してください。');
-                }
-            };
-            
-            if (gameAudio.readyState >= 2) {
-                // Audio already loaded
-                startGameplay();
-            } else {
-                gameAudio.addEventListener('loadeddata', startGameplay, { once: true });
-                gameAudio.addEventListener('error', (e) => {
-                    console.error('Audio loading error:', e);
-                    alert('音楽ファイルの読み込みに失敗しました。');
-                });
-            }
-            
-            gameAudio.load();
+            // 🎮 NEW LOADING SYSTEM - Preload all assets before starting
+            this.showLoadingScreen();
+            this.preloadAllAssets(gameAudio, bgVideo, chartData);
             
         } catch (error) {
             console.error('Error starting game:', error);
@@ -475,13 +438,26 @@ class App {
     
     async loadChart(chartPath) {
         try {
+            console.log('🎼 Attempting to load chart from:', chartPath);
             const response = await fetch(chartPath);
+            
+            if (!response.ok) {
+                console.error(`❌ Chart file fetch failed: ${response.status} ${response.statusText}`);
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const chartData = await response.json();
+            console.log('✅ Chart file loaded successfully');
+            console.log('🎼 Raw chart data first 3 notes:', chartData.notes?.slice(0, 3));
             return chartData;
         } catch (error) {
-            console.warn('Chart file not found:', chartPath, 'Generating simple chart...');
+            console.error('❌ Chart file loading failed:', error);
+            console.warn('⚠️  Chart file not found:', chartPath, 'Generating fallback chart...');
             // Generate simple chart as fallback
-            return this.generateFallbackChart();
+            const fallbackChart = this.generateFallbackChart();
+            console.log('🔄 Generated fallback chart with', fallbackChart.notes?.length, 'notes');
+            console.log('🔄 Fallback first 3 notes:', fallbackChart.notes?.slice(0, 3));
+            return fallbackChart;
         }
     }
     
@@ -576,6 +552,262 @@ class App {
         }, { once: true });
     }
     
+    showLoadingScreen() {
+        // Create loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loadingOverlay';
+        loadingOverlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            color: #00ffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            font-family: 'Courier New', monospace;
+        `;
+        
+        loadingOverlay.innerHTML = `
+            <div style="text-align: center;">
+                <h2 style="font-size: 2rem; margin-bottom: 2rem;">LOADING GAME ASSETS</h2>
+                <div id="loadingProgress" style="font-size: 1.2rem; margin-bottom: 1rem;">Preparing...</div>
+                <div id="loadingBar" style="width: 300px; height: 20px; border: 2px solid #00ffff; background: rgba(0,255,255,0.1); margin-bottom: 2rem;">
+                    <div id="loadingFill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #ff00ff); transition: width 0.3s ease;"></div>
+                </div>
+                <div id="countdown" style="font-size: 3rem; color: #ff6b6b;"></div>
+            </div>
+        `;
+        
+        document.body.appendChild(loadingOverlay);
+    }
+
+    async preloadAllAssets(gameAudio, bgVideo, chartData) {
+        const updateProgress = (progress, message) => {
+            document.getElementById('loadingProgress').textContent = message;
+            document.getElementById('loadingFill').style.width = `${progress}%`;
+        };
+
+        try {
+            console.log('🎮 Starting comprehensive asset preload...');
+            
+            // Step 1: Load chart data (already loaded)
+            updateProgress(20, 'Chart data ready ✅');
+            await this.delay(300);
+            
+            // Step 2: Preload audio
+            updateProgress(40, 'Loading audio...');
+            await this.preloadAudio(gameAudio);
+            updateProgress(50, 'Audio ready ✅');
+            
+            // Step 3: Preload video  
+            updateProgress(60, 'Loading video...');
+            await this.preloadVideo(bgVideo);
+            updateProgress(70, 'Video ready ✅');
+            
+            // Step 4: Initialize game engine
+            updateProgress(80, 'Initializing game engine...');
+            if (!this.game) {
+                console.error('❌ Game engine not available');
+                throw new Error('Game engine initialization failed');
+            }
+            
+            console.log('🎮 Loading chart into game engine...');
+            console.log('  - Chart data notes:', chartData.notes?.length || 0);
+            console.log('  - Chart first 3 notes:', chartData.notes?.slice(0, 3));
+            
+            this.game.loadChart(chartData);
+            
+            console.log('🎮 Chart loaded, verifying...');
+            console.log('  - Game notes after load:', this.game.notes?.length || 0);
+            if (this.game.notes && this.game.notes.length > 0) {
+                console.log('  - Game first 3 notes after load:', this.game.notes.slice(0, 3).map(n => `time=${n.originalTime?.toFixed(3)}, lane=${n.lane}`));
+            }
+            
+            updateProgress(90, 'Game engine ready ✅');
+            await this.delay(300);
+            
+            // Step 5: Final preparations
+            updateProgress(100, 'All assets loaded ✅');
+            await this.delay(500);
+            
+            // Step 6: Countdown and synchronized start
+            await this.startCountdown();
+            
+            // Step 7: SYNCHRONIZED START
+            console.log('🚀 SYNCHRONIZED START!');
+            await this.synchronizedStart(gameAudio, bgVideo);
+            
+        } catch (error) {
+            console.error('❌ Asset preload failed:', error);
+            alert(`アセットの読み込みに失敗しました: ${error.message}`);
+            this.backToMenu();
+        }
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async preloadAudio(audio) {
+        return new Promise((resolve, reject) => {
+            console.log('🎵 Preloading audio...');
+            
+            const onReady = () => {
+                console.log(`✅ Audio preloaded: readyState=${audio.readyState}, duration=${audio.duration}`);
+                resolve();
+            };
+            
+            const onError = (e) => {
+                console.error('❌ Audio preload failed:', e);
+                reject(new Error('Audio loading failed'));
+            };
+            
+            // Reset audio to ensure clean state
+            audio.pause();
+            audio.currentTime = 0;
+            audio.load();
+            
+            if (audio.readyState >= 2) {
+                onReady();
+            } else {
+                audio.addEventListener('loadeddata', onReady, { once: true });
+                audio.addEventListener('error', onError, { once: true });
+            }
+            
+            // Timeout fallback
+            setTimeout(() => {
+                if (audio.readyState < 2) {
+                    console.warn('⚠️ Audio preload timeout, continuing anyway');
+                    resolve();
+                }
+            }, 10000);
+        });
+    }
+
+    async preloadVideo(video) {
+        return new Promise((resolve, reject) => {
+            console.log('📹 Preloading video...');
+            
+            const onReady = () => {
+                console.log(`✅ Video preloaded: readyState=${video.readyState}, duration=${video.duration}`);
+                resolve();
+            };
+            
+            const onError = (e) => {
+                console.error('❌ Video preload failed:', e);
+                reject(new Error('Video loading failed'));
+            };
+            
+            // Reset video to ensure clean state
+            video.pause();
+            video.currentTime = 0;
+            video.load();
+            
+            if (video.readyState >= 2) {
+                onReady();
+            } else {
+                video.addEventListener('loadeddata', onReady, { once: true });
+                video.addEventListener('error', onError, { once: true });
+            }
+            
+            // Timeout fallback  
+            setTimeout(() => {
+                if (video.readyState < 2) {
+                    console.warn('⚠️ Video preload timeout, continuing anyway');
+                    resolve();
+                }
+            }, 10000);
+        });
+    }
+
+    async startCountdown() {
+        const countdown = document.getElementById('countdown');
+        const messages = ['READY?', '3', '2', '1', 'START!'];
+        
+        for (let i = 0; i < messages.length; i++) {
+            countdown.textContent = messages[i];
+            countdown.style.transform = 'scale(1.2)';
+            await this.delay(100);
+            countdown.style.transform = 'scale(1.0)';
+            
+            if (i < messages.length - 1) {
+                await this.delay(600);
+            } else {
+                await this.delay(300);
+            }
+        }
+    }
+
+    async synchronizedStart(audio, video) {
+        console.log('🎬 SYNCHRONIZED START - All systems go!');
+        
+        // Remove loading overlay
+        const overlay = document.getElementById('loadingOverlay');
+        if (overlay) {
+            overlay.remove();
+        }
+        
+        // CRITICAL: Force complete reset of all media timing
+        console.log('🔄 Forcing media reset to 0...');
+        
+        // Stop everything first
+        audio.pause();
+        video.pause();
+        
+        // Force reset multiple times to ensure it takes
+        for (let i = 0; i < 3; i++) {
+            audio.currentTime = 0;
+            video.currentTime = 0;
+            await this.delay(10); // Small delay between resets
+        }
+        
+        console.log(`🎵 Final audio currentTime: ${audio.currentTime}`);
+        console.log(`📹 Final video currentTime: ${video.currentTime}`);
+        
+        // DEBUG: Check notes state before starting game
+        console.log('🔍 PRE-START NOTES DEBUG:');
+        console.log('  - Game notes count:', this.game.notes?.length || 0);
+        if (this.game.notes && this.game.notes.length > 0) {
+            console.log('  - First 5 notes:', this.game.notes.slice(0, 5).map(n => `time=${n.originalTime?.toFixed(3) || n.time?.toFixed(3)}, lane=${n.lane}`));
+            const earlyNotes = this.game.notes.filter(n => (n.originalTime || n.time) <= 5);
+            console.log('  - Early notes (≤5s):', earlyNotes.length);
+        }
+        
+        // Start game engine FIRST with timing reset
+        this.game.gameTime = 0; // Force game time to 0 as well
+        this.game.start();
+        
+        // Small delay to ensure game engine is ready
+        await this.delay(50);
+        
+        // Start media simultaneously with explicit timing
+        console.log('🚀 Starting media playback...');
+        const audioPromise = audio.play().then(() => {
+            console.log(`🎵 Audio started at: ${audio.currentTime}`);
+        });
+        const videoPromise = video.play().then(() => {
+            console.log(`📹 Video started at: ${video.currentTime}`);
+        });
+        
+        try {
+            await Promise.all([audioPromise, videoPromise]);
+            console.log('✅ Synchronized playback started successfully!');
+            
+            // Verify timing after start
+            setTimeout(() => {
+                console.log(`🔍 Post-start verification - Audio: ${audio.currentTime.toFixed(3)}s, Video: ${video.currentTime.toFixed(3)}s, Game: ${this.game.gameTime.toFixed(3)}s`);
+            }, 100);
+            
+        } catch (error) {
+            console.error('⚠️ Media playback error (continuing anyway):', error);
+        }
+    }
+
     showScreen(screenName) {
         console.log('showScreen called with:', screenName);
         

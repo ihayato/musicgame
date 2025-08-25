@@ -125,19 +125,50 @@ class RhythmGame {
     }
     
     loadChart(chartData) {
-        console.log('loadChart called with:', chartData);
+        console.log('🎵 loadChart called with:', chartData);
+        console.log('🎵 Chart data type:', typeof chartData);
+        console.log('🎵 Chart data structure:', chartData ? Object.keys(chartData) : 'null');
+        
         this.currentChart = chartData;
         
-        if (chartData && chartData.notes) {
-            this.notes = chartData.notes.map(note => ({
-                ...note,
-                y: -50 - (note.time * this.noteSpeed),
-                hit: false
-            }));
-            console.log(`Loaded chart "${chartData.title}" with ${this.notes.length} notes`);
-            console.log('First few notes:', this.notes.slice(0, 3));
+        if (chartData && chartData.notes && Array.isArray(chartData.notes) && chartData.notes.length > 0) {
+            console.log('🎵 Processing', chartData.notes.length, 'notes from chart...');
+            
+            this.notes = chartData.notes.map((note, index) => {
+                if (!note.time || note.lane === undefined) {
+                    console.warn(`⚠️ Invalid note at index ${index}:`, note);
+                }
+                return {
+                    ...note,
+                    time: note.time,
+                    originalTime: note.time,
+                    y: -50 - (note.time * this.noteSpeed), // Initial position (will be recalculated in game loop)
+                    hit: false
+                };
+            });
+            
+            console.log(`✅ Successfully loaded chart "${chartData.title}" (${chartData.difficulty}) with ${this.notes.length} notes`);
+            console.log('🎵 First few notes:', this.notes.slice(0, 5).map(n => `time=${n.originalTime.toFixed(3)}, lane=${n.lane}`));
+            console.log('🎵 Last few notes:', this.notes.slice(-3).map(n => `time=${n.originalTime.toFixed(3)}, lane=${n.lane}`));
+            
+            // Sort notes by time to verify order
+            const sortedNotes = [...this.notes].sort((a, b) => a.originalTime - b.originalTime);
+            console.log('🎵 Earliest notes (sorted):', sortedNotes.slice(0, 5).map(n => `time=${n.originalTime.toFixed(3)}, lane=${n.lane}`));
+            
+            console.log('🎵 Notes time range:', 
+                sortedNotes.length > 0 ? 
+                `${sortedNotes[0].originalTime.toFixed(3)}s - ${sortedNotes[sortedNotes.length-1].originalTime.toFixed(3)}s` : 
+                'No notes');
+            console.log('🎵 Total notes in memory:', this.notes.length);
         } else {
-            console.error('Invalid chart data:', chartData);
+            console.error('❌ Invalid chart data provided to loadChart!');
+            console.error('❌ chartData:', chartData);
+            console.error('❌ chartData.notes type:', chartData?.notes ? typeof chartData.notes : 'undefined');
+            console.error('❌ chartData.notes array?', chartData?.notes ? Array.isArray(chartData.notes) : false);
+            console.error('❌ chartData.notes length:', chartData?.notes?.length);
+            
+            this.notes = []; // Clear notes array for safety
+            this.currentChart = null;
         }
     }
     
@@ -149,59 +180,84 @@ class RhythmGame {
         this.maxCombo = 0;
         this.gameTime = 0;
         this.isPlaying = true;
-        this.startTime = performance.now(); // Add performance timing reference
+        this.lastTime = 0; // CRITICAL: Reset lastTime to prevent initial jump
+        this.startTime = performance.now();
         
-        if (this.currentChart) {
+        console.log('🚀 GAME START DEBUG:');
+        console.log('  - Current chart:', this.currentChart?.title, this.currentChart?.difficulty);
+        console.log('  - Notes in this.notes:', this.notes ? this.notes.length : 'UNDEFINED/NULL');
+        console.log('  - Notes in currentChart:', this.currentChart?.notes ? this.currentChart.notes.length : 'UNDEFINED/NULL');
+        
+        // CRITICAL DEBUG: Check if notes exist before modification
+        if (this.notes && this.notes.length > 0) {
+            console.log('  - First 5 notes at start():', this.notes.slice(0, 5).map(n => `time=${n.originalTime.toFixed(3)}, lane=${n.lane}`));
+            console.log('  - Notes time range at start():', `${this.notes[0].originalTime.toFixed(3)}s - ${this.notes[this.notes.length-1].originalTime.toFixed(3)}s`);
+        }
+        
+        // DO NOT regenerate notes - they should already be loaded from loadChart
+        if (this.notes && this.notes.length > 0) {
+            // Just reset the notes that were already loaded
+            this.notes.forEach(note => {
+                note.hit = false;
+                note.originalTime = note.time;
+                note.y = 0; // Will be calculated in real-time during update
+            });
+            console.log('Using existing notes:', this.notes.length);
+            console.log('Chart title:', this.currentChart?.title, 'Difficulty:', this.currentChart?.difficulty);
+            console.log('First note timing:', this.notes[0]?.originalTime || this.notes[0]?.time);
+            console.log('Last note timing:', this.notes[this.notes.length - 1]?.originalTime || this.notes[this.notes.length - 1]?.time);
+            console.log('Chart metadata:', this.currentChart?.metadata);
+            console.log('Judgment line position:', this.judgmentLine);
+        } else if (this.currentChart && this.currentChart.notes) {
+            // Fallback: regenerate from chart if notes are missing
             this.notes = this.currentChart.notes.map(note => ({
                 ...note,
                 originalTime: note.time,
                 hit: false,
-                y: 0 // Will be calculated in real-time during update
+                y: 0
             }));
-            console.log('Notes generated:', this.notes.length);
-            console.log('Chart title:', this.currentChart.title, 'Difficulty:', this.currentChart.difficulty);
-            console.log('First note timing:', this.notes[0]?.originalTime);
-            console.log('Last note timing:', this.notes[this.notes.length - 1]?.originalTime);
-            console.log('Chart metadata:', this.currentChart.metadata);
-            console.log('Judgment line position:', this.judgmentLine);
-            
-            // Check note density in first 30 seconds
-            const early = this.notes.filter(n => n.originalTime <= 30).length;
-            const mid = this.notes.filter(n => n.originalTime > 30 && n.originalTime <= 60).length; 
-            const late = this.notes.filter(n => n.originalTime > 60).length;
-            console.log(`Note distribution: 0-30s: ${early}, 30-60s: ${mid}, 60s+: ${late}`);
-            
-            // Debug first 10 notes specifically
-            console.log('First 10 notes:', this.notes.slice(0, 10).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane} chord=${n.isChord}`));
-            
-            // Check for missing early notes with enhanced debugging
-            const reallyEarlyNotes = this.notes.filter(n => n.originalTime <= 5);
-            const allEarlyNotes = this.notes.filter(n => n.originalTime <= 10);
-            console.log(`🔍 EARLY NOTES ANALYSIS:`);
-            console.log(`  - Chart: ${this.currentChart?.title} (${this.currentChart?.difficulty})`);
-            console.log(`  - Total notes in chart: ${this.currentChart?.notes?.length || 0}`);
-            console.log(`  - Loaded notes in game: ${this.notes.length}`);
-            console.log(`  - Notes 0-5s: ${reallyEarlyNotes.length}`);
-            console.log(`  - Notes 0-10s: ${allEarlyNotes.length}`);
-            
-            if (reallyEarlyNotes.length === 0) {
-                console.error('🚨 NO EARLY NOTES FOUND! Chart may not have loaded properly.');
-                console.log('Raw chart data check:', this.currentChart.notes?.slice(0, 5));
-            } else {
-                console.log('✅ Early notes found:', reallyEarlyNotes.slice(0, 3).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane}`));
-            }
-            
-            // Check for issues with note data
-            const invalidNotes = this.notes.filter(n => n.originalTime === undefined || n.lane === undefined);
-            if (invalidNotes.length > 0) {
-                console.error('Invalid notes found:', invalidNotes);
-            }
+            console.log('Regenerated notes from chart:', this.notes.length);
         } else {
-            console.error('No chart loaded!');
+            console.error('🚨 NO NOTES OR CHART DATA AVAILABLE!');
+            console.log('currentChart:', this.currentChart);
+            console.log('notes array:', this.notes);
+            return; // Stop game start if no data
         }
         
-        // ISOLATED VIDEO PLAYBACK - completely separate from game loop
-        this.startMediaIndependently();
+        // Check note density in first 30 seconds
+        const early = this.notes.filter(n => n.originalTime <= 30).length;
+        const mid = this.notes.filter(n => n.originalTime > 30 && n.originalTime <= 60).length; 
+        const late = this.notes.filter(n => n.originalTime > 60).length;
+        console.log(`Note distribution: 0-30s: ${early}, 30-60s: ${mid}, 60s+: ${late}`);
+        
+        // Debug first 10 notes specifically
+        console.log('First 10 notes:', this.notes.slice(0, 10).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane} chord=${n.isChord}`));
+        
+        // Check for missing early notes with enhanced debugging
+        const reallyEarlyNotes = this.notes.filter(n => n.originalTime <= 5);
+        const allEarlyNotes = this.notes.filter(n => n.originalTime <= 10);
+        console.log(`🔍 EARLY NOTES ANALYSIS:`);
+        console.log(`  - Chart: ${this.currentChart?.title} (${this.currentChart?.difficulty})`);
+        console.log(`  - Total notes in chart: ${this.currentChart?.notes?.length || 0}`);
+        console.log(`  - Loaded notes in game: ${this.notes.length}`);
+        console.log(`  - Notes 0-5s: ${reallyEarlyNotes.length}`);
+        console.log(`  - Notes 0-10s: ${allEarlyNotes.length}`);
+        
+        if (reallyEarlyNotes.length === 0) {
+            console.error('🚨 NO EARLY NOTES FOUND! Chart may not have loaded properly.');
+            console.log('Raw chart data check:', this.currentChart.notes?.slice(0, 5));
+        } else {
+            console.log('✅ Early notes found:', reallyEarlyNotes.slice(0, 3).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane}`));
+        }
+        
+        // Check for issues with note data
+        const invalidNotes = this.notes.filter(n => n.originalTime === undefined || n.lane === undefined);
+        if (invalidNotes.length > 0) {
+            console.error('Invalid notes found:', invalidNotes);
+        }
+        
+        // SKIP MEDIA SETUP - now handled by synchronized start system
+        console.log('🎮 Game engine ready, media will be started by synchronization system');
         
         console.log('Starting game loop...');
         console.log('isPlaying before gameLoop:', this.isPlaying);
@@ -224,10 +280,12 @@ class RhythmGame {
         this.gameTime = 0;
         this.audioStartOffset = 0;
         
-        // Reset audio
+        // CRITICAL: Force audio to start from 0 to prevent timing issues
+        this.audio.pause();
         this.audio.currentTime = 0;
         this.audio.playbackRate = 1.0;
         this.audio.defaultPlaybackRate = 1.0;
+        console.log('🎵 Audio reset to currentTime=0');
         
         // Debug video state before starting
         console.log('📹 Pre-start video state:', {
@@ -470,23 +528,31 @@ class RhythmGame {
             return;
         }
         
-        // Removed frame rate limiting - back to 60fps
-        
-        const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
-        this.lastTime = currentTime;
-        
-        // ISOLATED TIMING SYSTEM - only use audio, never touch video
-        if (this.audio && this.audio.readyState >= 2 && !this.audio.paused) {
-            // Use audio time when it's actually playing and ready
-            const audioTime = this.audio.currentTime;
-            if (audioTime > 0 || this.gameTime > 0) {
-                this.gameTime = audioTime;
-            } else {
-                // Audio is loaded but hasn't started, accumulate time
-                this.gameTime += deltaTime;
-            }
+        // CRITICAL FIX: Prevent initial time jumps
+        let deltaTime;
+        if (this.lastTime === 0 || currentTime === 0) {
+            // First frame or invalid time - use small default
+            deltaTime = 0.016; // 60fps default
+            this.lastTime = currentTime || performance.now();
         } else {
-            // Always accumulate time when audio isn't ready or paused
+            deltaTime = (currentTime - this.lastTime) / 1000;
+            
+            // SAFETY: Cap deltaTime to prevent large jumps
+            if (deltaTime > 0.1) { // More than 100ms is suspicious
+                console.warn(`⚠️ Large deltaTime detected: ${deltaTime.toFixed(3)}s, capping to 0.016s`);
+                deltaTime = 0.016;
+            }
+            
+            this.lastTime = currentTime;
+        }
+        
+        // SYNCHRONIZED TIMING SYSTEM - uses audio as primary timing source
+        if (this.audio && this.audio.readyState >= 2 && !this.audio.paused) {
+            // Use audio time as the authoritative timing source
+            const audioTime = this.audio.currentTime;
+            this.gameTime = audioTime;
+        } else {
+            // Accumulate time when audio isn't available (should be rare now)
             this.gameTime += deltaTime;
         }
         
@@ -532,6 +598,11 @@ class RhythmGame {
                 // When timeUntilHit = 2, note is 800px above judgment line
                 // When timeUntilHit = 0, note is at judgment line
                 note.y = this.judgmentLine - (timeUntilHit * this.noteSpeed);
+                
+                // Debug early notes specifically
+                if (note.originalTime <= 5 && this.gameTime <= 6) {
+                    console.log(`🔍 Early note debug: time=${note.originalTime.toFixed(3)}, gameTime=${this.gameTime.toFixed(3)}, timeUntilHit=${timeUntilHit.toFixed(3)}, y=${note.y.toFixed(1)}, judgmentLine=${this.judgmentLine}`);
+                }
             }
         });
         
@@ -541,7 +612,39 @@ class RhythmGame {
             const upcomingNotes = allNotes.filter(n => n.originalTime > this.gameTime && n.originalTime < this.gameTime + 10);
             const visibleNotes = allNotes.filter(n => n.y > -100 && n.y < this.canvas.height + 100);
             
+            // Enhanced debugging for early notes
+            if (this.gameTime <= 6) {
+                const earlyNotes = allNotes.filter(n => n.originalTime <= 5);
+                console.log(`🔍 Early notes analysis at ${this.gameTime.toFixed(2)}s:`);
+                console.log(`  - Total notes: ${allNotes.length}`);
+                console.log(`  - Early notes (≤5s): ${earlyNotes.length}`);
+                console.log(`  - First 5 notes times:`, allNotes.slice(0, 5).map(n => n.originalTime?.toFixed(3) || 'undefined'));
+                
+                earlyNotes.slice(0, 3).forEach((note, i) => {
+                    const timeUntilHit = note.originalTime - this.gameTime;
+                    console.log(`  - Early note ${i}: time=${note.originalTime.toFixed(3)}s, y=${note.y.toFixed(1)}, timeUntilHit=${timeUntilHit.toFixed(3)}, visible=${note.y > -100 && note.y < this.canvas.height + 100}`);
+                });
+            }
+            
             console.log(`Game time: ${this.gameTime.toFixed(2)}s, Visible notes: ${visibleNotes.length}, Total active: ${allNotes.length}, Upcoming (next 10s): ${upcomingNotes.length}`);
+            
+            // EMERGENCY DEBUG: Show current chart info every 5 seconds
+            if (Math.floor(this.gameTime) % 5 === 0 && this.gameTime < 20) {
+                console.log('🚨 EMERGENCY DEBUG:');
+                console.log('  - Chart title:', this.currentChart?.title, 'difficulty:', this.currentChart?.difficulty);
+                console.log('  - Original chart notes count:', this.currentChart?.notes?.length);
+                console.log('  - Current game notes count:', this.notes?.length);
+                if (this.currentChart?.notes) {
+                    console.log('  - Original chart first 3:', this.currentChart.notes.slice(0, 3).map(n => `time=${n.time}, lane=${n.lane}`));
+                }
+            }
+            
+            // Enhanced debugging for troubleshooting
+            if (allNotes.length === 0) {
+                console.error('🚨 NO ACTIVE NOTES! Total notes array length:', this.notes.length);
+                console.log('Chart title:', this.currentChart?.title);
+                console.log('Chart notes count:', this.currentChart?.notes?.length);
+            }
             
             if (upcomingNotes.length > 0) {
                 const next = upcomingNotes[0];
@@ -557,9 +660,9 @@ class RhythmGame {
             }
         }
         
-        // Check for missed notes (notes that passed judgment line)
-        // But only start checking after a brief startup period to avoid immediate misses
-        if (this.gameTime > 0.5) { // Wait 500ms before checking for misses
+        // DISABLE miss checking during sync/loading period  
+        // Only start checking misses after game has been running stably
+        if (this.gameTime > 2.0 && this.gameTime < 300) { // Only check misses between 2-300 seconds
             this.notes.forEach(note => {
                 if (!note.hit && note.y > this.judgmentLine + 100) {
                     note.hit = true;
