@@ -12,8 +12,8 @@
       "year": 2024,
       "description": "心に響く美しいメロディーの電子音楽",
       "audio": "assets/audio/cryinggirl.mp3",
-      "video": "assets/video/cryinggirl.mov",
-      "backgroundVideo": "assets/video/cryinggirl.mov",
+      "video": "assets/video/cryinggirl.mp4",
+      "backgroundVideo": "assets/video/cryinggirl.mp4",
       "jacket": "",
       "color": {
         "primary": "#ff6b9d",

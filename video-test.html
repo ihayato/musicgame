@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Speed Test - No JavaScript</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+        }
+        .test-container {
+            padding: 20px;
+        }
+        video {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        .info {
+            background: #333;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎬 Video Speed Diagnostic Test</h1>
+        <p>This page tests video playback with ZERO JavaScript interference.</p>
+        
+        <div class="info">
+            <h3>Test Video</h3>
+            <video id="testVideo" controls preload="metadata">
+                <source src="assets/video/cryinggirl.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        
+        <div class="info">
+            <h3>Expected Behavior</h3>
+            <p>If this video plays at normal speed here, the problem is JavaScript interference.</p>
+            <p>If this video STILL plays too fast, the problem is the video file itself.</p>
+        </div>
+        
+        <div class="info">
+            <h3>Instructions</h3>
+            <ol>
+                <li>Play the video above using browser controls</li>
+                <li>Compare the speed to what you expect</li>
+                <li>Check the browser's developer tools for video metadata</li>
+            </ol>
+        </div>
+        
+        <div class="info">
+            <h3>Audio Comparison</h3>
+            <p>Play this audio file and compare timing:</p>
+            <audio controls preload="metadata">
+                <source src="assets/audio/cryinggirl.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        // Minimal script to log video metadata
+        document.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('testVideo');
+            
+            video.addEventListener('loadedmetadata', () => {
+                console.log('🎬 VIDEO METADATA:');
+                console.log('Duration:', video.duration, 'seconds');
+                console.log('VideoWidth:', video.videoWidth);
+                console.log('VideoHeight:', video.videoHeight);
+                console.log('PlaybackRate:', video.playbackRate);
+                console.log('ReadyState:', video.readyState);
+                
+                // Check for any unusual properties
+                console.log('DefaultPlaybackRate:', video.defaultPlaybackRate);
+                console.log('Muted:', video.muted);
+                console.log('Loop:', video.loop);
+            });
+            
+            video.addEventListener('play', () => {
+                console.log('🎵 VIDEO STARTED');
+                console.log('CurrentTime:', video.currentTime);
+                console.log('PlaybackRate at start:', video.playbackRate);
+            });
+            
+            // Log playback rate every few seconds
+            setInterval(() => {
+                if (!video.paused) {
+                    console.log(`Time: ${video.currentTime.toFixed(2)}s, Rate: ${video.playbackRate}, Paused: ${video.paused}`);
+                }
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
