@@ -201,9 +201,11 @@ class RhythmGame {
             this.audio.currentTime = 0;
             this.video.currentTime = 0;
             
-            // Ensure video playback rate matches audio (normal speed)
+            // Force playback rates to normal speed and verify
+            console.log(`🔍 BEFORE setting rates - Video: ${this.video.playbackRate}, Audio: ${this.audio.playbackRate}`);
             this.video.playbackRate = 1.0;
             this.audio.playbackRate = 1.0;
+            console.log(`🔍 AFTER setting rates - Video: ${this.video.playbackRate}, Audio: ${this.audio.playbackRate}`);
             
             // Initialize timing variables
             this.gameTime = 0;
@@ -230,11 +232,25 @@ class RhythmGame {
                 console.log(`  Audio playbackRate: ${this.audio.playbackRate}`);
                 console.log(`  Video playbackRate: ${this.video.playbackRate}`);
                 
-                // Check for duration mismatch
+                // Check for duration mismatch and analyze speed issues
                 const durationDiff = Math.abs(this.audio.duration - this.video.duration);
-                if (durationDiff > 1) { // More than 1 second difference
-                    console.warn(`⚠️  Duration mismatch detected: Audio=${this.audio.duration.toFixed(2)}s, Video=${this.video.duration.toFixed(2)}s, Diff=${durationDiff.toFixed(2)}s`);
-                    console.warn('This may cause sync issues. Consider using matching duration files.');
+                console.log(`🎬 DURATION ANALYSIS:`);
+                console.log(`Audio duration: ${this.audio.duration.toFixed(2)}s`);
+                console.log(`Video duration: ${this.video.duration.toFixed(2)}s`);
+                console.log(`Difference: ${durationDiff.toFixed(2)}s`);
+                
+                if (durationDiff > 1) {
+                    console.warn(`⚠️  Duration mismatch detected!`);
+                    
+                    // If video is about half the duration of audio, it might be 2x speed
+                    const videoDurationRatio = this.video.duration / this.audio.duration;
+                    console.log(`Video/Audio duration ratio: ${videoDurationRatio.toFixed(3)}`);
+                    
+                    if (videoDurationRatio < 0.6) { // Video is significantly shorter
+                        console.warn(`🚨 VIDEO APPEARS TO BE DOUBLE SPEED!`);
+                        console.warn(`Setting video playback rate to 0.5 to compensate...`);
+                        this.video.playbackRate = 0.5;
+                    }
                 }
                 
                 // Start audio first, then video follows with precise timing
@@ -401,13 +417,29 @@ class RhythmGame {
         // Update particles
         this.updateParticles(deltaTime);
         
-        // SYNC DISABLED - Let video play naturally without interference
-        // Only log major issues for debugging, but don't actively correct
-        if (Math.floor(this.gameTime) % 30 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
-                const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                if (timeDiff > 2.0) { // Only log major drift, don't fix it
-                    console.log(`📊 Sync info (no correction): audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, drift=${timeDiff.toFixed(2)}s`);
+        // Monitor playback rates every few seconds to catch any changes
+        if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+            if (this.video && this.audio) {
+                const videoRate = this.video.playbackRate;
+                const audioRate = this.audio.playbackRate;
+                
+                if (videoRate !== 1.0 || audioRate !== 1.0) {
+                    console.log(`🚨 PLAYBACK RATE ISSUE DETECTED!`);
+                    console.log(`Video rate: ${videoRate} (should be 1.0)`);
+                    console.log(`Audio rate: ${audioRate} (should be 1.0)`);
+                    
+                    // Force correct them
+                    this.video.playbackRate = 1.0;
+                    this.audio.playbackRate = 1.0;
+                    console.log(`✅ Corrected rates back to 1.0`);
+                }
+                
+                // Also monitor sync drift for info
+                if (!this.audio.paused && !this.video.paused) {
+                    const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
+                    if (timeDiff > 2.0) {
+                        console.log(`📊 Large sync drift: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
+                    }
                 }
             }
         }
