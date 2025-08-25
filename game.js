@@ -201,11 +201,7 @@ class RhythmGame {
             this.audio.currentTime = 0;
             this.video.currentTime = 0;
             
-            // Force playback rates to normal speed and verify
-            console.log(`🔍 BEFORE setting rates - Video: ${this.video.playbackRate}, Audio: ${this.audio.playbackRate}`);
-            this.video.playbackRate = 1.0;
-            this.audio.playbackRate = 1.0;
-            console.log(`🔍 AFTER setting rates - Video: ${this.video.playbackRate}, Audio: ${this.audio.playbackRate}`);
+            // Let video and audio play at their natural rates - no interference
             
             // Initialize timing variables
             this.gameTime = 0;
@@ -226,57 +222,15 @@ class RhythmGame {
             };
             
             waitForMetadata().then(() => {
-                console.log(`📊 Media Info:`);
-                console.log(`  Audio duration: ${this.audio.duration}s`);
-                console.log(`  Video duration: ${this.video.duration}s`);
-                console.log(`  Audio playbackRate: ${this.audio.playbackRate}`);
-                console.log(`  Video playbackRate: ${this.video.playbackRate}`);
+                console.log(`🎬 Starting audio and video naturally`);
                 
-                // Check for duration mismatch and analyze speed issues
-                const durationDiff = Math.abs(this.audio.duration - this.video.duration);
-                console.log(`🎬 DURATION ANALYSIS:`);
-                console.log(`Audio duration: ${this.audio.duration.toFixed(2)}s`);
-                console.log(`Video duration: ${this.video.duration.toFixed(2)}s`);
-                console.log(`Difference: ${durationDiff.toFixed(2)}s`);
+                // Simply start both - no sync attempts
+                const audioPromise = this.audio.play();
+                const videoPromise = this.video.play();
                 
-                if (durationDiff > 1) {
-                    console.warn(`⚠️  Duration mismatch detected!`);
-                    
-                    // If video is about half the duration of audio, it might be 2x speed
-                    const videoDurationRatio = this.video.duration / this.audio.duration;
-                    console.log(`Video/Audio duration ratio: ${videoDurationRatio.toFixed(3)}`);
-                    
-                    if (videoDurationRatio < 0.6) { // Video is significantly shorter
-                        console.warn(`🚨 VIDEO APPEARS TO BE DOUBLE SPEED!`);
-                        console.warn(`Setting video playback rate to 0.5 to compensate...`);
-                        this.video.playbackRate = 0.5;
-                    }
-                }
-                
-                // Start audio first, then video follows with precise timing
-                return this.audio.play().then(() => {
-                    console.log(`Audio started at: ${this.audio.currentTime}s`);
-                    
-                    // Wait a tiny bit for audio to establish timing, then start video
-                    return new Promise((resolve) => {
-                        setTimeout(() => {
-                            this.video.currentTime = this.audio.currentTime;
-                            console.log(`Setting video time to match audio: ${this.video.currentTime}s`);
-                            
-                            this.video.play().then(resolve).catch(resolve);
-                        }, 50); // Small delay to let audio establish timing
-                    });
-                });
+                return Promise.all([audioPromise, videoPromise]);
             }).then(() => {
-                console.log('✅ Audio and video started simultaneously');
-                console.log(`Final playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
-                
-                // Just log the initial sync status, no corrections
-                setTimeout(() => {
-                    const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                    console.log(`📊 Initial sync status: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
-                    console.log('🎬 Video now playing naturally without sync interference');
-                }, 1000);
+                console.log('✅ Audio and video started - playing naturally');
             }).catch(e => {
                 console.error('Media playback failed:', e);
             });
@@ -417,32 +371,7 @@ class RhythmGame {
         // Update particles
         this.updateParticles(deltaTime);
         
-        // Monitor playback rates every few seconds to catch any changes
-        if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            if (this.video && this.audio) {
-                const videoRate = this.video.playbackRate;
-                const audioRate = this.audio.playbackRate;
-                
-                if (videoRate !== 1.0 || audioRate !== 1.0) {
-                    console.log(`🚨 PLAYBACK RATE ISSUE DETECTED!`);
-                    console.log(`Video rate: ${videoRate} (should be 1.0)`);
-                    console.log(`Audio rate: ${audioRate} (should be 1.0)`);
-                    
-                    // Force correct them
-                    this.video.playbackRate = 1.0;
-                    this.audio.playbackRate = 1.0;
-                    console.log(`✅ Corrected rates back to 1.0`);
-                }
-                
-                // Also monitor sync drift for info
-                if (!this.audio.paused && !this.video.paused) {
-                    const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                    if (timeDiff > 2.0) {
-                        console.log(`📊 Large sync drift: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
-                    }
-                }
-            }
-        }
+        // No monitoring or corrections - let media play naturally
         
         // Remove notes that are far off screen (but keep unhit notes)
         this.notes = this.notes.filter(note => {
