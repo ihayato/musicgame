@@ -422,15 +422,25 @@ class App {
                     console.log('Loading chart into game...');
                     this.game.loadChart(chartData);
                     
-                    // More reliable audio loading check
+                    // Enhanced audio loading check with timeout protection
+                    let attempts = 0;
+                    const maxAttempts = 50; // 5 second timeout
+                    
                     const attemptStart = () => {
+                        attempts++;
+                        console.log(`Audio loading attempt ${attempts}/${maxAttempts}, readyState: ${gameAudio.readyState}, currentTime: ${gameAudio.currentTime}`);
+                        
                         if (gameAudio.readyState >= 2) { // HAVE_CURRENT_DATA or better
-                            console.log('Audio ready (readyState:', gameAudio.readyState, '), starting game immediately...');
+                            console.log('✅ Audio ready, starting game...');
                             this.game.start();
                             console.log('Game.start() called');
-                        } else {
-                            console.log('Audio not ready (readyState:', gameAudio.readyState, '), waiting...');
+                        } else if (attempts < maxAttempts) {
+                            console.log('⏳ Audio not ready, waiting...');
                             setTimeout(attemptStart, 100); // Check every 100ms
+                        } else {
+                            console.warn('⚠️  Audio loading timeout, starting anyway...');
+                            this.game.start();
+                            console.log('Game.start() called (timeout fallback)');
                         }
                     };
                     

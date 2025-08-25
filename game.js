@@ -120,6 +120,7 @@ class RhythmGame {
         this.maxCombo = 0;
         this.gameTime = 0;
         this.isPlaying = true;
+        this.startTime = performance.now(); // Add performance timing reference
         
         if (this.currentChart) {
             this.notes = this.currentChart.notes.map(note => ({
@@ -144,14 +145,21 @@ class RhythmGame {
             // Debug first 10 notes specifically
             console.log('First 10 notes:', this.notes.slice(0, 10).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane} chord=${n.isChord}`));
             
-            // Check for missing early notes
+            // Check for missing early notes with enhanced debugging
             const reallyEarlyNotes = this.notes.filter(n => n.originalTime <= 5);
-            console.log(`🔍 VERY EARLY NOTES CHECK: Total found=${reallyEarlyNotes.length}`);
+            const allEarlyNotes = this.notes.filter(n => n.originalTime <= 10);
+            console.log(`🔍 EARLY NOTES ANALYSIS:`);
+            console.log(`  - Chart: ${this.currentChart?.title} (${this.currentChart?.difficulty})`);
+            console.log(`  - Total notes in chart: ${this.currentChart?.notes?.length || 0}`);
+            console.log(`  - Loaded notes in game: ${this.notes.length}`);
+            console.log(`  - Notes 0-5s: ${reallyEarlyNotes.length}`);
+            console.log(`  - Notes 0-10s: ${allEarlyNotes.length}`);
+            
             if (reallyEarlyNotes.length === 0) {
                 console.error('🚨 NO EARLY NOTES FOUND! Chart may not have loaded properly.');
                 console.log('Raw chart data check:', this.currentChart.notes?.slice(0, 5));
             } else {
-                console.log('Early notes details:', reallyEarlyNotes.map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane}`));
+                console.log('✅ Early notes found:', reallyEarlyNotes.slice(0, 3).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane}`));
             }
             
             // Check for issues with note data
@@ -168,11 +176,16 @@ class RhythmGame {
             this.audio.currentTime = 0;
             this.video.currentTime = 0;
             
+            // Ensure video playback rate matches audio (normal speed)
+            this.video.playbackRate = 1.0;
+            this.audio.playbackRate = 1.0;
+            
             // Initialize timing variables
             this.gameTime = 0;
             this.audioStartOffset = 0;
             
             console.log('Starting synchronized audio and video playback...');
+            console.log(`Audio duration: ${this.audio.duration}s, Video duration: ${this.video.duration}s`);
             
             // Start audio first, then sync video to it
             this.audio.play().then(() => {
@@ -184,6 +197,7 @@ class RhythmGame {
                 return this.video.play();
             }).then(() => {
                 console.log('Video started successfully and synced to audio');
+                console.log(`Playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
                 
                 // Optional: Re-sync after a brief moment to ensure accuracy
                 setTimeout(() => {
@@ -248,14 +262,23 @@ class RhythmGame {
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
         
-        // Use audio time when available, otherwise accumulate time
-        if (this.audio && !this.audio.paused && this.audio.readyState >= 2) {
-            // Sync with audio time when audio is playing and ready
-            this.gameTime = this.audio.currentTime;
+        // More robust timing system
+        if (this.audio && this.audio.readyState >= 2 && !this.audio.paused) {
+            // Use audio time when it's actually playing and ready
+            const audioTime = this.audio.currentTime;
+            if (audioTime > 0 || this.gameTime > 0) {
+                this.gameTime = audioTime;
+            } else {
+                // Audio is loaded but hasn't started, accumulate time
+                this.gameTime += deltaTime;
+            }
         } else {
-            // Accumulate time when audio isn't ready
+            // Always accumulate time when audio isn't ready or paused
             this.gameTime += deltaTime;
         }
+        
+        // Ensure time never goes backwards
+        this.gameTime = Math.max(this.gameTime || 0, 0);
         
         // Debug timing issue
         if (Math.floor(this.gameTime * 10) % 10 === 0) {
@@ -326,6 +349,13 @@ class RhythmGame {
         // Sync video to audio periodically (every 5 seconds)
         if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
             if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
+                // Check playback rates
+                if (this.video.playbackRate !== 1.0 || this.audio.playbackRate !== 1.0) {
+                    console.log(`⚠️  Incorrect playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
+                    this.video.playbackRate = 1.0;
+                    this.audio.playbackRate = 1.0;
+                }
+                
                 const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
                 if (timeDiff > 0.2) { // If more than 200ms difference
                     console.log(`Syncing video: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
