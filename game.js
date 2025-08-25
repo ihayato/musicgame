@@ -318,6 +318,11 @@ class RhythmGame {
             console.error('Error in game loop:', error);
         }
         
+        // Log frame timing every second
+        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+            console.log(`🎮 Frame timing - FPS: ${(1/deltaTime).toFixed(1)}, deltaTime: ${deltaTime.toFixed(4)}s`);
+        }
+        
         requestAnimationFrame((time) => this.gameLoop(time));
     }
     
@@ -381,6 +386,9 @@ class RhythmGame {
     }
     
     render() {
+        // PERFORMANCE TEST: Disable all canvas rendering
+        return; // Comment this line to re-enable rendering
+        
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
