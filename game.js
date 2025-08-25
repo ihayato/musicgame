@@ -168,25 +168,34 @@ class RhythmGame {
             this.audio.currentTime = 0;
             this.video.currentTime = 0;
             
-            // Initialize timing variables consistently
+            // Initialize timing variables
             this.gameTime = 0;
-            this.audioStartTime = 0; // Always start from 0 for consistency
             this.audioStartOffset = 0;
             
-            console.log('Starting audio playback...');
+            console.log('Starting synchronized audio and video playback...');
+            
+            // Start audio first, then sync video to it
             this.audio.play().then(() => {
-                console.log('Audio started successfully');
-                // Audio is now playing, timing will be handled in gameLoop
+                console.log('Audio started successfully, now starting video...');
+                
+                // Sync video to audio time
+                this.video.currentTime = this.audio.currentTime;
+                
+                return this.video.play();
+            }).then(() => {
+                console.log('Video started successfully and synced to audio');
+                
+                // Optional: Re-sync after a brief moment to ensure accuracy
+                setTimeout(() => {
+                    if (Math.abs(this.video.currentTime - this.audio.currentTime) > 0.1) {
+                        console.log('Re-syncing video to audio...');
+                        this.video.currentTime = this.audio.currentTime;
+                    }
+                }, 100);
             }).catch(e => {
-                console.error('Audio play failed:', e);
+                console.error('Media playback failed:', e);
             });
             
-            console.log('Starting video playback...');
-            this.video.play().then(() => {
-                console.log('Video started successfully');
-            }).catch(e => {
-                console.error('Video play failed:', e);
-            });
         } catch (error) {
             console.error('Error starting media:', error);
         }
@@ -239,13 +248,13 @@ class RhythmGame {
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
         
-        // Use audio time consistently for better synchronization
-        if (this.audio && !this.audio.paused && this.audio.currentTime >= 0) {
-            // Use audio currentTime directly since we reset it to 0 at start
+        // Use audio time when available, otherwise accumulate time
+        if (this.audio && !this.audio.paused && this.audio.readyState >= 2) {
+            // Sync with audio time when audio is playing and ready
             this.gameTime = this.audio.currentTime;
         } else {
-            // Fallback to accumulated time
-            this.gameTime = Math.max(0, this.gameTime + deltaTime);
+            // Accumulate time when audio isn't ready
+            this.gameTime += deltaTime;
         }
         
         // Debug timing issue
@@ -293,6 +302,7 @@ class RhythmGame {
             if (this.gameTime < 10) {
                 const reallyEarlyNotes = this.notes.filter(n => !n.hit && n.originalTime <= 5);
                 const earlyNotes = this.notes.filter(n => !n.hit && n.originalTime > 5 && n.originalTime <= 10);
+                console.log(`🔍 EARLY NOTES DEBUG: gameTime=${this.gameTime.toFixed(2)}, audioTime=${this.audio.currentTime.toFixed(2)}, paused=${this.audio.paused}`);
                 console.log(`Very early notes (0-5s): Total=${reallyEarlyNotes.length}`, reallyEarlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
                 console.log(`Early notes (5-10s): Total=${earlyNotes.length}`, earlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
             }
@@ -312,6 +322,17 @@ class RhythmGame {
         
         // Update particles
         this.updateParticles(deltaTime);
+        
+        // Sync video to audio periodically (every 5 seconds)
+        if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+            if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
+                const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
+                if (timeDiff > 0.2) { // If more than 200ms difference
+                    console.log(`Syncing video: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
+                    this.video.currentTime = this.audio.currentTime;
+                }
+            }
+        }
         
         // Remove notes that are far off screen (but keep unhit notes)
         this.notes = this.notes.filter(note => {
