@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Otogame 2 - ビートマニア風音楽ゲーム</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="menu" class="screen active">
+            <h1>Otogame 2</h1>
+            <div id="songSelection" class="selection-step active">
+                <h2>楽曲選択</h2>
+                <div id="songList" class="song-list"></div>
+            </div>
+            
+            <div id="difficultySelection" class="selection-step">
+                <div id="selectedSongDisplay">
+                    <div id="songBanner">
+                        <video id="bannerVideo" muted loop></video>
+                        <div class="banner-overlay"></div>
+                        <div class="banner-content">
+                            <h2 id="bannerSongTitle"></h2>
+                            <p id="bannerSongArtist"></p>
+                            <div class="banner-stats">
+                                <span id="bannerBPM"></span>
+                                <span id="bannerDuration"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="difficulty-grid">
+                    <h3>難易度を選択してください</h3>
+                    <div class="difficulty-cards">
+                        <div class="difficulty-card" data-difficulty="easy">
+                            <div class="difficulty-name">EASY</div>
+                            <div class="difficulty-level">★☆☆☆</div>
+                            <div class="difficulty-description">初心者向け</div>
+                        </div>
+                        <div class="difficulty-card" data-difficulty="normal">
+                            <div class="difficulty-name">NORMAL</div>
+                            <div class="difficulty-level">★★☆☆</div>
+                            <div class="difficulty-description">基本レベル</div>
+                        </div>
+                        <div class="difficulty-card" data-difficulty="hard">
+                            <div class="difficulty-name">HARD</div>
+                            <div class="difficulty-level">★★★☆</div>
+                            <div class="difficulty-description">上級者向け</div>
+                        </div>
+                        <div class="difficulty-card" data-difficulty="extreme">
+                            <div class="difficulty-name">EXTREME</div>
+                            <div class="difficulty-level">★★★★</div>
+                            <div class="difficulty-description">最高難易度</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="selection-controls">
+                    <button id="backToSongBtn" class="control-btn back-btn">楽曲選択に戻る</button>
+                    <button id="previewBtn" class="control-btn preview-btn">プレビュー</button>
+                    <button id="startGameBtn" class="control-btn start-btn" disabled>ゲーム開始</button>
+                </div>
+                
+                <audio id="previewAudio" loop></audio>
+            </div>
+        </div>
+
+        <div id="game" class="screen">
+            <video id="bgVideo" muted loop></video>
+            <canvas id="gameCanvas"></canvas>
+            <audio id="gameAudio"></audio>
+            
+            <div id="gameUI">
+                <div id="score">Score: 0</div>
+                <div id="combo">Combo: 0</div>
+                <div id="judgment"></div>
+            </div>
+            
+            <div id="keys">
+                <div class="key" data-key="A">A</div>
+                <div class="key" data-key="S">S</div>
+                <div class="key" data-key="D">D</div>
+                <div class="key" data-key="G">G</div>
+                <div class="key" data-key="H">H</div>
+                <div class="key" data-key="J">J</div>
+            </div>
+            
+            <button id="backToMenu">メニューに戻る</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="chart-generator.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Debug: Check if all functions are loaded
+        console.log('Scripts loaded check:');
+        console.log('- initGame:', typeof initGame);
+        console.log('- game variable:', typeof game);
+        console.log('- RhythmGame class:', typeof RhythmGame);
+    </script>
+</body>
+</html>

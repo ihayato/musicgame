@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>譜面制作システム - Otogame 2</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="editor-app">
+        <header>
+            <h1>譜面制作システム</h1>
+            <a href="index.html">メインに戻る</a>
+        </header>
+
+        <div id="editor-controls">
+            <div>
+                <label for="editorMusicFile">音楽ファイル:</label>
+                <input type="file" id="editorMusicFile" accept=".mp3">
+            </div>
+            
+            <div>
+                <label for="songTitle">楽曲名:</label>
+                <input type="text" id="songTitle" placeholder="楽曲名を入力">
+            </div>
+            
+            <div>
+                <button id="startRecording">記録開始 (スペースキーで記録)</button>
+                <button id="stopRecording" disabled>記録停止</button>
+                <button id="playPreview" disabled>プレビュー再生</button>
+            </div>
+            
+            <div>
+                <button id="generateCharts" disabled>譜面生成</button>
+                <button id="saveRawData" disabled>生データ保存</button>
+                <button id="loadRawData">生データ読み込み</button>
+                <input type="file" id="rawDataFile" accept=".json" style="display: none;">
+            </div>
+        </div>
+
+        <div id="editor-status">
+            <div>記録状態: <span id="recordingStatus">待機中</span></div>
+            <div>再生時間: <span id="currentTime">0.00</span>秒</div>
+            <div>記録数: <span id="recordCount">0</span></div>
+        </div>
+
+        <div id="timestamps">
+            <h3>記録されたタイムスタンプ</h3>
+            <div id="timestampList"></div>
+        </div>
+
+        <div id="generated-charts">
+            <h3>生成された譜面</h3>
+            <div id="chartsList"></div>
+        </div>
+
+        <audio id="editorAudio"></audio>
+    </div>
+
+    <script src="chart-generator.js"></script>
+    <script src="chart-editor.js"></script>
+</body>
+</html>

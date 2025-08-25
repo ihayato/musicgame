@@ -1,0 +1,1297 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    background: #000;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+/* ゲーム画面でのoverflow制御 */
+.game-active {
+    overflow: hidden !important;
+}
+
+/* メイン画面共通 */
+.screen {
+    display: none;
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* メニュー画面 */
+#menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+}
+
+#menu h1 {
+    font-size: 4rem;
+    margin-bottom: 3rem;
+    color: #00ffff;
+    text-shadow: 0 0 20px #00ffff;
+}
+
+#songSelection {
+    margin-bottom: 2rem;
+    width: 100%;
+    max-width: 1000px;
+}
+
+#songSelection h2 {
+    color: #00ffff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Selection Steps */
+.selection-step {
+    display: none;
+    width: 100%;
+}
+
+.selection-step.active {
+    display: block;
+}
+
+/* Song Selection */
+.song-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.song-item {
+    background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+    border: 3px solid #333;
+    border-radius: 20px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.song-item:hover {
+    border-color: #00ffff;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(0, 255, 255, 0.4);
+}
+
+.song-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.song-item:hover::before {
+    left: 100%;
+}
+
+.song-item h3 {
+    color: #00ffff;
+    margin-bottom: 8px;
+    font-size: 1.6rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.song-item .artist {
+    color: #ccc;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.song-item .info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1rem;
+    color: #aaa;
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #444;
+}
+
+/* メニューのナビゲーションは削除済み */
+
+#menu button {
+    padding: 1rem 2rem;
+    font-size: 1.5rem;
+    background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#menu button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+}
+
+/* 楽曲詳細画面 */
+#songDetail {
+    padding: 40px;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+}
+
+#songInfo {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+#songJacket {
+    width: 200px;
+    height: 200px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 3px solid #00ffff;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+}
+
+#songJacket img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#songMeta h2 {
+    color: #00ffff;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+#songMeta p {
+    color: #ccc;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+#difficultySelection {
+    text-align: center;
+}
+
+#difficultySelection h3 {
+    color: #00ffff;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+#difficultyList {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.difficulty-btn {
+    padding: 15px 25px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+}
+
+.difficulty-btn[data-difficulty="easy"] {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.difficulty-btn[data-difficulty="normal"] {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    color: white;
+}
+
+.difficulty-btn[data-difficulty="hard"] {
+    background: linear-gradient(45deg, #FF9800, #F57C00);
+    color: white;
+}
+
+.difficulty-btn[data-difficulty="extreme"] {
+    background: linear-gradient(45deg, #F44336, #D32F2F);
+    color: white;
+}
+
+.difficulty-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.difficulty-btn.selected {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    transform: scale(1.05);
+}
+
+#songDetailControls {
+    display: flex;
+    gap: 20px;
+}
+
+#songDetailControls button {
+    padding: 15px 30px;
+    font-size: 1.3rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#previewBtn {
+    background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+    color: white;
+}
+
+#startGameBtn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    font-weight: bold;
+}
+
+#backToSongList {
+    background: linear-gradient(45deg, #607D8B, #455A64);
+    color: white;
+}
+
+#songDetailControls button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* 選択された楽曲のスタイル強化 */
+.song-item.selected {
+    border-color: #ffff00;
+    background: linear-gradient(135deg, #3a3a4e, #2a2a3e);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.3);
+}
+
+.song-item.selected h3 {
+    color: #ffff00;
+    text-shadow: 0 0 15px rgba(255, 255, 0, 0.8);
+}
+
+/* Difficulty Selection */
+#difficultySelection {
+    padding: 20px;
+}
+
+#selectedSongDisplay {
+    margin-bottom: 40px;
+}
+
+#songBanner {
+    position: relative;
+    height: 200px;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 3px solid var(--primary-color, #00ffff);
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+#bannerVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.banner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        45deg,
+        rgba(0, 0, 0, 0.7) 0%,
+        rgba(0, 0, 0, 0.3) 50%,
+        rgba(0, 0, 0, 0.6) 100%
+    );
+}
+
+.banner-content {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 30px;
+    color: white;
+}
+
+#bannerSongTitle {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--primary-color, #00ffff);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    margin-bottom: 8px;
+}
+
+#bannerSongArtist {
+    font-size: 1.3rem;
+    color: #ccc;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.banner-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 1.1rem;
+    color: var(--accent-color, #ffd93d);
+    font-weight: bold;
+}
+
+/* Difficulty Grid */
+.difficulty-grid {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.difficulty-grid h3 {
+    color: #00ffff;
+    font-size: 1.8rem;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.difficulty-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.difficulty-card {
+    background: linear-gradient(135deg, #2a2a3e, #1a1a2e);
+    border: 3px solid #333;
+    border-radius: 15px;
+    padding: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.difficulty-card:hover {
+    border-color: #00ffff;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
+}
+
+.difficulty-card.selected {
+    border-color: #ffff00;
+    background: linear-gradient(135deg, #4a4a5e, #3a3a4e);
+    box-shadow: 0 0 30px rgba(255, 255, 0, 0.5);
+    transform: translateY(-8px) scale(1.05);
+}
+
+.difficulty-card[data-difficulty="easy"] {
+    border-color: #4CAF50;
+}
+
+.difficulty-card[data-difficulty="normal"] {
+    border-color: #2196F3;
+}
+
+.difficulty-card[data-difficulty="hard"] {
+    border-color: #FF9800;
+}
+
+.difficulty-card[data-difficulty="extreme"] {
+    border-color: #F44336;
+}
+
+.difficulty-card.selected[data-difficulty="easy"] {
+    border-color: #4CAF50;
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.5);
+}
+
+.difficulty-card.selected[data-difficulty="normal"] {
+    border-color: #2196F3;
+    box-shadow: 0 0 30px rgba(33, 150, 243, 0.5);
+}
+
+.difficulty-card.selected[data-difficulty="hard"] {
+    border-color: #FF9800;
+    box-shadow: 0 0 30px rgba(255, 152, 0, 0.5);
+}
+
+.difficulty-card.selected[data-difficulty="extreme"] {
+    border-color: #F44336;
+    box-shadow: 0 0 30px rgba(244, 67, 54, 0.5);
+}
+
+.difficulty-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.difficulty-level {
+    font-size: 1.8rem;
+    color: #ffd700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.difficulty-description {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+/* Selection Controls */
+.selection-controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.control-btn {
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.back-btn {
+    background: linear-gradient(45deg, #607D8B, #455A64);
+    color: white;
+}
+
+.preview-btn {
+    background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+    color: white;
+}
+
+.start-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    font-size: 1.4rem;
+    padding: 18px 40px;
+    box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.start-btn:disabled {
+    background: linear-gradient(45deg, #555, #444);
+    color: #999;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.control-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.start-btn:hover:not(:disabled) {
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+    transform: translateY(-3px) scale(1.02);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .difficulty-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .selection-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .control-btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    #bannerSongTitle {
+        font-size: 2rem;
+    }
+    
+    .banner-content {
+        padding: 0 20px;
+    }
+}
+
+/* 楽曲カード背景動画 */
+.song-bg-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    opacity: 0.4;
+    transition: opacity 0.3s ease;
+}
+
+.song-item:hover .song-bg-video {
+    opacity: 0.6;
+}
+
+.song-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        135deg,
+        rgba(26, 26, 46, 0.85) 0%,
+        rgba(42, 42, 62, 0.75) 50%,
+        rgba(26, 26, 46, 0.9) 100%
+    );
+    z-index: 2;
+}
+
+.song-content {
+    position: relative;
+    z-index: 3;
+    padding: 25px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* 楽曲ヘッダー */
+.song-header {
+    margin-bottom: 10px;
+}
+
+.song-header h3 {
+    color: var(--primary-color, #00ffff);
+    margin-bottom: 8px;
+    font-size: 1.6rem;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    line-height: 1.2;
+}
+
+.song-meta {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 5px;
+}
+
+.genre, .year {
+    font-size: 0.8rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.genre {
+    background: var(--secondary-color, rgba(255, 255, 255, 0.1));
+    color: #222;
+    font-weight: bold;
+}
+
+/* アーティスト名 */
+.artist {
+    color: #ccc;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    font-style: italic;
+    font-weight: 500;
+}
+
+/* 楽曲説明 */
+.description {
+    color: #aaa;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+/* 統計情報の新スタイル */
+.song-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat {
+    text-align: center;
+    flex: 1;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.7rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    display: block;
+    font-size: 1rem;
+    color: var(--accent-color, #fff);
+    font-weight: bold;
+}
+
+/* カスタムカラー対応 */
+.song-item {
+    --primary-color: #00ffff;
+    --secondary-color: #a8e6cf;
+    --accent-color: #ffd93d;
+}
+
+.song-item.selected {
+    border-color: var(--primary-color, #ffff00);
+    background: linear-gradient(
+        135deg, 
+        color-mix(in srgb, var(--primary-color, #ffff00) 20%, #3a3a4e),
+        color-mix(in srgb, var(--primary-color, #ffff00) 10%, #2a2a3e)
+    );
+    box-shadow: 0 0 30px color-mix(in srgb, var(--primary-color, #ffff00) 30%, transparent);
+}
+
+.song-item.selected .song-overlay {
+    background: linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--primary-color, #ffff00) 15%, rgba(26, 26, 46, 0.85)),
+        color-mix(in srgb, var(--primary-color, #ffff00) 10%, rgba(42, 42, 62, 0.75)),
+        color-mix(in srgb, var(--primary-color, #ffff00) 20%, rgba(26, 26, 46, 0.9))
+    );
+}
+
+/* アニメーション効果 */
+@keyframes videoFadeIn {
+    from { opacity: 0; }
+    to { opacity: 0.4; }
+}
+
+.song-bg-video {
+    animation: videoFadeIn 0.5s ease-in-out;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .song-list {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+    }
+    
+    .song-content {
+        padding: 20px;
+    }
+    
+    .song-header h3 {
+        font-size: 1.4rem;
+    }
+}
+
+/* ゲーム画面 */
+#game {
+    position: relative;
+}
+
+#bgVideo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.7;
+}
+
+#gameCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#gameUI {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 2;
+}
+
+#score, #combo {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+}
+
+#judgment {
+    font-size: 2rem;
+    font-weight: bold;
+    text-align: center;
+    position: absolute;
+    top: 200px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    pointer-events: none;
+}
+
+.judgment-perfect { color: #00ff00; }
+.judgment-good { color: #ffff00; }
+.judgment-poor { color: #ff8800; }
+.judgment-miss { color: #ff0000; }
+
+/* キー表示（ビートマニア風） */
+#keys {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    z-index: 2;
+}
+
+.key {
+    width: 80px;
+    height: 120px;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-bottom: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.1s;
+}
+
+.key:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.key.active {
+    background: rgba(0, 255, 255, 0.7) !important;
+    box-shadow: 0 0 20px #00ffff;
+}
+
+#backToMenu {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 2;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* 譜面制作システム */
+#editor-app {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #1a1a1a;
+    min-height: 100vh;
+    overflow-y: auto;
+}
+
+#editor-app header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #333;
+}
+
+#editor-app h1 {
+    color: #00ffff;
+}
+
+#editor-app a {
+    color: #00ffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border: 2px solid #00ffff;
+    border-radius: 5px;
+    transition: background 0.2s;
+}
+
+#editor-app a:hover {
+    background: rgba(0, 255, 255, 0.2);
+}
+
+#editor-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #2a2a2a;
+    border-radius: 10px;
+}
+
+#editor-controls > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#editor-controls label {
+    font-weight: bold;
+    color: #ccc;
+}
+
+#editor-controls input, #editor-controls button {
+    padding: 10px;
+    border: 2px solid #555;
+    border-radius: 5px;
+    background: #333;
+    color: #fff;
+    font-size: 1rem;
+}
+
+#editor-controls button {
+    background: linear-gradient(45deg, #4a9eff, #007acc);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+#editor-controls button:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+
+#editor-controls button:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#editor-status {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 15px;
+    background: #2a2a2a;
+    border-radius: 10px;
+    font-size: 1.1rem;
+}
+
+#timestamps, #generated-charts {
+    background: #2a2a2a;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 40px; /* 余裕を持たせる */
+}
+
+#timestamps h3, #generated-charts h3 {
+    margin-bottom: 15px;
+    color: #00ffff;
+}
+
+#timestampList {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #555;
+    padding: 10px;
+    background: #1a1a1a;
+    border-radius: 5px;
+}
+
+.timestamp-item {
+    padding: 12px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.timestamp-item:last-child {
+    border-bottom: none;
+}
+
+.timestamp-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+}
+
+/* プレビュー再生時の視覚的状態 */
+.timestamp-item.playing {
+    background: rgba(0, 255, 0, 0.3) !important;
+    border-left: 4px solid #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    animation: pulse-playing 0.5s ease-in-out infinite alternate;
+}
+
+.timestamp-item.upcoming {
+    background: rgba(255, 255, 0, 0.15) !important;
+    border-left: 3px solid #ffff00;
+    animation: upcoming-fade 1s ease-in-out infinite;
+}
+
+.timestamp-item.active {
+    background: rgba(0, 255, 255, 0.15) !important;
+    border-left: 2px solid #00ffff;
+}
+
+.timestamp-item.selected {
+    background: rgba(255, 0, 255, 0.2) !important;
+    border-left: 4px solid #ff00ff;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.4);
+}
+
+@keyframes pulse-playing {
+    0% { 
+        transform: scale(1) translateX(5px);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+    100% { 
+        transform: scale(1.02) translateX(8px);
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
+    }
+}
+
+@keyframes upcoming-fade {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* タイムスタンプアイテムの内容 */
+.timestamp-number {
+    font-weight: bold;
+    color: #00ffff;
+    min-width: 40px;
+}
+
+.timestamp-time {
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-weight: bold;
+    min-width: 80px;
+}
+
+.timestamp-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.timestamp-controls button {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: bold;
+}
+
+.edit-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+}
+
+.delete-btn {
+    background: linear-gradient(45deg, #f44336, #d32f2f);
+    color: white;
+}
+
+.seek-btn {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    color: white;
+}
+
+.timestamp-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+#chartsList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 15px;
+    padding: 5px;
+}
+
+.chart-item {
+    padding: 20px;
+    background: #1a1a1a;
+    border: 2px solid #555;
+    border-radius: 10px;
+    transition: border-color 0.3s ease;
+}
+
+.chart-item:hover {
+    border-color: #00ffff;
+}
+
+.chart-item h4 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    text-align: center;
+}
+
+.difficulty-easy { color: #4CAF50; }
+.difficulty-normal { color: #2196F3; }
+.difficulty-hard { color: #FF9800; }
+.difficulty-extreme { color: #F44336; }
+
+/* 統計情報 */
+.chart-stats {
+    margin-bottom: 15px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 4px 0;
+}
+
+.stat-item:last-child {
+    margin-bottom: 0;
+}
+
+.stat-label {
+    color: #ccc;
+    font-size: 0.9rem;
+}
+
+.stat-value {
+    color: #fff;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* レーン使用率チャート */
+.chart-pattern-preview {
+    margin-bottom: 15px;
+}
+
+.chart-pattern-preview h5 {
+    color: #00ffff;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.lane-usage {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lane-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+}
+
+.lane-label {
+    width: 20px;
+    font-weight: bold;
+    color: #00ffff;
+    text-align: center;
+}
+
+.lane-bar-bg {
+    flex: 1;
+    height: 16px;
+    background: #333;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.lane-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+    transition: width 0.3s ease;
+    border-radius: 8px;
+}
+
+.lane-count {
+    width: 25px;
+    color: #ccc;
+    text-align: right;
+    font-size: 0.8rem;
+}
+
+/* ボタン類 */
+.chart-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chart-controls button {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+.save-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+}
+
+.test-btn {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+}
+
+.preview-btn {
+    background: linear-gradient(45deg, #9C27B0, #7B1FA2);
+}
+
+.chart-controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 記録中状態 */
+.recording #recordingStatus {
+    color: #ff0000;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* プレビュー再生中の状態表示 */
+.playing-preview #editor-status {
+    background: linear-gradient(45deg, #2a4d2a, #1a3d1a);
+    border-left: 4px solid #00ff00;
+}
+
+.playing-preview #currentTime {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* エディターアプリのスクロールバー */
+#editor-app {
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1a1a1a;
+}
+
+#editor-app::-webkit-scrollbar {
+    width: 12px;
+}
+
+#editor-app::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 6px;
+}
+
+#editor-app::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #555, #777);
+    border-radius: 6px;
+}
+
+#editor-app::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #777, #999);
+}
+
+/* タイムスタンプリストのスクロール改善 */
+#timestampList {
+    scrollbar-width: thin;
+    scrollbar-color: #555 #1a1a1a;
+}
+
+#timestampList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#timestampList::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 4px;
+}
+
+#timestampList::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 4px;
+}
+
+#timestampList::-webkit-scrollbar-thumb:hover {
+    background: #777;
+}
+
+/* プレビューボタンの状態 */
+#playPreview.playing {
+    background: linear-gradient(45deg, #f44336, #d32f2f) !important;
+    animation: button-pulse 1s ease-in-out infinite;
+}
+
+@keyframes button-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}

@@ -1,0 +1,42 @@
+{
+  "songs": [
+    {
+      "id": "cryinggirl",
+      "title": "Crying Girl",
+      "displayName": "Crying Girl",
+      "artist": "Music Artist",
+      "artistDisplayName": "Music Artist",
+      "bpm": 128,
+      "duration": 240,
+      "genre": "Electronic",
+      "year": 2024,
+      "description": "心に響く美しいメロディーの電子音楽",
+      "audio": "assets/audio/cryinggirl.mp3",
+      "video": "assets/video/cryinggirl.mov",
+      "backgroundVideo": "assets/video/cryinggirl.mov",
+      "jacket": "",
+      "color": {
+        "primary": "#ff6b9d",
+        "secondary": "#a8e6cf",
+        "accent": "#ffd93d"
+      },
+      "preview": {
+        "start": 30,
+        "duration": 15,
+        "videoStart": 25
+      },
+      "charts": {
+        "easy": "assets/chart/cryinggirl_easy.json",
+        "normal": "assets/chart/cryinggirl_normal.json",
+        "hard": "assets/chart/cryinggirl_hard.json",
+        "extreme": "assets/chart/cryinggirl_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      }
+    }
+  ]
+}

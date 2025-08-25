@@ -1,0 +1,17 @@
+{
+  "name": "otogame-2",
+  "version": "1.0.0",
+  "description": "ビートマニア風音楽ゲーム",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server . -p 3000 -o",
+    "start": "npx http-server . -p 3000"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "keywords": ["rhythm-game", "beatmania", "music-game"],
+  "author": "",
+  "license": "MIT"
+}
