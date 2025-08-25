@@ -58,17 +58,37 @@ class RhythmGame {
     }
     
     setupEventListeners() {
-        document.addEventListener('keydown', (e) => this.handleKeyDown(e));
-        document.addEventListener('keyup', (e) => this.handleKeyUp(e));
+        // Capture key events at document level to prevent video interference
+        document.addEventListener('keydown', (e) => this.handleKeyDown(e), true);
+        document.addEventListener('keyup', (e) => this.handleKeyUp(e), true);
+        
+        // Prevent video element from receiving focus and key events
+        if (this.video) {
+            this.video.addEventListener('keydown', (e) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }, true);
+            
+            this.video.addEventListener('keyup', (e) => {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            }, true);
+        }
     }
     
     handleKeyDown(e) {
         const key = e.key.toUpperCase();
-        if (this.keys.includes(key) && !this.pressedKeys.has(key)) {
-            this.pressedKeys.add(key);
-            this.showKeyPress(key);
-            if (this.isPlaying) {
-                this.checkNoteHit(key);
+        if (this.keys.includes(key)) {
+            // Prevent default browser behavior for game keys
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!this.pressedKeys.has(key)) {
+                this.pressedKeys.add(key);
+                this.showKeyPress(key);
+                if (this.isPlaying) {
+                    this.checkNoteHit(key);
+                }
             }
         }
     }
@@ -76,6 +96,10 @@ class RhythmGame {
     handleKeyUp(e) {
         const key = e.key.toUpperCase();
         if (this.keys.includes(key)) {
+            // Prevent default browser behavior for game keys
+            e.preventDefault();
+            e.stopPropagation();
+            
             this.pressedKeys.delete(key);
             this.hideKeyPress(key);
         }

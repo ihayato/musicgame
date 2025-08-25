@@ -769,6 +769,9 @@ body {
     object-fit: cover;
     z-index: 1;
     opacity: 0.6;
+    pointer-events: none; /* Prevent mouse/touch interactions */
+    outline: none; /* Remove focus outline */
+    user-select: none; /* Prevent text selection */
 }
 
 #gameCanvas {
