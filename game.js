@@ -185,27 +185,54 @@ class RhythmGame {
             this.audioStartOffset = 0;
             
             console.log('Starting synchronized audio and video playback...');
-            console.log(`Audio duration: ${this.audio.duration}s, Video duration: ${this.video.duration}s`);
             
-            // Start audio first, then sync video to it
-            this.audio.play().then(() => {
-                console.log('Audio started successfully, now starting video...');
+            // Wait for metadata to load first
+            const waitForMetadata = () => {
+                return new Promise((resolve) => {
+                    if (this.audio.duration && this.video.duration) {
+                        resolve();
+                    } else {
+                        this.audio.addEventListener('loadedmetadata', resolve, { once: true });
+                        this.video.addEventListener('loadedmetadata', resolve, { once: true });
+                    }
+                });
+            };
+            
+            waitForMetadata().then(() => {
+                console.log(`📊 Media Info:`);
+                console.log(`  Audio duration: ${this.audio.duration}s`);
+                console.log(`  Video duration: ${this.video.duration}s`);
+                console.log(`  Audio playbackRate: ${this.audio.playbackRate}`);
+                console.log(`  Video playbackRate: ${this.video.playbackRate}`);
                 
-                // Sync video to audio time
-                this.video.currentTime = this.audio.currentTime;
+                // Check for duration mismatch
+                const durationDiff = Math.abs(this.audio.duration - this.video.duration);
+                if (durationDiff > 1) { // More than 1 second difference
+                    console.warn(`⚠️  Duration mismatch detected: Audio=${this.audio.duration.toFixed(2)}s, Video=${this.video.duration.toFixed(2)}s, Diff=${durationDiff.toFixed(2)}s`);
+                    console.warn('This may cause sync issues. Consider using matching duration files.');
+                }
                 
-                return this.video.play();
+                // Start audio and video together at exactly the same time
+                const startPromises = [
+                    this.audio.play(),
+                    this.video.play()
+                ];
+                
+                return Promise.all(startPromises);
             }).then(() => {
-                console.log('Video started successfully and synced to audio');
-                console.log(`Playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
+                console.log('✅ Audio and video started simultaneously');
+                console.log(`Final playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
                 
-                // Optional: Re-sync after a brief moment to ensure accuracy
+                // Verify sync after a moment
                 setTimeout(() => {
-                    if (Math.abs(this.video.currentTime - this.audio.currentTime) > 0.1) {
-                        console.log('Re-syncing video to audio...');
+                    const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
+                    console.log(`🔍 Sync check: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
+                    
+                    if (timeDiff > 0.1) {
+                        console.log('⚠️  Correcting video sync...');
                         this.video.currentTime = this.audio.currentTime;
                     }
-                }, 100);
+                }, 200);
             }).catch(e => {
                 console.error('Media playback failed:', e);
             });
@@ -346,20 +373,28 @@ class RhythmGame {
         // Update particles
         this.updateParticles(deltaTime);
         
-        // Sync video to audio periodically (every 5 seconds)
-        if (Math.floor(this.gameTime) % 5 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+        // Sync video to audio more frequently (every 2 seconds)
+        if (Math.floor(this.gameTime * 0.5) !== Math.floor((this.gameTime - deltaTime) * 0.5)) {
             if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
-                // Check playback rates
-                if (this.video.playbackRate !== 1.0 || this.audio.playbackRate !== 1.0) {
-                    console.log(`⚠️  Incorrect playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
+                // Force playback rates to be exactly 1.0
+                if (this.video.playbackRate !== 1.0) {
+                    console.log(`🔧 Fixing video playbackRate: ${this.video.playbackRate} → 1.0`);
                     this.video.playbackRate = 1.0;
+                }
+                if (this.audio.playbackRate !== 1.0) {
+                    console.log(`🔧 Fixing audio playbackRate: ${this.audio.playbackRate} → 1.0`);
                     this.audio.playbackRate = 1.0;
                 }
                 
                 const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                if (timeDiff > 0.2) { // If more than 200ms difference
-                    console.log(`Syncing video: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
+                if (timeDiff > 0.1) { // Reduced threshold to 100ms
+                    console.log(`🎬 Syncing video: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
                     this.video.currentTime = this.audio.currentTime;
+                    
+                    // If video is consistently ahead, it might be playing too fast
+                    if (this.video.currentTime > this.audio.currentTime + 0.5) {
+                        console.warn('🚨 Video appears to be playing faster than audio! Checking for speed issues...');
+                    }
                 }
             }
         }
