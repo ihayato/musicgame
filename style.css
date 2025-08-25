@@ -772,6 +772,9 @@ body {
     pointer-events: none; /* Prevent mouse/touch interactions */
     outline: none; /* Remove focus outline */
     user-select: none; /* Prevent text selection */
+    will-change: auto; /* Let browser optimize video rendering */
+    transform: translateZ(0); /* Force hardware acceleration for smooth playback */
+    backface-visibility: hidden; /* Optimize rendering */
 }
 
 #gameCanvas {

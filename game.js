@@ -40,6 +40,9 @@ class RhythmGame {
         this.pressedKeys = new Set();
         this.setupEventListeners();
         this.lastTime = 0;
+        this.lastRenderTime = 0;
+        this.targetFPS = 30; // Limit to 30fps to reduce video interference
+        this.frameInterval = 1000 / this.targetFPS;
         
         this.particles = [];
     }
@@ -247,16 +250,17 @@ class RhythmGame {
                 console.log('✅ Audio and video started simultaneously');
                 console.log(`Final playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
                 
-                // Verify sync after a moment
+                // Gentle initial sync check after media has settled
                 setTimeout(() => {
                     const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                    console.log(`🔍 Sync check: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
+                    console.log(`🔍 Initial sync check: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
                     
-                    if (timeDiff > 0.1) {
-                        console.log('⚠️  Correcting video sync...');
+                    // Only correct major desync on startup
+                    if (timeDiff > 0.3) {
+                        console.log('⚠️  Major startup desync detected, correcting...');
                         this.video.currentTime = this.audio.currentTime;
                     }
-                }, 200);
+                }, 500); // Wait longer for media to stabilize
             }).catch(e => {
                 console.error('Media playback failed:', e);
             });
@@ -309,6 +313,13 @@ class RhythmGame {
             return;
         }
         
+        // Frame rate limiting to reduce video interference
+        const elapsed = currentTime - this.lastRenderTime;
+        if (elapsed < this.frameInterval) {
+            requestAnimationFrame((time) => this.gameLoop(time));
+            return;
+        }
+        this.lastRenderTime = currentTime;
         
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
@@ -331,9 +342,9 @@ class RhythmGame {
         // Ensure time never goes backwards
         this.gameTime = Math.max(this.gameTime || 0, 0);
         
-        // Debug timing issue
-        if (Math.floor(this.gameTime * 10) % 10 === 0) {
-            console.log(`Timing debug: gameTime=${this.gameTime.toFixed(3)}, audioTime=${this.audio.currentTime.toFixed(3)}, deltaTime=${deltaTime.toFixed(3)}, offset=${this.audioStartOffset || 0}`);
+        // Reduced debug frequency to avoid performance impact
+        if (Math.floor(this.gameTime) % 10 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+            console.log(`Timing debug: gameTime=${this.gameTime.toFixed(3)}, audioTime=${this.audio.currentTime.toFixed(3)}, deltaTime=${deltaTime.toFixed(3)}`);
         }
         
         try {
@@ -372,13 +383,12 @@ class RhythmGame {
                 console.log(`Next note: lane=${next.lane}, time=${next.originalTime.toFixed(2)}`);
             }
             
-            // Debug early notes specifically  
-            if (this.gameTime < 10) {
-                const reallyEarlyNotes = this.notes.filter(n => !n.hit && n.originalTime <= 5);
-                const earlyNotes = this.notes.filter(n => !n.hit && n.originalTime > 5 && n.originalTime <= 10);
-                console.log(`🔍 EARLY NOTES DEBUG: gameTime=${this.gameTime.toFixed(2)}, audioTime=${this.audio.currentTime.toFixed(2)}, paused=${this.audio.paused}`);
-                console.log(`Very early notes (0-5s): Total=${reallyEarlyNotes.length}`, reallyEarlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
-                console.log(`Early notes (5-10s): Total=${earlyNotes.length}`, earlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
+            // Minimal early notes debug (only when there are issues)
+            if (this.gameTime < 10 && Math.floor(this.gameTime) % 5 === 0) {
+                const visibleNotesCount = allNotes.filter(n => n.y > -100 && n.y < this.canvas.height + 100).length;
+                if (visibleNotesCount === 0 && upcomingNotes.length > 0) {
+                    console.log(`⚠️  No visible notes detected at ${this.gameTime.toFixed(1)}s despite ${upcomingNotes.length} upcoming notes`);
+                }
             }
         }
         
@@ -397,28 +407,27 @@ class RhythmGame {
         // Update particles
         this.updateParticles(deltaTime);
         
-        // Sync video to audio more frequently (every 2 seconds)
-        if (Math.floor(this.gameTime * 0.5) !== Math.floor((this.gameTime - deltaTime) * 0.5)) {
+        // Gentle sync check - less frequent and less intrusive
+        if (Math.floor(this.gameTime) % 10 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
             if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
-                // Force playback rates to be exactly 1.0
-                if (this.video.playbackRate !== 1.0) {
-                    console.log(`🔧 Fixing video playbackRate: ${this.video.playbackRate} → 1.0`);
+                // Only fix playback rates if they're significantly wrong
+                if (Math.abs(this.video.playbackRate - 1.0) > 0.01) {
+                    console.log(`🔧 Correcting video playbackRate: ${this.video.playbackRate} → 1.0`);
                     this.video.playbackRate = 1.0;
                 }
-                if (this.audio.playbackRate !== 1.0) {
-                    console.log(`🔧 Fixing audio playbackRate: ${this.audio.playbackRate} → 1.0`);
+                if (Math.abs(this.audio.playbackRate - 1.0) > 0.01) {
+                    console.log(`🔧 Correcting audio playbackRate: ${this.audio.playbackRate} → 1.0`);
                     this.audio.playbackRate = 1.0;
                 }
                 
                 const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                if (timeDiff > 0.1) { // Reduced threshold to 100ms
-                    console.log(`🎬 Syncing video: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
+                // Only sync if there's a significant drift (500ms+) to avoid interrupting smooth playback
+                if (timeDiff > 0.5) {
+                    console.log(`🎬 Major sync correction needed: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
                     this.video.currentTime = this.audio.currentTime;
-                    
-                    // If video is consistently ahead, it might be playing too fast
-                    if (this.video.currentTime > this.audio.currentTime + 0.5) {
-                        console.warn('🚨 Video appears to be playing faster than audio! Checking for speed issues...');
-                    }
+                } else if (timeDiff > 0.1) {
+                    // Log the drift but don't correct it unless it's severe
+                    console.log(`📊 Sync status: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, drift=${timeDiff.toFixed(2)}s (acceptable)`);
                 }
             }
         }
@@ -611,7 +620,9 @@ class RhythmGame {
             miss: '#ff0000'
         };
         
-        for (let i = 0; i < 10; i++) {
+        // Reduced particle count for better performance
+        const particleCount = judgment === 'perfect' ? 8 : judgment === 'good' ? 5 : 3;
+        for (let i = 0; i < particleCount; i++) {
             this.particles.push({
                 x: x + (Math.random() - 0.5) * 20,
                 y: y + (Math.random() - 0.5) * 20,
@@ -619,7 +630,7 @@ class RhythmGame {
                 vy: (Math.random() - 0.5) * 200 - 100,
                 color: colors[judgment],
                 life: 1.0,
-                decay: 0.02
+                decay: 0.025 // Slightly faster decay
             });
         }
     }
