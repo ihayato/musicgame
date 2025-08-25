@@ -43,6 +43,10 @@ class RhythmGame {
         this.lastRenderTime = 0;
         
         this.particles = [];
+        
+        // Cache for debug text to reduce performance impact
+        this.cachedDebugLine1 = '';
+        this.cachedDebugLine2 = '';
     }
     
     resizeCanvas() {
@@ -196,48 +200,8 @@ class RhythmGame {
             console.error('No chart loaded!');
         }
         
-        // Start audio and video with proper synchronization
-        try {
-            this.audio.currentTime = 0;
-            this.video.currentTime = 0;
-            
-            // Let video and audio play at their natural rates - no interference
-            
-            // Initialize timing variables
-            this.gameTime = 0;
-            this.audioStartOffset = 0;
-            
-            console.log('Starting synchronized audio and video playback...');
-            
-            // Wait for metadata to load first
-            const waitForMetadata = () => {
-                return new Promise((resolve) => {
-                    if (this.audio.duration && this.video.duration) {
-                        resolve();
-                    } else {
-                        this.audio.addEventListener('loadedmetadata', resolve, { once: true });
-                        this.video.addEventListener('loadedmetadata', resolve, { once: true });
-                    }
-                });
-            };
-            
-            waitForMetadata().then(() => {
-                console.log(`🎬 Starting audio and video naturally`);
-                
-                // Simply start both - no sync attempts
-                const audioPromise = this.audio.play();
-                const videoPromise = this.video.play();
-                
-                return Promise.all([audioPromise, videoPromise]);
-            }).then(() => {
-                console.log('✅ Audio and video started - playing naturally');
-            }).catch(e => {
-                console.error('Media playback failed:', e);
-            });
-            
-        } catch (error) {
-            console.error('Error starting media:', error);
-        }
+        // ISOLATED VIDEO PLAYBACK - completely separate from game loop
+        this.startMediaIndependently();
         
         console.log('Starting game loop...');
         console.log('isPlaying before gameLoop:', this.isPlaying);
@@ -248,6 +212,223 @@ class RhythmGame {
         
         console.log('Game started, isPlaying:', this.isPlaying);
         
+    }
+    
+    startMediaIndependently() {
+        console.log('🎬 RECREATING video element to reset decoder');
+        
+        // NUCLEAR OPTION: Completely recreate video element
+        this.recreateVideoElement();
+        
+        // Initialize game timing separately
+        this.gameTime = 0;
+        this.audioStartOffset = 0;
+        
+        // Reset audio
+        this.audio.currentTime = 0;
+        this.audio.playbackRate = 1.0;
+        this.audio.defaultPlaybackRate = 1.0;
+        
+        // Debug video state before starting
+        console.log('📹 Pre-start video state:', {
+            playbackRate: this.video.playbackRate,
+            defaultPlaybackRate: this.video.defaultPlaybackRate,
+            currentTime: this.video.currentTime,
+            paused: this.video.paused,
+            muted: this.video.muted,
+            loop: this.video.loop,
+            autoplay: this.video.autoplay,
+            src: this.video.src
+        });
+        
+        // Wait for video to be ready before starting
+        const waitForVideoReady = () => {
+            return new Promise((resolve) => {
+                if (this.video.readyState >= 2) {
+                    resolve();
+                } else {
+                    this.video.addEventListener('loadeddata', resolve, { once: true });
+                }
+            });
+        };
+        
+        waitForVideoReady().then(() => {
+            console.log('📹 Video ready, starting natural playback...');
+            
+            // Start media without any synchronization attempts
+            console.log('🎵 Starting audio at natural rate...');
+            const audioPromise = this.audio.play().catch(e => {
+                console.error('Audio play failed:', e);
+            });
+            
+            console.log('📹 Starting video at natural rate...');
+            const videoPromise = this.video.play().catch(e => {
+                console.error('Video play failed:', e);
+            });
+            
+            // Monitor video playback to detect speed issues
+            this.startVideoMonitoring();
+            
+            return Promise.allSettled([audioPromise, videoPromise]);
+        }).then(results => {
+            console.log('🎬 Media playback results:', results);
+            
+            // Additional verification after 1 second
+            setTimeout(() => {
+                console.log('🔍 FINAL VIDEO VERIFICATION after 1 second:');
+                console.log('📊 Video properties:', {
+                    playbackRate: this.video.playbackRate,
+                    duration: this.video.duration,
+                    currentTime: this.video.currentTime,
+                    readyState: this.video.readyState,
+                    paused: this.video.paused
+                });
+                console.log('🎵 Audio properties:', {
+                    playbackRate: this.audio.playbackRate,
+                    duration: this.audio.duration,
+                    currentTime: this.audio.currentTime,
+                    readyState: this.audio.readyState,
+                    paused: this.audio.paused
+                });
+                
+                // Check if video is playing too fast
+                const expectedTime = this.video.currentTime;
+                if (expectedTime > 1.5) {
+                    console.warn('⚠️ VIDEO SPEED ISSUE DETECTED! Playing too fast:', expectedTime);
+                } else {
+                    console.log('✅ Video playback speed looks normal');
+                }
+            }, 1000);
+        });
+    }
+    
+    recreateVideoElement() {
+        console.log('🔄 Recreating video element from scratch');
+        
+        const oldVideo = this.video;
+        const videoSrc = oldVideo.src;
+        const gameContainer = oldVideo.parentNode;
+        
+        // Remove old video completely
+        oldVideo.pause();
+        oldVideo.removeAttribute('src');
+        oldVideo.load(); // Force unload
+        oldVideo.remove();
+        
+        // Create completely new video element with ZERO interference
+        const newVideo = document.createElement('video');
+        newVideo.id = 'bgVideo';
+        newVideo.muted = true;
+        newVideo.loop = false; // Don't loop to avoid decoder issues
+        newVideo.preload = 'auto';
+        newVideo.playsInline = true;
+        newVideo.disablePictureInPicture = true;
+        newVideo.controls = false;
+        newVideo.tabIndex = -1;
+        
+        // CRITICAL: Set playback rates IMMEDIATELY on creation
+        newVideo.playbackRate = 1.0;
+        newVideo.defaultPlaybackRate = 1.0;
+        
+        // Force minimal CSS to avoid any transform/animation interference
+        newVideo.style.cssText = `
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            z-index: 1 !important;
+            opacity: 0.6 !important;
+            pointer-events: none !important;
+            outline: none !important;
+            user-select: none !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+            will-change: auto !important;
+            backface-visibility: visible !important;
+        `;
+        
+        // Insert new video at the beginning of game container
+        gameContainer.insertBefore(newVideo, gameContainer.firstChild);
+        
+        // Update reference
+        this.video = newVideo;
+        
+        // Set source and force reload
+        this.video.src = videoSrc;
+        this.video.load();
+        
+        // Add emergency speed correction
+        this.addVideoSpeedCorrection();
+        
+        console.log('✅ New video element created and loaded');
+    }
+    
+    addVideoSpeedCorrection() {
+        // Emergency speed correction that continuously monitors and fixes video speed
+        const speedCorrector = () => {
+            if (!this.video || this.video.paused) return;
+            
+            // Force playback rate to 1.0 continuously
+            if (this.video.playbackRate !== 1.0) {
+                console.warn('🔧 Correcting video playback rate from', this.video.playbackRate, 'to 1.0');
+                this.video.playbackRate = 1.0;
+            }
+            
+            // Also ensure default rate is correct
+            if (this.video.defaultPlaybackRate !== 1.0) {
+                console.warn('🔧 Correcting default playback rate from', this.video.defaultPlaybackRate, 'to 1.0');
+                this.video.defaultPlaybackRate = 1.0;
+            }
+        };
+        
+        // Run correction every 100ms
+        this.speedCorrectionInterval = setInterval(speedCorrector, 100);
+        
+        // Also add event listeners to catch any rate changes
+        this.video.addEventListener('ratechange', () => {
+            console.log('📹 Rate change detected:', this.video.playbackRate);
+            if (this.video.playbackRate !== 1.0) {
+                console.warn('🔧 Emergency rate correction!');
+                this.video.playbackRate = 1.0;
+            }
+        });
+        
+        console.log('✅ Video speed correction system activated');
+    }
+    
+    startVideoMonitoring() {
+        let lastTime = 0;
+        let checkCount = 0;
+        
+        const monitor = () => {
+            if (!this.isPlaying || checkCount > 10) return; // Stop after 10 checks
+            
+            const currentTime = this.video.currentTime;
+            const deltaTime = currentTime - lastTime;
+            
+            if (lastTime > 0) {
+                console.log(`📹 Video playback rate check ${checkCount}: ${deltaTime.toFixed(3)}s elapsed (expected ~1.0s)`);
+                
+                if (deltaTime > 1.3) {
+                    console.error('🚨 VIDEO PLAYING TOO FAST! Delta:', deltaTime);
+                } else if (deltaTime < 0.7) {
+                    console.warn('⚠️ Video playing too slow! Delta:', deltaTime);
+                } else {
+                    console.log('✅ Video speed normal');
+                }
+            }
+            
+            lastTime = currentTime;
+            checkCount++;
+            
+            setTimeout(monitor, 1000);
+        };
+        
+        // Start monitoring after 2 seconds
+        setTimeout(monitor, 2000);
     }
     
     stop() {
@@ -264,6 +445,12 @@ class RhythmGame {
         if (this.video) {
             this.video.pause();
             this.video.currentTime = 0;
+        }
+        
+        // Stop speed correction interval
+        if (this.speedCorrectionInterval) {
+            clearInterval(this.speedCorrectionInterval);
+            this.speedCorrectionInterval = null;
         }
         
         // Reset game state
@@ -288,7 +475,7 @@ class RhythmGame {
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
         
-        // More robust timing system
+        // ISOLATED TIMING SYSTEM - only use audio, never touch video
         if (this.audio && this.audio.readyState >= 2 && !this.audio.paused) {
             // Use audio time when it's actually playing and ready
             const audioTime = this.audio.currentTime;
@@ -318,9 +505,18 @@ class RhythmGame {
             console.error('Error in game loop:', error);
         }
         
-        // Log frame timing every second
+        // Log frame timing every second with performance metrics
         if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            console.log(`🎮 Frame timing - FPS: ${(1/deltaTime).toFixed(1)}, deltaTime: ${deltaTime.toFixed(4)}s`);
+            const fps = (1/deltaTime).toFixed(1);
+            const noteCount = this.notes.filter(n => !n.hit && n.y > -100 && n.y < this.canvas.height + 100).length;
+            const particleCount = this.particles.length;
+            
+            console.log(`🎮 Performance - FPS: ${fps}, Notes: ${noteCount}, Particles: ${particleCount}, δt: ${deltaTime.toFixed(4)}s`);
+            
+            // Performance warning
+            if (fps < 30) {
+                console.log(`⚠️ Low FPS detected (${fps}). Video playback may be affected.`);
+            }
         }
         
         requestAnimationFrame((time) => this.gameLoop(time));
@@ -386,8 +582,7 @@ class RhythmGame {
     }
     
     render() {
-        // PERFORMANCE TEST: Disable all canvas rendering
-        return; // Comment this line to re-enable rendering
+        // Re-enable rendering with optimizations
         
         // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -404,63 +599,79 @@ class RhythmGame {
         // Draw particles
         this.drawParticles();
         
-        // Debug: Show game time and note count
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = '16px monospace';
-        this.ctx.fillText(`Time: ${this.gameTime.toFixed(2)}s`, 10, 30);
-        const activeNotes = this.notes.filter(n => !n.hit);
-        const visibleNotes = this.notes.filter(n => !n.hit && n.y > -50 && n.y < this.canvas.height + 50);
-        this.ctx.fillText(`Total: ${this.notes.length} | Active: ${activeNotes.length} | Visible: ${visibleNotes.length}`, 10, 50);
+        // OPTIMIZED DEBUG: Only update debug text once per second to reduce rendering load
+        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - 0.016)) {
+            // Cache debug strings to avoid recalculating every frame
+            const activeNotes = this.notes.filter(n => !n.hit);
+            const visibleNotes = this.notes.filter(n => !n.hit && n.y > -50 && n.y < this.canvas.height + 50);
+            
+            this.cachedDebugLine1 = `Time: ${this.gameTime.toFixed(2)}s`;
+            this.cachedDebugLine2 = `Total: ${this.notes.length} | Active: ${activeNotes.length} | Visible: ${visibleNotes.length}`;
+        }
+        
+        // Draw cached debug info (much faster than recalculating every frame)
+        if (this.cachedDebugLine1) {
+            this.ctx.fillStyle = '#ffffff';
+            this.ctx.font = '16px monospace';
+            this.ctx.fillText(this.cachedDebugLine1, 10, 30);
+            this.ctx.fillText(this.cachedDebugLine2, 10, 50);
+        }
     }
     
     drawLanes() {
         const startX = (this.canvas.width - (this.lanes * this.laneWidth)) / 2;
         
+        // OPTIMIZATION: Batch all lane drawing into single stroke operation
+        this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        
         for (let i = 0; i <= this.lanes; i++) {
             const x = startX + (i * this.laneWidth);
-            
-            this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-            this.ctx.lineWidth = 2;
-            this.ctx.beginPath();
             this.ctx.moveTo(x, 0);
             this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
         }
+        
+        this.ctx.stroke(); // Single stroke call for all lines
     }
     
     drawNotes() {
         const startX = (this.canvas.width - (this.lanes * this.laneWidth)) / 2;
         let renderedCount = 0;
         
+        // OPTIMIZATION: Batch similar operations
+        this.ctx.save();
+        
+        // First pass: Draw all note bodies (fastest)
         this.notes.forEach(note => {
             if (note.hit) return;
-            
-            // Only render notes that are reasonably on screen
             if (note.y < -100 || note.y > this.canvas.height + 100) return;
             
             renderedCount++;
             const x = startX + (note.lane * this.laneWidth);
             
-            // Note body
+            // Note body only
             this.ctx.fillStyle = this.getNoteColor(note.lane);
             this.ctx.fillRect(x + 5, note.y, this.laneWidth - 10, 20);
-            
-            // Note border
+        });
+        
+        // Second pass: Draw borders (skip for performance)
+        if (renderedCount < 50) { // Only draw borders if not too many notes
             this.ctx.strokeStyle = '#fff';
             this.ctx.lineWidth = 2;
-            this.ctx.strokeRect(x + 5, note.y, this.laneWidth - 10, 20);
             
-            // Note glow effect
-            const gradient = this.ctx.createRadialGradient(
-                x + this.laneWidth/2, note.y + 10, 0,
-                x + this.laneWidth/2, note.y + 10, 50
-            );
-            gradient.addColorStop(0, `${this.getNoteColor(note.lane)}88`);
-            gradient.addColorStop(1, 'transparent');
-            
-            this.ctx.fillStyle = gradient;
-            this.ctx.fillRect(x - 20, note.y - 20, this.laneWidth + 40, 60);
-        });
+            this.notes.forEach(note => {
+                if (note.hit) return;
+                if (note.y < -100 || note.y > this.canvas.height + 100) return;
+                
+                const x = startX + (note.lane * this.laneWidth);
+                this.ctx.strokeRect(x + 5, note.y, this.laneWidth - 10, 20);
+            });
+        }
+        
+        // SKIP GLOW EFFECTS - Major performance impact
+        
+        this.ctx.restore();
         
         // Debug: Show note count in top-right corner
         this.ctx.fillStyle = '#ffffff';
@@ -481,11 +692,7 @@ class RhythmGame {
         this.ctx.lineTo(this.canvas.width, this.judgmentLine);
         this.ctx.stroke();
         
-        // Glow effect
-        this.ctx.shadowColor = '#00ffff';
-        this.ctx.shadowBlur = 20;
-        this.ctx.stroke();
-        this.ctx.shadowBlur = 0;
+        // SKIP GLOW - Performance optimization
     }
     
     checkNoteHit(key) {
@@ -596,15 +803,25 @@ class RhythmGame {
     }
     
     drawParticles() {
+        // OPTIMIZATION: Skip particles if there are too many (major performance hit)
+        if (this.particles.length > 20) {
+            return; // Skip drawing particles when there are too many
+        }
+        
+        // OPTIMIZATION: Batch rendering to reduce save/restore calls
+        if (this.particles.length === 0) return;
+        
+        this.ctx.save();
+        
         this.particles.forEach(particle => {
-            this.ctx.save();
             this.ctx.globalAlpha = particle.life;
             this.ctx.fillStyle = particle.color;
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
             this.ctx.fill();
-            this.ctx.restore();
         });
+        
+        this.ctx.restore();
     }
 }
 

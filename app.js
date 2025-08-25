@@ -139,10 +139,6 @@ class App {
                     ${song.description ? `<div class="description">${song.description}</div>` : ''}
                     <div class="song-stats">
                         <div class="stat">
-                            <span class="stat-label">BPM</span>
-                            <span class="stat-value">${song.bpm}</span>
-                        </div>
-                        <div class="stat">
                             <span class="stat-label">時間</span>
                             <span class="stat-value">${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}</span>
                         </div>
@@ -256,7 +252,7 @@ class App {
         // Update banner information
         document.getElementById('bannerSongTitle').textContent = song.displayName || song.title;
         document.getElementById('bannerSongArtist').textContent = song.artistDisplayName || song.artist;
-        document.getElementById('bannerBPM').textContent = `BPM: ${song.bpm}`;
+        // BPM表示を削除
         document.getElementById('bannerDuration').textContent = `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}`;
         
         // Setup banner video
