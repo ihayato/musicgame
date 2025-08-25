@@ -41,8 +41,6 @@ class RhythmGame {
         this.setupEventListeners();
         this.lastTime = 0;
         this.lastRenderTime = 0;
-        this.targetFPS = 30; // Limit to 30fps to reduce video interference
-        this.frameInterval = 1000 / this.targetFPS;
         
         this.particles = [];
     }
@@ -239,28 +237,30 @@ class RhythmGame {
                     console.warn('This may cause sync issues. Consider using matching duration files.');
                 }
                 
-                // Start audio and video together at exactly the same time
-                const startPromises = [
-                    this.audio.play(),
-                    this.video.play()
-                ];
-                
-                return Promise.all(startPromises);
+                // Start audio first, then video follows with precise timing
+                return this.audio.play().then(() => {
+                    console.log(`Audio started at: ${this.audio.currentTime}s`);
+                    
+                    // Wait a tiny bit for audio to establish timing, then start video
+                    return new Promise((resolve) => {
+                        setTimeout(() => {
+                            this.video.currentTime = this.audio.currentTime;
+                            console.log(`Setting video time to match audio: ${this.video.currentTime}s`);
+                            
+                            this.video.play().then(resolve).catch(resolve);
+                        }, 50); // Small delay to let audio establish timing
+                    });
+                });
             }).then(() => {
                 console.log('✅ Audio and video started simultaneously');
                 console.log(`Final playback rates - Audio: ${this.audio.playbackRate}, Video: ${this.video.playbackRate}`);
                 
-                // Gentle initial sync check after media has settled
+                // Just log the initial sync status, no corrections
                 setTimeout(() => {
                     const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                    console.log(`🔍 Initial sync check: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
-                    
-                    // Only correct major desync on startup
-                    if (timeDiff > 0.3) {
-                        console.log('⚠️  Major startup desync detected, correcting...');
-                        this.video.currentTime = this.audio.currentTime;
-                    }
-                }, 500); // Wait longer for media to stabilize
+                    console.log(`📊 Initial sync status: Audio=${this.audio.currentTime.toFixed(2)}s, Video=${this.video.currentTime.toFixed(2)}s, Diff=${timeDiff.toFixed(2)}s`);
+                    console.log('🎬 Video now playing naturally without sync interference');
+                }, 1000);
             }).catch(e => {
                 console.error('Media playback failed:', e);
             });
@@ -313,13 +313,7 @@ class RhythmGame {
             return;
         }
         
-        // Frame rate limiting to reduce video interference
-        const elapsed = currentTime - this.lastRenderTime;
-        if (elapsed < this.frameInterval) {
-            requestAnimationFrame((time) => this.gameLoop(time));
-            return;
-        }
-        this.lastRenderTime = currentTime;
+        // Removed frame rate limiting - back to 60fps
         
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
@@ -407,27 +401,13 @@ class RhythmGame {
         // Update particles
         this.updateParticles(deltaTime);
         
-        // Gentle sync check - less frequent and less intrusive
-        if (Math.floor(this.gameTime) % 10 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+        // SYNC DISABLED - Let video play naturally without interference
+        // Only log major issues for debugging, but don't actively correct
+        if (Math.floor(this.gameTime) % 30 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
             if (this.video && this.audio && !this.audio.paused && !this.video.paused) {
-                // Only fix playback rates if they're significantly wrong
-                if (Math.abs(this.video.playbackRate - 1.0) > 0.01) {
-                    console.log(`🔧 Correcting video playbackRate: ${this.video.playbackRate} → 1.0`);
-                    this.video.playbackRate = 1.0;
-                }
-                if (Math.abs(this.audio.playbackRate - 1.0) > 0.01) {
-                    console.log(`🔧 Correcting audio playbackRate: ${this.audio.playbackRate} → 1.0`);
-                    this.audio.playbackRate = 1.0;
-                }
-                
                 const timeDiff = Math.abs(this.video.currentTime - this.audio.currentTime);
-                // Only sync if there's a significant drift (500ms+) to avoid interrupting smooth playback
-                if (timeDiff > 0.5) {
-                    console.log(`🎬 Major sync correction needed: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, diff=${timeDiff.toFixed(2)}s`);
-                    this.video.currentTime = this.audio.currentTime;
-                } else if (timeDiff > 0.1) {
-                    // Log the drift but don't correct it unless it's severe
-                    console.log(`📊 Sync status: audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, drift=${timeDiff.toFixed(2)}s (acceptable)`);
+                if (timeDiff > 2.0) { // Only log major drift, don't fix it
+                    console.log(`📊 Sync info (no correction): audio=${this.audio.currentTime.toFixed(2)}s, video=${this.video.currentTime.toFixed(2)}s, drift=${timeDiff.toFixed(2)}s`);
                 }
             }
         }
