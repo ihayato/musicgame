@@ -70,20 +70,15 @@ class App {
         
         // Game controls
         document.getElementById('backToMenu').addEventListener('click', () => {
-            this.showSongSelection();
-            if (this.game) {
-                this.game.stop();
-            }
+            console.log('Back to menu clicked');
+            this.backToMenu();
         });
         
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 if (this.currentScreen === 'game') {
-                    this.showSongSelection();
-                    if (this.game) {
-                        this.game.stop();
-                    }
+                    this.backToMenu();
                 } else if (this.currentStep === 'difficulty') {
                     this.showSongSelection();
                     this.stopPreview();
@@ -214,6 +209,42 @@ class App {
         document.getElementById('startGameBtn').disabled = true;
         
         console.log('Switched to song selection');
+    }
+    
+    backToMenu() {
+        console.log('Returning to main menu');
+        
+        // Stop game if playing
+        if (this.game) {
+            this.game.stop();
+            console.log('Game stopped');
+        }
+        
+        // Stop any preview audio
+        this.stopPreview();
+        
+        // Reset selections
+        this.selectedSong = null;
+        this.selectedDifficulty = null;
+        this.currentStep = 'song';
+        
+        // Clear UI selections
+        document.querySelectorAll('.song-item').forEach(item => {
+            item.classList.remove('selected');
+        });
+        document.querySelectorAll('.difficulty-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+        
+        // Reset difficulty selection UI
+        document.getElementById('songSelection').classList.add('active');
+        document.getElementById('difficultySelection').classList.remove('active');
+        document.getElementById('startGameBtn').disabled = true;
+        
+        // Switch to menu screen
+        this.showScreen('menu');
+        
+        console.log('Successfully returned to main menu');
     }
     
     showDifficultySelection() {
@@ -364,6 +395,8 @@ class App {
             
             const chartData = await this.loadChart(chartPath);
             console.log('Chart data loaded:', chartData);
+            console.log('📊 Chart has', chartData.notes?.length || 0, 'notes');
+            console.log('📊 First 5 notes from chart:', chartData.notes?.slice(0, 5));
             
             // Setup game audio and video
             const gameAudio = document.getElementById('gameAudio');
@@ -378,7 +411,6 @@ class App {
             }
             
             this.showScreen('game');
-            console.log('Switched to game screen');
             
             // Start game after audio is loaded
             const startGameplay = () => {
@@ -390,12 +422,21 @@ class App {
                     console.log('Loading chart into game...');
                     this.game.loadChart(chartData);
                     
-                    console.log('Starting game in 2 seconds...');
-                    setTimeout(() => {
-                        console.log('Calling game.start()...');
-                        this.game.start();
-                        console.log('Game.start() called');
-                    }, 2000);
+                    // More reliable audio loading check
+                    const attemptStart = () => {
+                        if (gameAudio.readyState >= 2) { // HAVE_CURRENT_DATA or better
+                            console.log('Audio ready (readyState:', gameAudio.readyState, '), starting game immediately...');
+                            this.game.start();
+                            console.log('Game.start() called');
+                        } else {
+                            console.log('Audio not ready (readyState:', gameAudio.readyState, '), waiting...');
+                            setTimeout(attemptStart, 100); // Check every 100ms
+                        }
+                    };
+                    
+                    // Start checking immediately
+                    attemptStart();
+                    
                 } else {
                     console.error('Game or chart data missing:', { 
                         game: this.game, 
@@ -530,14 +571,23 @@ class App {
     }
     
     showScreen(screenName) {
+        console.log('showScreen called with:', screenName);
+        
+        // Force hide all screens first
         document.querySelectorAll('.screen').forEach(screen => {
             screen.classList.remove('active');
+            screen.style.display = 'none'; // Force hide
         });
         
         const targetScreen = document.getElementById(screenName);
         if (targetScreen) {
             targetScreen.classList.add('active');
+            targetScreen.style.display = 'block'; // Force show
             this.currentScreen = screenName;
+            console.log('Successfully switched to:', screenName);
+        } else {
+            console.error('Target screen not found:', screenName);
+            return;
         }
         
         // ゲーム画面の時のみoverflow制御
@@ -547,7 +597,16 @@ class App {
             document.body.classList.remove('game-active');
         }
         
-        console.log('Switched to screen:', screenName);
+        // Double check that the game screen is visible
+        if (screenName === 'game') {
+            setTimeout(() => {
+                const gameScreen = document.getElementById('game');
+                console.log('Game screen final state:', {
+                    display: getComputedStyle(gameScreen).display,
+                    hasActive: gameScreen.classList.contains('active')
+                });
+            }, 50);
+        }
     }
 }
 

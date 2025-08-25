@@ -1,7 +1,7 @@
 {
-  "name": "otogame-2",
+  "name": "beat-diffusion",
   "version": "1.0.0",
-  "description": "ビートマニア風音楽ゲーム",
+  "description": "Beat Diffusion - ビートマニア風音楽ゲーム",
   "main": "index.html",
   "scripts": {
     "dev": "npx http-server . -p 3000 -o",
@@ -11,7 +11,7 @@
   "devDependencies": {
     "http-server": "^14.1.1"
   },
-  "keywords": ["rhythm-game", "beatmania", "music-game"],
+  "keywords": ["beat-diffusion", "rhythm-game", "beatmania", "music-game"],
   "author": "",
   "license": "MIT"
 }

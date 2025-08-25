@@ -3,31 +3,31 @@ class ChartGenerator {
         this.keys = ['A', 'S', 'D', 'G', 'H', 'J'];
         this.difficulties = {
             easy: {
-                noteRatio: 0.4,        // 40%のタイムスタンプを使用
+                noteRatio: 0.55,       // 55%のタイムスタンプを使用（163ノーツ）
                 chordChance: 0,        // 同時押しなし
                 maxSimultaneous: 1,    // 1キーまで
-                minInterval: 0.6,      // 600ms間隔
-                laneVariety: 0.7       // レーン選択の多様性
+                minInterval: 0.5,      // 500ms間隔
+                laneVariety: 0.8       // レーン選択の多様性
             },
             normal: {
-                noteRatio: 0.7,
-                chordChance: 0.15,     // 15%の確率で同時押し
+                noteRatio: 0.75,       // 75%のタイムスタンプを使用（222ノーツ）
+                chordChance: 0.20,     // 20%の確率で同時押し
                 maxSimultaneous: 2,    // 2キーまで
-                minInterval: 0.35,     // 350ms間隔
-                laneVariety: 0.8
-            },
-            hard: {
-                noteRatio: 0.9,
-                chordChance: 0.3,      // 30%の確率で同時押し
-                maxSimultaneous: 3,    // 3キーまで
-                minInterval: 0.2,      // 200ms間隔
+                minInterval: 0.25,     // 250ms間隔
                 laneVariety: 0.9
             },
+            hard: {
+                noteRatio: 0.90,       // 90%のタイムスタンプを使用（266ノーツ）
+                chordChance: 0.35,     // 35%の確率で同時押し
+                maxSimultaneous: 3,    // 3キーまで
+                minInterval: 0.15,     // 150ms間隔
+                laneVariety: 1.0
+            },
             extreme: {
-                noteRatio: 1.0,
-                chordChance: 0.45,     // 45%の確率で同時押し
-                maxSimultaneous: 3,    // 3キーまで（4キーは避ける）
-                minInterval: 0.1,      // 100ms間隔
+                noteRatio: 1.0,        // 100%のタイムスタンプを使用（296ノーツ全て）
+                chordChance: 0.50,     // 50%の確率で同時押し
+                maxSimultaneous: 4,    // 4キーまで（最高難易度）
+                minInterval: 0.08,     // 80ms間隔（高速）
                 laneVariety: 1.0
             }
         };
@@ -45,7 +45,13 @@ class ChartGenerator {
     
     generateChart(timestamps, difficulty, title = 'Untitled') {
         const config = this.difficulties[difficulty];
-        const selectedTimestamps = this.selectTimestamps(timestamps, config.noteRatio);
+        let selectedTimestamps = this.selectTimestamps(timestamps, config.noteRatio);
+        
+        // EXTREME難易度の場合、空白部分に追加ノーツを生成
+        if (difficulty === 'extreme') {
+            selectedTimestamps = this.addFillerNotesForExtreme(selectedTimestamps);
+        }
+        
         const filteredTimestamps = this.filterMinInterval(selectedTimestamps, config.minInterval);
         const notes = this.generateNotes(filteredTimestamps, config);
         
@@ -82,6 +88,44 @@ class ChartGenerator {
         return selected;
     }
     
+    addFillerNotesForExtreme(timestamps) {
+        const enhanced = [...timestamps];
+        const maxGap = 3.0; // 3秒以上の空白を検出
+        const fillDensity = 0.4; // 0.4秒間隔でノーツ追加
+        
+        for (let i = 0; i < timestamps.length - 1; i++) {
+            const currentTime = timestamps[i].time;
+            const nextTime = timestamps[i + 1].time;
+            const gap = nextTime - currentTime;
+            
+            // 大きな空白がある場合、間を埋める
+            if (gap > maxGap) {
+                const fillStart = currentTime + 1.0; // 1秒後から開始
+                const fillEnd = nextTime - 1.0; // 1秒前まで
+                
+                if (fillEnd > fillStart) {
+                    let fillTime = fillStart;
+                    let fillIndex = timestamps.length + enhanced.length;
+                    
+                    while (fillTime < fillEnd) {
+                        enhanced.push({
+                            time: fillTime,
+                            index: fillIndex++,
+                            isFiller: true // フィラーノーツであることをマーク
+                        });
+                        fillTime += fillDensity;
+                    }
+                }
+            }
+        }
+        
+        // 時間順にソート
+        enhanced.sort((a, b) => a.time - b.time);
+        
+        console.log(`EXTREME: Added ${enhanced.length - timestamps.length} filler notes to gaps`);
+        return enhanced;
+    }
+
     filterMinInterval(timestamps, minInterval) {
         if (timestamps.length === 0) return [];
         
@@ -188,6 +232,13 @@ class ChartGenerator {
                 [0, 1, 3], [1, 2, 4], [2, 3, 5],           // 混合パターン
                 [0, 2, 5], [0, 3, 5], [1, 3, 4],           // その他のパターン
                 [0, 1, 5], [1, 4, 5]                       // 両端含む
+            ],
+            4: [ // 4キー同時押しパターン（EXTREME用）
+                [0, 1, 2, 3], [1, 2, 3, 4], [2, 3, 4, 5], // 連続4個
+                [0, 1, 3, 4], [1, 2, 4, 5], [0, 2, 3, 5], // 混合パターン
+                [0, 1, 2, 5], [0, 2, 4, 5], [1, 3, 4, 5], // 両端含む
+                [0, 1, 3, 5], [0, 2, 3, 4], [1, 2, 3, 5], // バランス型
+                [0, 1, 4, 5]                               // 対称形
             ]
         };
         

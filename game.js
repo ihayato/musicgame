@@ -48,6 +48,12 @@ class RhythmGame {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
         this.judgmentLine = this.canvas.height - 120;
+        
+        // Force canvas style to match size
+        this.canvas.style.width = window.innerWidth + 'px';
+        this.canvas.style.height = window.innerHeight + 'px';
+        
+        
         console.log('Canvas resized to:', this.canvas.width, 'x', this.canvas.height);
     }
     
@@ -108,10 +114,6 @@ class RhythmGame {
     
     start() {
         console.log('RhythmGame.start() called');
-        console.log('Canvas:', this.canvas);
-        console.log('Audio:', this.audio);
-        console.log('Video:', this.video);
-        console.log('Current chart:', this.currentChart);
         
         this.score = 0;
         this.combo = 0;
@@ -122,23 +124,59 @@ class RhythmGame {
         if (this.currentChart) {
             this.notes = this.currentChart.notes.map(note => ({
                 ...note,
-                y: -50 - (note.time * this.noteSpeed),
-                hit: false
+                originalTime: note.time,
+                hit: false,
+                y: 0 // Will be calculated in real-time during update
             }));
             console.log('Notes generated:', this.notes.length);
-            console.log('Sample notes:', this.notes.slice(0, 5).map(n => ({ time: n.time, lane: n.lane, y: n.y })));
+            console.log('Chart title:', this.currentChart.title, 'Difficulty:', this.currentChart.difficulty);
+            console.log('First note timing:', this.notes[0]?.originalTime);
+            console.log('Last note timing:', this.notes[this.notes.length - 1]?.originalTime);
+            console.log('Chart metadata:', this.currentChart.metadata);
+            console.log('Judgment line position:', this.judgmentLine);
+            
+            // Check note density in first 30 seconds
+            const early = this.notes.filter(n => n.originalTime <= 30).length;
+            const mid = this.notes.filter(n => n.originalTime > 30 && n.originalTime <= 60).length; 
+            const late = this.notes.filter(n => n.originalTime > 60).length;
+            console.log(`Note distribution: 0-30s: ${early}, 30-60s: ${mid}, 60s+: ${late}`);
+            
+            // Debug first 10 notes specifically
+            console.log('First 10 notes:', this.notes.slice(0, 10).map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane} chord=${n.isChord}`));
+            
+            // Check for missing early notes
+            const reallyEarlyNotes = this.notes.filter(n => n.originalTime <= 5);
+            console.log(`🔍 VERY EARLY NOTES CHECK: Total found=${reallyEarlyNotes.length}`);
+            if (reallyEarlyNotes.length === 0) {
+                console.error('🚨 NO EARLY NOTES FOUND! Chart may not have loaded properly.');
+                console.log('Raw chart data check:', this.currentChart.notes?.slice(0, 5));
+            } else {
+                console.log('Early notes details:', reallyEarlyNotes.map(n => `time=${n.originalTime.toFixed(2)} lane=${n.lane}`));
+            }
+            
+            // Check for issues with note data
+            const invalidNotes = this.notes.filter(n => n.originalTime === undefined || n.lane === undefined);
+            if (invalidNotes.length > 0) {
+                console.error('Invalid notes found:', invalidNotes);
+            }
         } else {
             console.error('No chart loaded!');
         }
         
-        // Start audio and video
+        // Start audio and video with proper synchronization
         try {
             this.audio.currentTime = 0;
             this.video.currentTime = 0;
             
+            // Initialize timing variables consistently
+            this.gameTime = 0;
+            this.audioStartTime = 0; // Always start from 0 for consistency
+            this.audioStartOffset = 0;
+            
             console.log('Starting audio playback...');
             this.audio.play().then(() => {
                 console.log('Audio started successfully');
+                // Audio is now playing, timing will be handled in gameLoop
             }).catch(e => {
                 console.error('Audio play failed:', e);
             });
@@ -154,16 +192,41 @@ class RhythmGame {
         }
         
         console.log('Starting game loop...');
+        console.log('isPlaying before gameLoop:', this.isPlaying);
+        console.log('Notes count before gameLoop:', this.notes.length);
+        
         this.gameLoop();
         this.updateUI();
         
         console.log('Game started, isPlaying:', this.isPlaying);
+        
     }
     
     stop() {
+        console.log('Stopping game');
         this.isPlaying = false;
-        this.audio.pause();
-        this.video.pause();
+        
+        // Stop and reset audio
+        if (this.audio) {
+            this.audio.pause();
+            this.audio.currentTime = 0;
+        }
+        
+        // Stop and reset video
+        if (this.video) {
+            this.video.pause();
+            this.video.currentTime = 0;
+        }
+        
+        // Reset game state
+        this.gameTime = 0;
+        this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.notes.forEach(note => note.hit = false);
+        this.particles = [];
+        
+        console.log('Game stopped and reset');
     }
     
     gameLoop(currentTime = 0) {
@@ -172,11 +235,23 @@ class RhythmGame {
             return;
         }
         
+        
         const deltaTime = currentTime > 0 ? (currentTime - this.lastTime) / 1000 : 0.016; // Default to 60fps
         this.lastTime = currentTime;
         
-        // Use audio time when available, otherwise use accumulated time
-        this.gameTime = this.audio.currentTime || this.gameTime + deltaTime;
+        // Use audio time consistently for better synchronization
+        if (this.audio && !this.audio.paused && this.audio.currentTime >= 0) {
+            // Use audio currentTime directly since we reset it to 0 at start
+            this.gameTime = this.audio.currentTime;
+        } else {
+            // Fallback to accumulated time
+            this.gameTime = Math.max(0, this.gameTime + deltaTime);
+        }
+        
+        // Debug timing issue
+        if (Math.floor(this.gameTime * 10) % 10 === 0) {
+            console.log(`Timing debug: gameTime=${this.gameTime.toFixed(3)}, audioTime=${this.audio.currentTime.toFixed(3)}, deltaTime=${deltaTime.toFixed(3)}, offset=${this.audioStartOffset || 0}`);
+        }
         
         try {
             this.update(deltaTime);
@@ -189,35 +264,65 @@ class RhythmGame {
     }
     
     update(deltaTime) {
-        // Update notes position
+        // Calculate note positions based on timing
         this.notes.forEach(note => {
             if (!note.hit) {
-                note.y += this.noteSpeed * deltaTime;
+                // Time until note should hit judgment line
+                const timeUntilHit = note.originalTime - this.gameTime;
+                // Position: judgment line - (time until hit * speed)
+                // When timeUntilHit = 2, note is 800px above judgment line
+                // When timeUntilHit = 0, note is at judgment line
+                note.y = this.judgmentLine - (timeUntilHit * this.noteSpeed);
             }
         });
         
-        // Check for missed notes
-        this.notes.forEach(note => {
-            if (!note.hit && note.y > this.judgmentLine + 100) {
-                note.hit = true;
-                this.processJudgment('miss');
+        // Debug: Log visible notes every second
+        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
+            const allNotes = this.notes.filter(n => !n.hit);
+            const upcomingNotes = allNotes.filter(n => n.originalTime > this.gameTime && n.originalTime < this.gameTime + 10);
+            const visibleNotes = allNotes.filter(n => n.y > -100 && n.y < this.canvas.height + 100);
+            
+            console.log(`Game time: ${this.gameTime.toFixed(2)}s, Visible notes: ${visibleNotes.length}, Total active: ${allNotes.length}, Upcoming (next 10s): ${upcomingNotes.length}`);
+            
+            if (upcomingNotes.length > 0) {
+                const next = upcomingNotes[0];
+                console.log(`Next note: lane=${next.lane}, time=${next.originalTime.toFixed(2)}`);
             }
-        });
+            
+            // Debug early notes specifically  
+            if (this.gameTime < 10) {
+                const reallyEarlyNotes = this.notes.filter(n => !n.hit && n.originalTime <= 5);
+                const earlyNotes = this.notes.filter(n => !n.hit && n.originalTime > 5 && n.originalTime <= 10);
+                console.log(`Very early notes (0-5s): Total=${reallyEarlyNotes.length}`, reallyEarlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
+                console.log(`Early notes (5-10s): Total=${earlyNotes.length}`, earlyNotes.slice(0, 3).map(n => `t=${n.originalTime.toFixed(1)} lane=${n.lane} y=${n.y?.toFixed(0)}`));
+            }
+        }
+        
+        // Check for missed notes (notes that passed judgment line)
+        // But only start checking after a brief startup period to avoid immediate misses
+        if (this.gameTime > 0.5) { // Wait 500ms before checking for misses
+            this.notes.forEach(note => {
+                if (!note.hit && note.y > this.judgmentLine + 100) {
+                    note.hit = true;
+                    this.processJudgment('miss');
+                    console.log(`Missed note at time ${note.originalTime.toFixed(3)}, current time: ${this.gameTime.toFixed(3)}`);
+                }
+            });
+        }
         
         // Update particles
         this.updateParticles(deltaTime);
         
-        // Remove old notes
-        this.notes = this.notes.filter(note => note.y < this.canvas.height + 100);
+        // Remove notes that are far off screen (but keep unhit notes)
+        this.notes = this.notes.filter(note => {
+            if (!note.hit) return true; // Keep all unhit notes
+            return note.y < this.canvas.height + 200; // Remove hit notes that are off screen
+        });
     }
     
     render() {
-        // Clear canvas with debug background
+        // Clear canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Debug: Draw background to ensure canvas is visible
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Draw lanes
         this.drawLanes();
@@ -231,11 +336,13 @@ class RhythmGame {
         // Draw particles
         this.drawParticles();
         
-        // Debug: Draw frame counter
-        this.ctx.fillStyle = '#fff';
+        // Debug: Show game time and note count
+        this.ctx.fillStyle = '#ffffff';
         this.ctx.font = '16px monospace';
         this.ctx.fillText(`Time: ${this.gameTime.toFixed(2)}s`, 10, 30);
-        this.ctx.fillText(`Notes: ${this.notes.filter(n => !n.hit).length}`, 10, 50);
+        const activeNotes = this.notes.filter(n => !n.hit);
+        const visibleNotes = this.notes.filter(n => !n.hit && n.y > -50 && n.y < this.canvas.height + 50);
+        this.ctx.fillText(`Total: ${this.notes.length} | Active: ${activeNotes.length} | Visible: ${visibleNotes.length}`, 10, 50);
     }
     
     drawLanes() {
@@ -255,10 +362,15 @@ class RhythmGame {
     
     drawNotes() {
         const startX = (this.canvas.width - (this.lanes * this.laneWidth)) / 2;
+        let renderedCount = 0;
         
         this.notes.forEach(note => {
             if (note.hit) return;
             
+            // Only render notes that are reasonably on screen
+            if (note.y < -100 || note.y > this.canvas.height + 100) return;
+            
+            renderedCount++;
             const x = startX + (note.lane * this.laneWidth);
             
             // Note body
@@ -281,6 +393,11 @@ class RhythmGame {
             this.ctx.fillStyle = gradient;
             this.ctx.fillRect(x - 20, note.y - 20, this.laneWidth + 40, 60);
         });
+        
+        // Debug: Show note count in top-right corner
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.font = '16px monospace';
+        this.ctx.fillText(`Rendered: ${renderedCount}`, this.canvas.width - 150, 30);
     }
     
     getNoteColor(lane) {
@@ -313,7 +430,8 @@ class RhythmGame {
         this.notes.forEach(note => {
             if (note.hit || note.lane !== keyIndex) return;
             
-            const timing = Math.abs(note.time - currentTime);
+            // Use originalTime for timing calculation
+            const timing = Math.abs(note.originalTime - currentTime);
             if (timing < bestTiming && timing <= this.judgmentTimings.miss) {
                 bestTiming = timing;
                 bestNote = note;
@@ -328,8 +446,12 @@ class RhythmGame {
             else if (bestTiming <= this.judgmentTimings.good) judgment = 'good';
             else if (bestTiming <= this.judgmentTimings.poor) judgment = 'poor';
             
+            console.log(`Hit ${key} - Note time: ${bestNote.originalTime.toFixed(3)}, Current: ${currentTime.toFixed(3)}, Timing: ${bestTiming.toFixed(3)}, Judgment: ${judgment}`);
+            
             this.processJudgment(judgment);
             this.createHitParticles(keyIndex, judgment);
+        } else {
+            console.log(`Key ${key} pressed but no note found. Current time: ${currentTime.toFixed(3)}`);
         }
     }
     

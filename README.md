@@ -1,4 +1,4 @@
-# Otogame 2 - ビートマニア風音楽ゲーム
+# Beat Diffusion - ビートマニア風音楽ゲーム
 
 MP4動画とMP3音楽に合わせて6キー（A,S,D,G,H,J）で遊ぶビートマニア風の音楽ゲームです。
 
@@ -131,7 +131,7 @@ npm run dev
 ## ファイル構成
 
 ```
-otogame_2/
+beat-diffusion/
 ├── assets/            # ゲームアセット
 │   ├── audio/         # 音楽ファイル（.mp3）
 │   ├── video/         # 動画ファイル（.mp4）
