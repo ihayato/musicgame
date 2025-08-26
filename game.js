@@ -618,6 +618,11 @@ class RhythmGame {
         try {
             this.update(deltaTime);
             this.render();
+            
+            // Check for game completion periodically
+            if (this.gameTime > 0 && this.gameTime % 1 < deltaTime) {
+                this.checkGameComplete();
+            }
         } catch (error) {
             console.error('Error in game loop:', error);
         }
@@ -1027,20 +1032,35 @@ class RhythmGame {
     }
     
     setupMediaEndListeners() {
+        // Remove existing listeners first to avoid duplicates
+        if (this.audioEndHandler) {
+            this.audio?.removeEventListener('ended', this.audioEndHandler);
+        }
+        if (this.videoEndHandler) {
+            this.video?.removeEventListener('ended', this.videoEndHandler);
+        }
+        
+        // Create new handlers
+        this.audioEndHandler = () => {
+            console.log('🎵 Audio ended naturally');
+            this.mediaEnded.audio = true;
+            this.checkGameComplete(); // Check if game should complete
+        };
+        
+        this.videoEndHandler = () => {
+            console.log('📹 Video ended naturally');
+            this.mediaEnded.video = true;
+            this.checkGameComplete(); // Check if game should complete
+        };
+        
         // Setup audio end listener
         if (this.audio) {
-            this.audio.addEventListener('ended', () => {
-                console.log('🎵 Audio ended naturally');
-                this.mediaEnded.audio = true;
-            });
+            this.audio.addEventListener('ended', this.audioEndHandler);
         }
         
         // Setup video end listener
         if (this.video) {
-            this.video.addEventListener('ended', () => {
-                console.log('📹 Video ended naturally');
-                this.mediaEnded.video = true;
-            });
+            this.video.addEventListener('ended', this.videoEndHandler);
         }
     }
     
