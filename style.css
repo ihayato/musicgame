@@ -1023,21 +1023,53 @@ body {
 }
 
 #judgment {
-    font-size: 2rem;
+    font-size: 3rem;
     font-weight: bold;
     text-align: center;
     position: absolute;
-    top: 200px;
+    bottom: 140px; /* Position near judgment line */
     left: 50%;
     transform: translateX(-50%);
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px currentColor, 2px 2px 8px rgba(0,0,0,0.9);
     pointer-events: none;
+    z-index: 10;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: judmentPulse 0.3s ease-out;
+    border-radius: 15px;
+    padding: 8px 16px;
+    backdrop-filter: blur(5px);
+    background: rgba(0,0,0,0.3);
+    border: 2px solid currentColor;
 }
 
-.judgment-perfect { color: #00ff00; }
-.judgment-good { color: #ffff00; }
-.judgment-poor { color: #ff8800; }
-.judgment-miss { color: #ff0000; }
+.judgment-perfect { 
+    color: #00ff88; 
+    background: radial-gradient(ellipse at center, rgba(0,255,136,0.3) 0%, transparent 70%);
+    border-color: #00ff88;
+    animation: perfectPulse 0.5s ease-out;
+}
+
+.judgment-good { 
+    color: #ffff00; 
+    background: radial-gradient(ellipse at center, rgba(255,255,0,0.3) 0%, transparent 70%);
+    border-color: #ffff00;
+    animation: goodPulse 0.4s ease-out;
+}
+
+.judgment-poor { 
+    color: #ff8800; 
+    background: radial-gradient(ellipse at center, rgba(255,136,0,0.3) 0%, transparent 70%);
+    border-color: #ff8800;
+    animation: poorShake 0.3s ease-out;
+}
+
+.judgment-miss { 
+    color: #ff3333; 
+    background: radial-gradient(ellipse at center, rgba(255,51,51,0.4) 0%, transparent 70%);
+    border-color: #ff3333;
+    animation: missShake 0.4s ease-out;
+}
 
 /* キー表示（ビートマニア風） */
 #keys {
@@ -1780,5 +1812,90 @@ body {
     
     #gameClear .clear-btn {
         width: 100%;
+    }
+}
+
+/* Judgment Display Animations */
+@keyframes perfectPulse {
+    0% { 
+        transform: translateX(-50%) scale(0.8); 
+        opacity: 0; 
+        filter: brightness(2) drop-shadow(0 0 20px #00ff88);
+    }
+    50% { 
+        transform: translateX(-50%) scale(1.3); 
+        filter: brightness(3) drop-shadow(0 0 30px #00ff88);
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        opacity: 1; 
+        filter: brightness(1.5) drop-shadow(0 0 15px #00ff88);
+    }
+}
+
+@keyframes goodPulse {
+    0% { 
+        transform: translateX(-50%) scale(0.9); 
+        opacity: 0; 
+        filter: brightness(2) drop-shadow(0 0 20px #ffff00);
+    }
+    50% { 
+        transform: translateX(-50%) scale(1.2); 
+        filter: brightness(2.5) drop-shadow(0 0 25px #ffff00);
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        opacity: 1; 
+        filter: brightness(1.3) drop-shadow(0 0 10px #ffff00);
+    }
+}
+
+@keyframes poorShake {
+    0% { 
+        transform: translateX(-50%) scale(0.9); 
+        opacity: 0; 
+        filter: brightness(2) drop-shadow(0 0 20px #ff8800);
+    }
+    25% { 
+        transform: translateX(-55%) scale(1.1); 
+        filter: brightness(2.2) drop-shadow(0 0 25px #ff8800);
+    }
+    75% { 
+        transform: translateX(-45%) scale(1.1); 
+        filter: brightness(2.2) drop-shadow(0 0 25px #ff8800);
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        opacity: 1; 
+        filter: brightness(1.2) drop-shadow(0 0 8px #ff8800);
+    }
+}
+
+@keyframes missShake {
+    0% { 
+        transform: translateX(-50%) scale(0.8); 
+        opacity: 0; 
+        filter: brightness(3) drop-shadow(0 0 25px #ff3333);
+    }
+    20% { 
+        transform: translateX(-58%) scale(1.15); 
+        filter: brightness(3.5) drop-shadow(0 0 35px #ff3333);
+    }
+    40% { 
+        transform: translateX(-42%) scale(1.15); 
+        filter: brightness(3.5) drop-shadow(0 0 35px #ff3333);
+    }
+    60% { 
+        transform: translateX(-58%) scale(1.05); 
+        filter: brightness(2.8) drop-shadow(0 0 30px #ff3333);
+    }
+    80% { 
+        transform: translateX(-42%) scale(1.05); 
+        filter: brightness(2.8) drop-shadow(0 0 30px #ff3333);
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        opacity: 1; 
+        filter: brightness(1.8) drop-shadow(0 0 12px #ff3333);
     }
 }
