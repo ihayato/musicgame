@@ -44,6 +44,8 @@ class RhythmGame {
         
         this.particles = [];
         
+        // Animation frame management for proper cleanup
+        this.animationFrameId = null;
         
         // Judgment line animation
         this.judgmentLineGlow = 0;
@@ -541,6 +543,12 @@ class RhythmGame {
         console.log('Stopping game');
         this.isPlaying = false;
         
+        // Cancel any active animation frame to prevent resource leaks
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        
         // Stop and reset audio
         if (this.audio) {
             this.audio.pause();
@@ -581,6 +589,7 @@ class RhythmGame {
     gameLoop(currentTime = 0) {
         if (!this.isPlaying) {
             console.log('Game loop stopped, isPlaying:', this.isPlaying);
+            this.animationFrameId = null; // Clear animation frame ID when stopping
             return;
         }
         
@@ -627,7 +636,7 @@ class RhythmGame {
             console.error('Error in game loop:', error);
         }
         
-        requestAnimationFrame((time) => this.gameLoop(time));
+        this.animationFrameId = requestAnimationFrame((time) => this.gameLoop(time));
     }
     
     update(deltaTime) {
@@ -981,6 +990,11 @@ class RhythmGame {
         });
         
         this.particles = this.particles.filter(particle => particle.life > 0);
+        
+        // Memory protection: Limit total particle count
+        if (this.particles.length > 200) {
+            this.particles.splice(0, this.particles.length - 150); // Keep newest 150 particles
+        }
     }
     
     updateJudgmentLineAnimation(deltaTime) {
@@ -1010,7 +1024,7 @@ class RhythmGame {
     
     drawParticles() {
         // OPTIMIZATION: Skip particles if there are too many (major performance hit)
-        if (this.particles.length > 20) {
+        if (this.particles.length > 50) {
             return; // Skip drawing particles when there are too many
         }
         
@@ -1092,6 +1106,13 @@ class RhythmGame {
         
         // Stop the game
         this.isPlaying = false;
+        
+        // Cancel animation frame and clear particles for clean completion
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        this.particles = []; // Clear particles on game completion
         
         // Stop media
         if (this.audio) {
