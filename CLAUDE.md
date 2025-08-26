@@ -119,6 +119,86 @@ npm run dev
 /assets/chart/cryinggirl_*.json  ✅ 4難易度分作成済み
 ```
 
+## 🚨 重要: 動画2倍速問題の対策 (2025-08-25 完全解決済み)
+
+### 問題の概要
+- **症状**: ゲーム画面の背景動画が2倍速で再生される
+- **原因**: ブラウザの動画デコーダー破損、HTML属性の競合、Canvas描画との干渉
+
+### ⚠️ 絶対に避けるべき設定
+```html
+<!-- ❌ 絶対にダメ: loop属性がデコーダー問題を引き起こす -->
+<video id="bgVideo" muted loop></video>
+
+<!-- ✅ 正しい設定 -->
+<video id="bgVideo" muted tabindex="-1" playsinline disablePictureInPicture preload="auto"></video>
+```
+
+### 🛡️ 実装済み多層防御システム
+
+#### 1. **動画要素完全再作成**
+```javascript
+// app.js: preloadVideo()メソッドで実装済み
+recreateVideoElement(oldVideo) {
+    // 古い要素を完全削除
+    oldVideo.remove();
+    
+    // 新要素をゼロから作成
+    const newVideo = document.createElement('video');
+    newVideo.playbackRate = 1.0;        // 必須
+    newVideo.defaultPlaybackRate = 1.0;  // 必須
+    newVideo.loop = false;               // 必須
+    
+    // デコーダー干渉を防ぐCSS
+    newVideo.style.cssText = `
+        transform: none !important;
+        animation: none !important;
+        will-change: auto !important;
+    `;
+}
+```
+
+#### 2. **継続的速度監視**
+```javascript
+// app.js: startContinuousVideoMonitoring()で実装済み
+setInterval(() => {
+    if (video.playbackRate !== 1.0) {
+        console.error('🚨 VIDEO SPEED ANOMALY DETECTED!');
+        video.playbackRate = 1.0;        // 即座修正
+        video.defaultPlaybackRate = 1.0; // 即座修正
+    }
+}, 200); // 200ms毎に監視
+```
+
+#### 3. **多段階チェックポイント**
+- **初期化時**: `bgVideo.playbackRate = 1.0` 強制設定
+- **プリロード時**: 要素再作成 + 速度再確認
+- **開始時**: 3回の連続リセット + 速度確認
+- **実行中**: 200ms毎の継続監視
+
+#### 4. **ゲームエンジン同期**
+```javascript
+// 新しい動画要素をゲームエンジンに同期
+if (this.game) {
+    this.game.video = newBgVideo;
+}
+```
+
+### 🔧 修正が必要な場合のチェックリスト
+
+1. **HTML確認**: `<video>`タグに`loop`属性がないか
+2. **CSS確認**: `transform`, `animation`等の干渉CSSがないか  
+3. **JS確認**: `playbackRate`と`defaultPlaybackRate`が1.0に設定されているか
+4. **監視確認**: 継続監視システムが動作しているか
+5. **要素確認**: 動画要素が完全に再作成されているか
+
+### 🚀 今後の開発指針
+
+- **新しい動画機能追加時**: 必ず上記の5つのチェックポイントを確認
+- **CSS修正時**: 動画要素に影響するプロパティは避ける
+- **デバッグ時**: コンソールで`video.playbackRate`を常に確認
+- **テスト時**: 必ず実際にゲームを開始して動画速度を確認
+
 ## 技術仕様
 - フロントエンド: Vanilla JavaScript + Canvas 2D
 - サーバー: http-server (Node.js)

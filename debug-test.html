@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Test</title>
+</head>
+<body>
+<script src="game.js"></script>
+<script src="chart-generator.js"></script>
+<script src="app.js"></script>
+<script>
+console.log('=== INITIALIZATION DEBUG TEST ===');
+console.log('initGame function exists:', typeof initGame);
+console.log('game variable exists:', typeof game);
+console.log('RhythmGame class exists:', typeof RhythmGame);
+
+if (typeof initGame === 'function') {
+    try {
+        console.log('Attempting to call initGame...');
+        const gameInstance = initGame();
+        console.log('initGame success, returned:', gameInstance);
+        console.log('Game instance type:', typeof gameInstance);
+        
+        if (gameInstance && gameInstance.loadChart) {
+            console.log('✅ Game has loadChart method');
+        } else {
+            console.log('❌ Game missing loadChart method');
+        }
+        
+    } catch (error) {
+        console.log('❌ initGame failed:', error);
+    }
+} else {
+    console.log('❌ initGame function not found');
+}
+</script>
+</body>
+</html>
