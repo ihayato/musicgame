@@ -1,6 +1,6 @@
 class ChartGenerator {
     constructor() {
-        this.keys = ['A', 'S', 'D', 'G', 'H', 'J'];
+        this.keys = ['A', 'S', 'D', 'F', 'G', 'H'];
         this.difficulties = {
             easy: {
                 noteRatio: 0.55,       // 55%のタイムスタンプを使用（163ノーツ）

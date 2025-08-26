@@ -8,7 +8,7 @@ class RhythmGame {
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
         
-        this.keys = ['A', 'S', 'D', 'G', 'H', 'J'];
+        this.keys = ['A', 'S', 'D', 'F', 'G', 'H'];
         this.lanes = 6;
         this.laneWidth = 80;
         this.noteSpeed = 400; // pixels per second
@@ -294,7 +294,7 @@ class RhythmGame {
     }
     
     startMediaIndependently() {
-        console.log('🎬 RECREATING video element to reset decoder');
+        console.log('🎬 Starting perfectly synchronized media playback');
         
         // NUCLEAR OPTION: Completely recreate video element
         this.recreateVideoElement();
@@ -303,12 +303,16 @@ class RhythmGame {
         this.gameTime = 0;
         this.audioStartOffset = 0;
         
-        // CRITICAL: Force audio to start from 0 to prevent timing issues
+        // CRITICAL: Force both audio AND video to start from exactly 0
         this.audio.pause();
+        this.video.pause();
         this.audio.currentTime = 0;
+        this.video.currentTime = 0;
         this.audio.playbackRate = 1.0;
         this.audio.defaultPlaybackRate = 1.0;
-        console.log('🎵 Audio reset to currentTime=0');
+        this.video.playbackRate = 1.0;
+        this.video.defaultPlaybackRate = 1.0;
+        console.log('🎵 Audio and Video reset to currentTime=0');
         
         // Debug video state before starting
         console.log('📹 Pre-start video state:', {
@@ -334,23 +338,41 @@ class RhythmGame {
         };
         
         waitForVideoReady().then(() => {
-            console.log('📹 Video ready, starting natural playback...');
+            console.log('📹 Video ready, starting SYNCHRONIZED playback...');
             
-            // Start media without any synchronization attempts
-            console.log('🎵 Starting audio at natural rate...');
-            const audioPromise = this.audio.play().catch(e => {
-                console.error('Audio play failed:', e);
-            });
-            
-            console.log('📹 Starting video at natural rate...');
-            const videoPromise = this.video.play().catch(e => {
-                console.error('Video play failed:', e);
-            });
+            // NEW APPROACH: Perfect synchronization using Promise.all
+            // This ensures both media elements start at the exact same time
+            const startSynchronizedPlayback = async () => {
+                // First, ensure both are ready to play
+                await Promise.all([
+                    new Promise(resolve => {
+                        if (this.audio.readyState >= 2) resolve();
+                        else this.audio.addEventListener('canplay', resolve, { once: true });
+                    }),
+                    new Promise(resolve => {
+                        if (this.video.readyState >= 2) resolve();
+                        else this.video.addEventListener('canplay', resolve, { once: true });
+                    })
+                ]);
+                
+                console.log('🎯 Both media elements ready. Starting synchronized playback...');
+                
+                // Start both at exactly the same time
+                const audioPromise = this.audio.play();
+                const videoPromise = this.video.play();
+                
+                // Use Promise.all to ensure they start together
+                return Promise.all([audioPromise, videoPromise]);
+            };
             
             // Monitor video playback to detect speed issues
             this.startVideoMonitoring();
             
-            return Promise.allSettled([audioPromise, videoPromise]);
+            return startSynchronizedPlayback().catch(error => {
+                console.error('Synchronized playback failed:', error);
+                // Fallback to sequential start
+                return this.audio.play().then(() => this.video.play());
+            });
         }).then(results => {
             console.log('🎬 Media playback results:', results);
             

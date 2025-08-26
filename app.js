@@ -809,13 +809,20 @@ class App {
         console.log('🔄 NUCLEAR OPTION: Completely recreating video element from scratch');
         
         const videoSrc = oldVideo.src;
-        const gameContainer = oldVideo.parentNode;
+        const gameContainer = oldVideo.parentNode || document.getElementById('game');
+        
+        if (!gameContainer) {
+            console.error('❌ Game container not found!');
+            throw new Error('Game container not found');
+        }
         
         // Remove old video completely
         oldVideo.pause();
         oldVideo.removeAttribute('src');
         oldVideo.load(); // Force unload
-        oldVideo.remove();
+        if (oldVideo.parentNode) {
+            oldVideo.remove();
+        }
         
         // Create completely new video element with ZERO interference
         const newVideo = document.createElement('video');
