@@ -6,7 +6,6 @@ class App {
         this.songs = [];
         this.selectedSong = null;
         this.selectedDifficulty = null;
-        this.previewAudio = null;
         this.isPreviewPlaying = false;
         
         this.initializeApp();
@@ -51,9 +50,6 @@ class App {
         });
         
         // Preview button
-        document.getElementById('previewBtn').addEventListener('click', () => {
-            this.togglePreview();
-        });
         
         // Start game button
         document.getElementById('startGameBtn').addEventListener('click', () => {
@@ -92,7 +88,6 @@ class App {
                     this.backToMenu();
                 } else if (this.currentStep === 'difficulty') {
                     this.showSongSelection();
-                    this.stopPreview();
                 }
             }
         });
@@ -263,7 +258,6 @@ class App {
     showSongSelection() {
         this.currentStep = 'song';
         this.selectedDifficulty = null;
-        this.stopPreview();
         
         // Hide difficulty selection, show song selection
         document.getElementById('songSelection').classList.add('active');
@@ -290,7 +284,6 @@ class App {
         }
         
         // Stop any preview audio
-        this.stopPreview();
         
         // Stop video monitoring
         if (this.videoMonitorInterval) {
@@ -370,7 +363,6 @@ class App {
         }
         
         // Setup preview audio
-        this.setupPreview();
         
         // Hide song selection, show difficulty selection
         document.getElementById('songSelection').classList.remove('active');
@@ -379,15 +371,6 @@ class App {
         console.log('Switched to difficulty selection for:', song.title);
     }
     
-    setupPreview() {
-        this.previewAudio = document.getElementById('previewAudio');
-        if (this.selectedSong && this.selectedSong.audio) {
-            this.previewAudio.src = this.selectedSong.audio;
-            if (this.selectedSong.preview) {
-                this.previewAudio.currentTime = this.selectedSong.preview.start;
-            }
-        }
-    }
     
     selectDifficulty(difficulty) {
         this.selectedDifficulty = difficulty;
@@ -404,39 +387,6 @@ class App {
         console.log('Selected difficulty:', difficulty);
     }
     
-    togglePreview() {
-        if (!this.previewAudio) return;
-        
-        const previewBtn = document.getElementById('previewBtn');
-        
-        if (this.isPreviewPlaying) {
-            this.previewAudio.pause();
-            this.isPreviewPlaying = false;
-            previewBtn.textContent = 'プレビュー';
-        } else {
-            this.previewAudio.play();
-            this.isPreviewPlaying = true;
-            previewBtn.textContent = '停止';
-            
-            // Stop after preview duration
-            if (this.selectedSong.preview && this.selectedSong.preview.duration) {
-                setTimeout(() => {
-                    if (this.isPreviewPlaying) {
-                        this.stopPreview();
-                    }
-                }, this.selectedSong.preview.duration * 1000);
-            }
-        }
-    }
-    
-    stopPreview() {
-        if (this.previewAudio) {
-            this.previewAudio.pause();
-            this.previewAudio.currentTime = this.selectedSong.preview ? this.selectedSong.preview.start : 0;
-        }
-        this.isPreviewPlaying = false;
-        document.getElementById('previewBtn').textContent = 'プレビュー';
-    }
     
     async startGame() {
         console.log('startGame called');
@@ -478,7 +428,6 @@ class App {
         
         console.log('Game engine ready:', this.game);
         
-        this.stopPreview();
         
         try {
             console.log('Loading chart for difficulty:', this.selectedDifficulty);
