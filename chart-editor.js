@@ -4,13 +4,21 @@ class ChartEditor {
         this.timestamps = [];
         this.isRecording = false;
         this.isPlaying = false;
+        this.isEditMode = false;
         this.songTitle = '';
         this.generatedCharts = null;
         this.playbackInterval = null;
         this.editingTimestamp = null;
+        this.nearestTimestampIndex = -1;
+        this.editModeRange = 0.5; // 500ms範囲でタイムスタンプを検索
+        this.isAutoSave = false;
+        this.autoSaveInterval = null;
+        this.hasUnsavedChanges = false;
+        this.currentAudioFile = null;
         
         this.setupEventListeners();
         this.updateUI();
+        this.checkForAutoSavedData();
     }
     
     setupEventListeners() {
@@ -41,6 +49,28 @@ class ChartEditor {
             this.togglePreview();
         });
         
+        // Edit mode toggle
+        document.getElementById('editModeToggle').addEventListener('click', () => {
+            this.toggleEditMode();
+        });
+        
+        // Progress save/load buttons
+        document.getElementById('saveProgress').addEventListener('click', () => {
+            this.saveProgress();
+        });
+        
+        document.getElementById('loadProgress').addEventListener('click', () => {
+            document.getElementById('progressFile').click();
+        });
+        
+        document.getElementById('progressFile').addEventListener('change', (e) => {
+            this.loadProgress(e.target.files[0]);
+        });
+        
+        document.getElementById('autoSaveToggle').addEventListener('click', () => {
+            this.toggleAutoSave();
+        });
+        
         document.getElementById('generateCharts').addEventListener('click', () => {
             this.generateCharts();
         });
@@ -53,11 +83,15 @@ class ChartEditor {
             document.getElementById('rawDataFile').click();
         });
         
-        // Keyboard events for recording
+        // Keyboard events for recording and editing
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && this.isRecording) {
+            if (e.code === 'Space') {
                 e.preventDefault();
-                this.recordTimestamp();
+                if (this.isRecording) {
+                    this.recordTimestamp();
+                } else if (this.isEditMode && this.isPlaying) {
+                    this.editTimestamp();
+                }
             }
         });
         
@@ -66,6 +100,9 @@ class ChartEditor {
             this.updateTimeDisplay();
             if (this.isPlaying) {
                 this.highlightCurrentTimestamp();
+                if (this.isEditMode) {
+                    this.updateNearestTimestamp();
+                }
             }
         });
         
@@ -98,8 +135,12 @@ class ChartEditor {
             const url = URL.createObjectURL(file);
             this.audio.src = url;
             this.audio.load();
+            this.currentAudioFile = file;
             
             document.getElementById('playPreview').disabled = false;
+            document.getElementById('editModeToggle').disabled = false;
+            document.getElementById('saveProgress').disabled = false;
+            
             console.log('Audio file loaded:', file.name);
         }
     }
@@ -147,6 +188,7 @@ class ChartEditor {
         
         this.updateTimestampDisplay();
         this.updateRecordCount();
+        this.markUnsavedChanges();
         
         // Visual feedback
         this.showRecordingFeedback();
@@ -453,13 +495,21 @@ class ChartEditor {
             div.dataset.index = index;
             div.innerHTML = `
                 <span class="timestamp-number">#${index + 1}</span>
-                <span class="timestamp-time">${timestamp.time.toFixed(3)}秒</span>
+                <span class="timestamp-time" onclick="chartEditor.playFromTimestamp(${index})">${timestamp.time.toFixed(3)}秒</span>
                 <div class="timestamp-controls">
-                    <button class="edit-btn" onclick="chartEditor.editTimestamp(${index})">編集</button>
+                    <button class="edit-btn" onclick="chartEditor.editTimestampManual(${index})">手動編集</button>
                     <button class="delete-btn" onclick="chartEditor.removeTimestamp(${index})">削除</button>
                     <button class="seek-btn" onclick="chartEditor.seekToTimestamp(${index})">移動</button>
                 </div>
             `;
+            
+            // Make timestamp clickable
+            div.addEventListener('click', (e) => {
+                // Only trigger if not clicking on buttons
+                if (!e.target.matches('button')) {
+                    this.playFromTimestamp(index);
+                }
+            });
             timestampList.appendChild(div);
         });
     }
@@ -472,9 +522,10 @@ class ChartEditor {
         
         this.updateTimestampDisplay();
         this.updateRecordCount();
+        this.markUnsavedChanges();
     }
     
-    editTimestamp(index) {
+    editTimestampManual(index) {
         const timestamp = this.timestamps[index];
         if (!timestamp) return;
         
@@ -496,7 +547,79 @@ class ChartEditor {
         });
         
         this.updateTimestampDisplay();
-        console.log(`Timestamp ${index} edited to ${parsedTime}s`);
+        this.markUnsavedChanges();
+        console.log(`Timestamp ${index} manually edited to ${parsedTime}s`);
+    }
+    
+    playFromTimestamp(index) {
+        const timestamp = this.timestamps[index];
+        if (!timestamp || !this.audio.src) return;
+        
+        // Seek to timestamp
+        this.audio.currentTime = timestamp.time;
+        
+        // Start playing if not already playing
+        if (!this.isPlaying) {
+            this.audio.play().then(() => {
+                // Automatically enable edit mode for convenience
+                if (!this.isEditMode) {
+                    this.toggleEditMode();
+                }
+                
+                // Highlight the clicked timestamp
+                this.highlightClickedTimestamp(index);
+                
+                // Show feedback
+                this.showPlayFromFeedback(index, timestamp.time);
+                
+                console.log(`Playing from timestamp ${index}: ${timestamp.time.toFixed(3)}s`);
+            }).catch(error => {
+                console.error('Error playing audio:', error);
+            });
+        } else {
+            // If already playing, just seek
+            if (!this.isEditMode) {
+                this.toggleEditMode();
+            }
+            
+            this.highlightClickedTimestamp(index);
+            this.showPlayFromFeedback(index, timestamp.time);
+            
+            console.log(`Seeked to timestamp ${index}: ${timestamp.time.toFixed(3)}s`);
+        }
+    }
+    
+    highlightClickedTimestamp(index) {
+        // Remove all highlights
+        document.querySelectorAll('.timestamp-item').forEach(item => {
+            item.classList.remove('clicked-target', 'selected');
+        });
+        
+        // Highlight the clicked timestamp with special styling
+        const item = document.querySelector(`[data-index="${index}"]`);
+        if (item) {
+            item.classList.add('clicked-target');
+            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Remove the highlight after 3 seconds
+            setTimeout(() => {
+                item.classList.remove('clicked-target');
+            }, 3000);
+        }
+    }
+    
+    showPlayFromFeedback(index, time) {
+        const feedback = document.getElementById('editFeedback');
+        if (!feedback) return;
+        
+        feedback.textContent = `🎵 #${index + 1} (${time.toFixed(3)}s) から再生中 - スペースキーで修正可能`;
+        feedback.className = 'edit-feedback edit-playing';
+        feedback.style.display = 'block';
+        
+        // Hide after 3 seconds
+        setTimeout(() => {
+            feedback.style.display = 'none';
+        }, 3000);
     }
     
     seekToTimestamp(index) {
@@ -586,6 +709,355 @@ class ChartEditor {
         this.updateTimestampDisplay();
         this.updateRecordCount();
         this.updateTimeDisplay();
+    }
+    
+    // New edit mode methods
+    toggleEditMode() {
+        this.isEditMode = !this.isEditMode;
+        const button = document.getElementById('editModeToggle');
+        
+        if (this.isEditMode) {
+            button.textContent = '編集モード: ON';
+            button.classList.add('active');
+            document.body.classList.add('edit-mode');
+            this.showEditModeInstructions();
+        } else {
+            button.textContent = '編集モード: OFF';
+            button.classList.remove('active');
+            document.body.classList.remove('edit-mode');
+            this.hideEditModeInstructions();
+            this.nearestTimestampIndex = -1;
+        }
+        
+        console.log(`Edit mode: ${this.isEditMode ? 'ON' : 'OFF'}`);
+    }
+    
+    updateNearestTimestamp() {
+        if (!this.isEditMode) return;
+        
+        const currentTime = this.audio.currentTime;
+        let nearestIndex = -1;
+        let nearestDistance = this.editModeRange;
+        
+        // Find the nearest timestamp within range
+        this.timestamps.forEach((timestamp, index) => {
+            const distance = Math.abs(timestamp.time - currentTime);
+            if (distance <= nearestDistance) {
+                nearestDistance = distance;
+                nearestIndex = index;
+            }
+        });
+        
+        // Update UI highlighting
+        if (this.nearestTimestampIndex !== nearestIndex) {
+            this.highlightNearestTimestamp(nearestIndex);
+            this.nearestTimestampIndex = nearestIndex;
+        }
+    }
+    
+    highlightNearestTimestamp(index) {
+        // Remove previous nearest highlighting
+        document.querySelectorAll('.timestamp-item').forEach(item => {
+            item.classList.remove('nearest-editable');
+        });
+        
+        // Highlight the nearest timestamp
+        if (index >= 0) {
+            const item = document.querySelector(`[data-index="${index}"]`);
+            if (item) {
+                item.classList.add('nearest-editable');
+            }
+        }
+    }
+    
+    editTimestamp() {
+        if (!this.isEditMode || !this.isPlaying) return;
+        
+        const currentTime = this.audio.currentTime;
+        
+        if (this.nearestTimestampIndex >= 0) {
+            // Edit existing timestamp
+            const timestamp = this.timestamps[this.nearestTimestampIndex];
+            const oldTime = timestamp.time;
+            timestamp.time = currentTime;
+            
+            // Re-sort timestamps by time
+            this.timestamps.sort((a, b) => a.time - b.time);
+            this.timestamps.forEach((ts, i) => {
+                ts.index = i;
+            });
+            
+            this.updateTimestampDisplay();
+            this.showEditFeedback(this.nearestTimestampIndex, oldTime, currentTime);
+            
+            console.log(`Edited timestamp ${this.nearestTimestampIndex}: ${oldTime.toFixed(3)}s → ${currentTime.toFixed(3)}s`);
+        } else {
+            // Add new timestamp if none is near
+            this.recordTimestamp();
+            this.showEditFeedback(-1, null, currentTime);
+            
+            console.log(`Added new timestamp: ${currentTime.toFixed(3)}s`);
+        }
+    }
+    
+    showEditFeedback(index, oldTime, newTime) {
+        const feedback = document.getElementById('editFeedback');
+        if (!feedback) return;
+        
+        if (index >= 0) {
+            feedback.textContent = `編集: #${index + 1} ${oldTime.toFixed(3)}s → ${newTime.toFixed(3)}s`;
+            feedback.className = 'edit-feedback edit-updated';
+        } else {
+            feedback.textContent = `新規追加: ${newTime.toFixed(3)}s`;
+            feedback.className = 'edit-feedback edit-added';
+        }
+        
+        feedback.style.display = 'block';
+        
+        // Hide after 2 seconds
+        setTimeout(() => {
+            feedback.style.display = 'none';
+        }, 2000);
+    }
+    
+    showEditModeInstructions() {
+        const instructions = document.getElementById('editModeInstructions');
+        if (instructions) {
+            instructions.style.display = 'block';
+        }
+    }
+    
+    hideEditModeInstructions() {
+        const instructions = document.getElementById('editModeInstructions');
+        if (instructions) {
+            instructions.style.display = 'none';
+        }
+    }
+    
+    // Progress save/load methods
+    saveProgress() {
+        const progressData = {
+            version: "1.0",
+            timestamp: new Date().toISOString(),
+            songTitle: this.songTitle,
+            audioFileName: this.currentAudioFile ? this.currentAudioFile.name : null,
+            timestamps: this.timestamps,
+            isRecording: this.isRecording,
+            currentTime: this.audio.currentTime || 0,
+            duration: this.audio.duration || 0,
+            metadata: {
+                recordCount: this.timestamps.length,
+                estimatedBPM: this.estimateBPM(),
+                lastModified: new Date().toISOString()
+            }
+        };
+        
+        const filename = `${this.songTitle || 'untitled'}_progress_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.json`;
+        const blob = new Blob([JSON.stringify(progressData, null, 2)], {
+            type: 'application/json'
+        });
+        
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        // Mark as saved
+        this.hasUnsavedChanges = false;
+        this.updateProgressUI();
+        
+        this.showProgressFeedback('途中保存完了', 'success');
+        console.log(`Progress saved: ${filename}`);
+    }
+    
+    loadProgress(file) {
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const progressData = JSON.parse(e.target.result);
+                
+                // Restore data
+                this.timestamps = progressData.timestamps || [];
+                this.songTitle = progressData.songTitle || '';
+                document.getElementById('songTitle').value = this.songTitle;
+                
+                // Update UI
+                this.updateTimestampDisplay();
+                this.updateRecordCount();
+                this.updateProgressUI();
+                
+                // Enable buttons
+                if (this.timestamps.length > 0) {
+                    document.getElementById('generateCharts').disabled = false;
+                    document.getElementById('saveRawData').disabled = false;
+                }
+                
+                // Seek to last position if audio is available
+                if (this.audio.src && progressData.currentTime) {
+                    this.audio.currentTime = progressData.currentTime;
+                }
+                
+                this.hasUnsavedChanges = false;
+                this.showProgressFeedback(`途中保存データを読み込みました (${this.timestamps.length} タイムスタンプ)`, 'success');
+                
+                console.log(`Progress loaded: ${progressData.metadata?.recordCount || 0} timestamps`);
+                
+                // Show audio file warning if needed
+                if (progressData.audioFileName && progressData.audioFileName !== this.currentAudioFile?.name) {
+                    setTimeout(() => {
+                        this.showProgressFeedback(`⚠️ 元の音声ファイル「${progressData.audioFileName}」を読み込んでください`, 'warning');
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                this.showProgressFeedback('途中保存データの読み込みに失敗しました', 'error');
+                console.error('Error loading progress:', error);
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    toggleAutoSave() {
+        this.isAutoSave = !this.isAutoSave;
+        const button = document.getElementById('autoSaveToggle');
+        const statusDiv = document.getElementById('autoSaveStatus');
+        
+        if (this.isAutoSave) {
+            button.textContent = '自動保存: ON';
+            button.classList.add('active');
+            statusDiv.style.display = 'block';
+            this.startAutoSave();
+        } else {
+            button.textContent = '自動保存: OFF';
+            button.classList.remove('active');
+            statusDiv.style.display = 'none';
+            this.stopAutoSave();
+        }
+        
+        this.updateProgressUI();
+        console.log(`Auto-save: ${this.isAutoSave ? 'ON' : 'OFF'}`);
+    }
+    
+    startAutoSave() {
+        // Auto-save every 30 seconds
+        this.autoSaveInterval = setInterval(() => {
+            if (this.hasUnsavedChanges && this.timestamps.length > 0) {
+                this.autoSaveToLocalStorage();
+            }
+        }, 30000);
+    }
+    
+    stopAutoSave() {
+        if (this.autoSaveInterval) {
+            clearInterval(this.autoSaveInterval);
+            this.autoSaveInterval = null;
+        }
+    }
+    
+    autoSaveToLocalStorage() {
+        const progressData = {
+            version: "1.0",
+            timestamp: new Date().toISOString(),
+            songTitle: this.songTitle,
+            audioFileName: this.currentAudioFile ? this.currentAudioFile.name : null,
+            timestamps: this.timestamps,
+            currentTime: this.audio.currentTime || 0,
+            autoSaved: true
+        };
+        
+        localStorage.setItem('chartEditor_autoSave', JSON.stringify(progressData));
+        
+        // Update UI
+        const now = new Date();
+        document.getElementById('lastAutoSave').textContent = 
+            now.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+        
+        this.hasUnsavedChanges = false;
+        console.log('Auto-saved to localStorage');
+    }
+    
+    checkForAutoSavedData() {
+        const autoSavedData = localStorage.getItem('chartEditor_autoSave');
+        if (autoSavedData) {
+            try {
+                const data = JSON.parse(autoSavedData);
+                const saveTime = new Date(data.timestamp);
+                const now = new Date();
+                const timeDiff = (now - saveTime) / 1000 / 60; // minutes
+                
+                if (timeDiff < 60) { // Less than 1 hour old
+                    setTimeout(() => {
+                        if (confirm(`自動保存データが見つかりました (${Math.floor(timeDiff)}分前)。復元しますか？\n\n楽曲: ${data.songTitle || '無題'}\nタイムスタンプ数: ${data.timestamps?.length || 0}`)) {
+                            this.restoreFromAutoSave(data);
+                        }
+                    }, 1000);
+                }
+            } catch (error) {
+                console.error('Error checking auto-saved data:', error);
+            }
+        }
+    }
+    
+    restoreFromAutoSave(data) {
+        this.timestamps = data.timestamps || [];
+        this.songTitle = data.songTitle || '';
+        document.getElementById('songTitle').value = this.songTitle;
+        
+        this.updateTimestampDisplay();
+        this.updateRecordCount();
+        this.updateProgressUI();
+        
+        if (this.timestamps.length > 0) {
+            document.getElementById('generateCharts').disabled = false;
+            document.getElementById('saveRawData').disabled = false;
+            document.getElementById('saveProgress').disabled = false;
+        }
+        
+        this.hasUnsavedChanges = false;
+        this.showProgressFeedback(`自動保存データを復元しました (${this.timestamps.length} タイムスタンプ)`, 'success');
+        
+        if (data.audioFileName) {
+            setTimeout(() => {
+                this.showProgressFeedback(`💡 音声ファイル「${data.audioFileName}」を読み込んでください`, 'info');
+            }, 2000);
+        }
+    }
+    
+    markUnsavedChanges() {
+        this.hasUnsavedChanges = true;
+        this.updateProgressUI();
+    }
+    
+    updateProgressUI() {
+        // Update title to show unsaved changes
+        const title = document.querySelector('header h1');
+        if (this.hasUnsavedChanges) {
+            if (!title.textContent.includes('*')) {
+                title.textContent += ' *';
+            }
+        } else {
+            title.textContent = title.textContent.replace(' *', '');
+        }
+    }
+    
+    showProgressFeedback(message, type = 'info') {
+        const feedback = document.getElementById('editFeedback');
+        if (!feedback) return;
+        
+        feedback.textContent = message;
+        feedback.className = `edit-feedback edit-${type}`;
+        feedback.style.display = 'block';
+        
+        // Hide after appropriate time based on message length
+        const hideTime = Math.max(3000, message.length * 50);
+        setTimeout(() => {
+            feedback.style.display = 'none';
+        }, hideTime);
     }
 }
 

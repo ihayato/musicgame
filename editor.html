@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Songs.json Editor - Beat Diffusion</title>
+    <link rel="stylesheet" href="editor-style.css">
+</head>
+<body>
+    <div id="editor-container">
+        <header>
+            <h1>Beat Diffusion - 楽曲データエディタ</h1>
+            <div class="header-actions">
+                <input type="file" id="fileInput" accept=".json" style="display: none;">
+                <button id="uploadBtn" class="btn btn-primary">JSONファイルを開く</button>
+                <button id="saveBtn" class="btn btn-success">保存</button>
+                <button id="downloadBtn" class="btn btn-secondary">ダウンロード</button>
+                <button id="backToGameBtn" class="btn btn-info">ゲームに戻る</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="editor-layout">
+                <!-- 楽曲リスト -->
+                <div class="song-list-panel">
+                    <div class="panel-header">
+                        <h2>楽曲リスト</h2>
+                        <button id="addSongBtn" class="btn btn-add">+ 新規楽曲</button>
+                    </div>
+                    <div id="songListEditor" class="song-list-editor"></div>
+                </div>
+
+                <!-- 楽曲詳細編集 -->
+                <div class="song-detail-panel">
+                    <div class="panel-header">
+                        <h2>楽曲詳細</h2>
+                    </div>
+                    <div id="songDetailForm" class="song-detail-form">
+                        <div class="no-selection">
+                            <p>左側のリストから楽曲を選択してください</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- JSON プレビュー -->
+                <div class="json-preview-panel">
+                    <div class="panel-header">
+                        <h2>JSONプレビュー</h2>
+                        <button id="copyJsonBtn" class="btn btn-small">コピー</button>
+                    </div>
+                    <pre id="jsonPreview" class="json-preview"></pre>
+                </div>
+            </div>
+        </main>
+
+        <!-- モーダル -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <div id="modalBody"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="editor.js"></script>
+</body>
+</html>

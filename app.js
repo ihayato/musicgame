@@ -74,6 +74,17 @@ class App {
             this.backToMenu();
         });
         
+        // Clear screen controls
+        document.getElementById('retryBtn').addEventListener('click', () => {
+            console.log('Retry button clicked');
+            this.retryGame();
+        });
+        
+        document.getElementById('backToMenuFromClear').addEventListener('click', () => {
+            console.log('Back to menu from clear clicked');
+            this.backToMenu();
+        });
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -140,7 +151,7 @@ class App {
                     <div class="song-stats">
                         <div class="stat">
                             <span class="stat-label">時間</span>
-                            <span class="stat-value">${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}</span>
+                            <span class="stat-value duration-loading">読み込み中...</span>
                         </div>
                     </div>
                 </div>
@@ -167,7 +178,69 @@ class App {
             }
             
             songList.appendChild(songItem);
+            
+            // 実際のMP3ファイルから時間を取得
+            this.loadActualDuration(song, songItem);
         });
+    }
+    
+    async loadActualDuration(song, songItem) {
+        try {
+            const audio = new Audio(song.audio);
+            
+            // プリロードしてメタデータを取得
+            audio.preload = 'metadata';
+            
+            const loadPromise = new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => {
+                    reject(new Error('Timeout loading audio metadata'));
+                }, 5000); // 5秒でタイムアウト
+                
+                audio.addEventListener('loadedmetadata', () => {
+                    clearTimeout(timeout);
+                    resolve();
+                }, { once: true });
+                
+                audio.addEventListener('error', () => {
+                    clearTimeout(timeout);
+                    reject(new Error('Error loading audio file'));
+                }, { once: true });
+            });
+            
+            // メタデータの読み込みを開始
+            audio.load();
+            
+            // メタデータが読み込まれるまで待機
+            await loadPromise;
+            
+            // 実際の時間を取得して表示
+            const duration = Math.floor(audio.duration);
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            
+            const durationElement = songItem.querySelector('.stat-value');
+            if (durationElement) {
+                durationElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                durationElement.classList.remove('duration-loading');
+            }
+            
+            // 楽曲オブジェクトの時間も更新（他の機能で使用される場合のため）
+            song.actualDuration = duration;
+            
+        } catch (error) {
+            console.warn(`Failed to load duration for ${song.title}:`, error);
+            
+            // フォールバック: songs.jsonの時間を使用
+            const duration = song.duration || 180; // デフォルト3分
+            const minutes = Math.floor(duration / 60);
+            const seconds = duration % 60;
+            
+            const durationElement = songItem.querySelector('.stat-value');
+            if (durationElement) {
+                durationElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                durationElement.classList.remove('duration-loading');
+            }
+        }
     }
     
     selectSong(song, event) {
@@ -219,6 +292,13 @@ class App {
         // Stop any preview audio
         this.stopPreview();
         
+        // Stop video monitoring
+        if (this.videoMonitorInterval) {
+            clearInterval(this.videoMonitorInterval);
+            this.videoMonitorInterval = null;
+            console.log('🔍 Video monitoring stopped');
+        }
+        
         // Reset selections
         this.selectedSong = null;
         this.selectedDifficulty = null;
@@ -241,6 +321,24 @@ class App {
         this.showScreen('menu');
         
         console.log('Successfully returned to main menu');
+    }
+    
+    retryGame() {
+        console.log('Retrying game with same song and difficulty');
+        
+        if (!this.selectedSong || !this.selectedDifficulty) {
+            console.error('Cannot retry: no song or difficulty selected');
+            return;
+        }
+        
+        // Stop video monitoring if active
+        if (this.videoMonitorInterval) {
+            clearInterval(this.videoMonitorInterval);
+            this.videoMonitorInterval = null;
+        }
+        
+        // Restart the game with the same settings
+        this.startGame();
     }
     
     showDifficultySelection() {
@@ -420,8 +518,15 @@ class App {
             console.log('Audio src set to:', this.selectedSong.audio);
             
             if (this.selectedSong.video) {
+                // CRITICAL: Reset video properties before setting source
+                bgVideo.playbackRate = 1.0;
+                bgVideo.defaultPlaybackRate = 1.0;
+                bgVideo.loop = false; // Ensure no looping
+                bgVideo.currentTime = 0;
+                
                 bgVideo.src = this.selectedSong.video;
                 console.log('Video src set to:', this.selectedSong.video);
+                console.log('Video properties reset: playbackRate=1.0, loop=false');
             }
             
             this.showScreen('game');
@@ -604,10 +709,18 @@ class App {
             await this.preloadAudio(gameAudio);
             updateProgress(50, 'Audio ready ✅');
             
-            // Step 3: Preload video  
-            updateProgress(60, 'Loading video...');
-            await this.preloadVideo(bgVideo);
-            updateProgress(70, 'Video ready ✅');
+            // Step 3: Preload video (with complete recreation)
+            updateProgress(60, 'Recreating and loading video...');
+            const newBgVideo = await this.preloadVideo(bgVideo);
+            bgVideo = newBgVideo; // Update reference to new video element
+            
+            // CRITICAL: Update game engine's video reference too
+            if (this.game) {
+                this.game.video = newBgVideo;
+                console.log('🎮 Updated game engine video reference to recreated element');
+            }
+            
+            updateProgress(70, 'Video recreated and ready ✅');
             
             // Step 4: Initialize game engine
             updateProgress(80, 'Initializing game engine...');
@@ -638,9 +751,12 @@ class App {
             // Step 6: Countdown and synchronized start
             await this.startCountdown();
             
-            // Step 7: SYNCHRONIZED START
-            console.log('🚀 SYNCHRONIZED START!');
+            // Step 7: SYNCHRONIZED START with recreated video
+            console.log('🚀 SYNCHRONIZED START with recreated video element!');
             await this.synchronizedStart(gameAudio, bgVideo);
+            
+            // Step 8: Start continuous video monitoring
+            this.startContinuousVideoMonitoring(bgVideo);
             
         } catch (error) {
             console.error('❌ Asset preload failed:', error);
@@ -689,37 +805,107 @@ class App {
         });
     }
 
+    recreateVideoElement(oldVideo) {
+        console.log('🔄 NUCLEAR OPTION: Completely recreating video element from scratch');
+        
+        const videoSrc = oldVideo.src;
+        const gameContainer = oldVideo.parentNode;
+        
+        // Remove old video completely
+        oldVideo.pause();
+        oldVideo.removeAttribute('src');
+        oldVideo.load(); // Force unload
+        oldVideo.remove();
+        
+        // Create completely new video element with ZERO interference
+        const newVideo = document.createElement('video');
+        newVideo.id = 'bgVideo';
+        newVideo.muted = true;
+        newVideo.loop = false; // CRITICAL: No looping
+        newVideo.preload = 'auto';
+        newVideo.playsInline = true;
+        newVideo.disablePictureInPicture = true;
+        newVideo.controls = false;
+        newVideo.tabIndex = -1;
+        
+        // CRITICAL: Set playback rates IMMEDIATELY on creation
+        newVideo.playbackRate = 1.0;
+        newVideo.defaultPlaybackRate = 1.0;
+        
+        // Force minimal CSS to avoid any transform/animation interference
+        newVideo.style.cssText = `
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            z-index: 1 !important;
+            opacity: 0.6 !important;
+            pointer-events: none !important;
+            outline: none !important;
+            user-select: none !important;
+            transform: none !important;
+            animation: none !important;
+            transition: none !important;
+            will-change: auto !important;
+            backface-visibility: visible !important;
+        `;
+        
+        // Insert new video at the beginning of game container
+        gameContainer.insertBefore(newVideo, gameContainer.firstChild);
+        
+        // Set source and force reload
+        newVideo.src = videoSrc;
+        newVideo.load();
+        
+        console.log('✅ New video element created and loaded with src:', videoSrc);
+        return newVideo;
+    }
+
     async preloadVideo(video) {
         return new Promise((resolve, reject) => {
-            console.log('📹 Preloading video...');
+            console.log('📹 Preloading video with complete recreation...');
+            
+            // NUCLEAR OPTION: Completely recreate video element
+            const newVideo = this.recreateVideoElement(video);
             
             const onReady = () => {
-                console.log(`✅ Video preloaded: readyState=${video.readyState}, duration=${video.duration}`);
-                resolve();
+                // Final verification of video properties
+                console.log('🔍 Final video verification:', {
+                    playbackRate: newVideo.playbackRate,
+                    defaultPlaybackRate: newVideo.defaultPlaybackRate,
+                    duration: newVideo.duration,
+                    readyState: newVideo.readyState,
+                    loop: newVideo.loop
+                });
+                
+                if (newVideo.playbackRate !== 1.0) {
+                    console.error('🚨 VIDEO PLAYBACK RATE STILL WRONG:', newVideo.playbackRate);
+                    newVideo.playbackRate = 1.0;
+                }
+                
+                console.log(`✅ Video completely recreated and preloaded successfully`);
+                resolve(newVideo);
             };
             
             const onError = (e) => {
-                console.error('❌ Video preload failed:', e);
-                reject(new Error('Video loading failed'));
+                console.error('❌ Video recreation/preload failed:', e);
+                reject(new Error('Video recreation failed'));
             };
             
-            // Reset video to ensure clean state
-            video.pause();
-            video.currentTime = 0;
-            video.load();
-            
-            if (video.readyState >= 2) {
+            if (newVideo.readyState >= 2) {
                 onReady();
             } else {
-                video.addEventListener('loadeddata', onReady, { once: true });
-                video.addEventListener('error', onError, { once: true });
+                newVideo.addEventListener('loadeddata', onReady, { once: true });
+                newVideo.addEventListener('error', onError, { once: true });
             }
             
             // Timeout fallback  
             setTimeout(() => {
-                if (video.readyState < 2) {
-                    console.warn('⚠️ Video preload timeout, continuing anyway');
-                    resolve();
+                if (newVideo.readyState < 2) {
+                    console.warn('⚠️ Video recreation timeout, continuing anyway');
+                    resolve(newVideo);
                 }
             }, 10000);
         });
@@ -759,10 +945,22 @@ class App {
         audio.pause();
         video.pause();
         
+        // CRITICAL: Fix video playback rate issues before starting
+        video.playbackRate = 1.0;
+        video.defaultPlaybackRate = 1.0;
+        video.loop = false;
+        
         // Force reset multiple times to ensure it takes
         for (let i = 0; i < 3; i++) {
             audio.currentTime = 0;
             video.currentTime = 0;
+            
+            // Extra protection: Re-enforce playback rate
+            if (video.playbackRate !== 1.0) {
+                console.warn(`🔧 Correcting video rate during reset ${i+1}: ${video.playbackRate} → 1.0`);
+                video.playbackRate = 1.0;
+            }
+            
             await this.delay(10); // Small delay between resets
         }
         
@@ -806,6 +1004,61 @@ class App {
         } catch (error) {
             console.error('⚠️ Media playback error (continuing anyway):', error);
         }
+    }
+
+    startContinuousVideoMonitoring(video) {
+        console.log('🔍 Starting continuous video speed monitoring...');
+        
+        let previousTime = 0;
+        let frameCount = 0;
+        
+        const monitorInterval = setInterval(() => {
+            if (!video || video.paused || !this.game || !this.game.isPlaying) {
+                return;
+            }
+            
+            // Check playback rate
+            if (video.playbackRate !== 1.0) {
+                console.error('🚨 VIDEO SPEED ANOMALY DETECTED!', {
+                    playbackRate: video.playbackRate,
+                    defaultPlaybackRate: video.defaultPlaybackRate,
+                    currentTime: video.currentTime
+                });
+                
+                // Emergency correction
+                video.playbackRate = 1.0;
+                video.defaultPlaybackRate = 1.0;
+                console.log('🔧 Emergency video speed correction applied');
+            }
+            
+            // Monitor time progression (every 5 checks = ~1 second)
+            frameCount++;
+            if (frameCount % 5 === 0) {
+                const currentTime = video.currentTime;
+                const timeDiff = currentTime - previousTime;
+                
+                // Expected: ~1 second, but allow some variance (0.8-1.2)
+                if (timeDiff > 1.5) {
+                    console.warn('⚠️ Video time progression too fast:', {
+                        timeDiff: timeDiff.toFixed(3),
+                        expected: '~1.0',
+                        currentTime: currentTime.toFixed(3),
+                        playbackRate: video.playbackRate
+                    });
+                    
+                    // Double-check and fix
+                    video.playbackRate = 1.0;
+                }
+                
+                previousTime = currentTime;
+            }
+            
+        }, 200); // Check every 200ms
+        
+        // Store interval reference for cleanup
+        this.videoMonitorInterval = monitorInterval;
+        
+        console.log('✅ Video monitoring started (checking every 200ms)');
     }
 
     showScreen(screenName) {

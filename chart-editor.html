@@ -5,6 +5,144 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>譜面制作システム - Beat Diffusion</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Edit Mode Styles */
+        #editModeInstructions {
+            background: linear-gradient(135deg, #2a2a4a, #1a1a3a);
+            border: 2px solid #4a4a8a;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            color: #e6e6ff;
+        }
+
+        #editModeInstructions h3 {
+            color: #ffcc00;
+            margin-bottom: 0.5rem;
+        }
+
+        #editModeInstructions ul {
+            margin: 0.5rem 0 0 1rem;
+        }
+
+        #editModeInstructions li {
+            margin-bottom: 0.3rem;
+        }
+
+        .edit-feedback {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .edit-feedback.edit-updated {
+            background: #4CAF50;
+            border: 2px solid #45a049;
+        }
+
+        .edit-feedback.edit-added {
+            background: #2196F3;
+            border: 2px solid #1976D2;
+        }
+
+        .edit-feedback.edit-playing {
+            background: #9C27B0;
+            border: 2px solid #7B1FA2;
+        }
+
+        .edit-feedback.edit-success {
+            background: #4CAF50;
+            border: 2px solid #45a049;
+        }
+
+        .edit-feedback.edit-warning {
+            background: #FF9800;
+            border: 2px solid #F57C00;
+            color: #000;
+        }
+
+        .edit-feedback.edit-error {
+            background: #f44336;
+            border: 2px solid #d32f2f;
+        }
+
+        .edit-feedback.edit-info {
+            background: #2196F3;
+            border: 2px solid #1976D2;
+        }
+
+        #autoSaveToggle.active {
+            background: #FF9800 !important;
+            color: white;
+        }
+
+        .unsaved-changes header h1::after {
+            content: " *";
+            color: #ff4444;
+        }
+
+        .timestamp-item.nearest-editable {
+            background: linear-gradient(135deg, #ff8800, #ffaa00) !important;
+            border: 2px solid #ffcc00 !important;
+            box-shadow: 0 0 15px rgba(255, 136, 0, 0.5) !important;
+            animation: pulseEdit 1.5s infinite;
+        }
+
+        .timestamp-item.clicked-target {
+            background: linear-gradient(135deg, #9C27B0, #E1BEE7) !important;
+            border: 2px solid #9C27B0 !important;
+            box-shadow: 0 0 20px rgba(156, 39, 176, 0.6) !important;
+            animation: pulseClicked 2s infinite;
+        }
+
+        .timestamp-time {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .timestamp-time:hover {
+            color: #9C27B0;
+            text-decoration: underline;
+        }
+
+        @keyframes pulseClicked {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(156, 39, 176, 0.6); }
+            50% { transform: scale(1.03); box-shadow: 0 0 30px rgba(156, 39, 176, 0.8); }
+        }
+
+        @keyframes pulseEdit {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        #editModeToggle.active {
+            background: #4CAF50 !important;
+            color: white;
+        }
+
+        .edit-mode #editModeToggle {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+    </style>
 </head>
 <body>
     <div id="editor-app">
@@ -28,6 +166,7 @@
                 <button id="startRecording">記録開始 (スペースキーで記録)</button>
                 <button id="stopRecording" disabled>記録停止</button>
                 <button id="playPreview" disabled>プレビュー再生</button>
+                <button id="editModeToggle" disabled>編集モード: OFF</button>
             </div>
             
             <div>
@@ -36,13 +175,36 @@
                 <button id="loadRawData">生データ読み込み</button>
                 <input type="file" id="rawDataFile" accept=".json" style="display: none;">
             </div>
+            
+            <div>
+                <button id="saveProgress" disabled>途中保存</button>
+                <button id="loadProgress">途中保存データ読み込み</button>
+                <button id="autoSaveToggle">自動保存: OFF</button>
+                <input type="file" id="progressFile" accept=".json" style="display: none;">
+            </div>
         </div>
 
         <div id="editor-status">
             <div>記録状態: <span id="recordingStatus">待機中</span></div>
             <div>再生時間: <span id="currentTime">0.00</span>秒</div>
             <div>記録数: <span id="recordCount">0</span></div>
+            <div id="autoSaveStatus" style="display: none;">自動保存: <span id="lastAutoSave">--</span></div>
         </div>
+
+        <!-- Edit Mode Instructions -->
+        <div id="editModeInstructions" style="display: none;">
+            <h3>📝 編集モード</h3>
+            <p>音楽を再生しながらスペースキーを押してタイムスタンプを修正できます</p>
+            <ul>
+                <li>🎵 音楽再生中にスペースキーで既存のタイムスタンプを上書き</li>
+                <li>🎯 近くにタイムスタンプがない場合は新規追加</li>
+                <li>⚡ 編集範囲: 現在時刻から±500ms以内</li>
+                <li>✨ オレンジ色で表示されているタイムスタンプが編集対象</li>
+            </ul>
+        </div>
+
+        <!-- Edit Feedback -->
+        <div id="editFeedback" class="edit-feedback" style="display: none;"></div>
 
         <div id="timestamps">
             <h3>記録されたタイムスタンプ</h3>

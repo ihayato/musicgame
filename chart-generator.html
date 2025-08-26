@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Chart Generator - Beat Diffusion</title>
+    <link rel="stylesheet" href="chart-generator-style.css">
+</head>
+<body>
+    <div id="generator-container">
+        <header>
+            <h1>Beat Diffusion - 自動譜面生成システム</h1>
+            <div class="header-actions">
+                <button id="backToEditorBtn" class="btn btn-info">エディタに戻る</button>
+                <button id="backToGameBtn" class="btn btn-secondary">ゲームに戻る</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="generator-layout">
+                <!-- Audio Upload Section -->
+                <div class="upload-section">
+                    <div class="panel-header">
+                        <h2>音声ファイル選択</h2>
+                    </div>
+                    
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <div class="upload-icon">🎵</div>
+                            <p>MP3ファイルをドラッグ&ドロップ<br>またはクリックしてファイル選択</p>
+                            <input type="file" id="audioInput" accept="audio/*" style="display: none;">
+                        </div>
+                    </div>
+                    
+                    <div id="audioInfo" class="audio-info" style="display: none;">
+                        <h3 id="audioFileName">ファイル名</h3>
+                        <div class="audio-details">
+                            <span id="audioDuration">時間: --:--</span>
+                            <span id="audioSize">サイズ: -- MB</span>
+                        </div>
+                        <audio id="previewAudio" controls style="width: 100%; margin: 1rem 0;"></audio>
+                    </div>
+                </div>
+
+                <!-- Generation Methods -->
+                <div class="methods-section">
+                    <div class="panel-header">
+                        <h2>生成手法選択</h2>
+                    </div>
+                    
+                    <div class="methods-grid">
+                        <div class="method-card" data-method="onset">
+                            <h3>🎯 オンセット検出</h3>
+                            <p>音の開始点を分析してノートを配置</p>
+                            <div class="method-settings">
+                                <div class="setting">
+                                    <label>感度:</label>
+                                    <input type="range" id="onsetSensitivity" min="0.1" max="1.0" step="0.1" value="0.5">
+                                    <span id="onsetSensitivityValue">0.5</span>
+                                </div>
+                                <div class="setting">
+                                    <label>最小間隔(ms):</label>
+                                    <input type="number" id="onsetMinInterval" min="50" max="500" value="100">
+                                </div>
+                            </div>
+                            <button class="method-btn" data-method="onset">生成</button>
+                        </div>
+
+                        <div class="method-card" data-method="bpm">
+                            <h3>🥁 BPM + グリッド</h3>
+                            <p>テンポを検出してグリッドベースで配置</p>
+                            <div class="method-settings">
+                                <div class="setting">
+                                    <label>BPM範囲:</label>
+                                    <select id="bpmRange">
+                                        <option value="60-180">60-180 (標準)</option>
+                                        <option value="80-160">80-160 (ポップス)</option>
+                                        <option value="120-180">120-180 (ダンス)</option>
+                                        <option value="60-120">60-120 (バラード)</option>
+                                    </select>
+                                </div>
+                                <div class="setting">
+                                    <label>ノート密度:</label>
+                                    <select id="noteDensity">
+                                        <option value="1">4分音符</option>
+                                        <option value="2" selected>8分音符</option>
+                                        <option value="4">16分音符</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="method-btn" data-method="bpm">生成</button>
+                        </div>
+
+                        <div class="method-card" data-method="ml">
+                            <h3>🤖 機械学習</h3>
+                            <p>AI分析で楽曲構造を理解して配置</p>
+                            <div class="method-settings">
+                                <div class="setting">
+                                    <label>分析モード:</label>
+                                    <select id="mlMode">
+                                        <option value="rhythm">リズム重視</option>
+                                        <option value="melody" selected>メロディー重視</option>
+                                        <option value="harmony">和音重視</option>
+                                        <option value="combined">総合分析</option>
+                                    </select>
+                                </div>
+                                <div class="setting">
+                                    <label>複雑さ:</label>
+                                    <input type="range" id="mlComplexity" min="1" max="5" value="3">
+                                    <span id="mlComplexityValue">3</span>
+                                </div>
+                            </div>
+                            <button class="method-btn" data-method="ml">生成</button>
+                        </div>
+
+                        <div class="method-card combo-card" data-method="combo">
+                            <h3>🔄 組み合わせ</h3>
+                            <p>複数手法を組み合わせて最適化</p>
+                            <div class="method-settings">
+                                <div class="combo-checkboxes">
+                                    <div class="setting">
+                                        <label>
+                                            <input type="checkbox" id="comboOnset" checked> オンセット
+                                        </label>
+                                    </div>
+                                    <div class="setting">
+                                        <label>
+                                            <input type="checkbox" id="comboBpm" checked> BPM
+                                        </label>
+                                    </div>
+                                    <div class="setting">
+                                        <label>
+                                            <input type="checkbox" id="comboMl"> AI分析
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="setting">
+                                    <label>重み:</label>
+                                    <select id="comboWeight">
+                                        <option value="equal">均等</option>
+                                        <option value="onset">オンセット重視</option>
+                                        <option value="bpm">BPM重視</option>
+                                        <option value="ml">AI重視</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button class="method-btn" data-method="combo">組み合わせ生成</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section">
+                    <div class="panel-header">
+                        <h2>生成結果</h2>
+                        <div class="results-actions">
+                            <button id="playChartBtn" class="btn btn-small" disabled>プレビュー</button>
+                            <button id="exportChartBtn" class="btn btn-small" disabled>エクスポート</button>
+                            <button id="clearResultsBtn" class="btn btn-small btn-danger">クリア</button>
+                        </div>
+                    </div>
+                    
+                    <div id="resultsContainer" class="results-container">
+                        <div class="no-results">
+                            <p>音声ファイルを選択して生成手法を実行してください</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Modal -->
+            <div id="progressModal" class="modal">
+                <div class="modal-content">
+                    <h3>譜面生成中...</h3>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <p id="progressText">処理を開始しています...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.0.0/dist/tf.min.js"></script>
+    <script src="auto-chart-generator.js"></script>
+</body>
+</html>

@@ -24,10 +24,10 @@ class RhythmGame {
         this.currentChart = null;
         
         this.judgmentTimings = {
-            perfect: 0.05, // 50ms
-            good: 0.1,     // 100ms
-            poor: 0.15,    // 150ms
-            miss: 0.2      // 200ms
+            perfect: 0.08, // 80ms (緩和)
+            good: 0.15,    // 150ms (緩和)
+            poor: 0.25,    // 250ms (緩和)
+            miss: 0.35     // 350ms (緩和)
         };
         
         this.scoreMultipliers = {
@@ -44,9 +44,25 @@ class RhythmGame {
         
         this.particles = [];
         
-        // Cache for debug text to reduce performance impact
-        this.cachedDebugLine1 = '';
-        this.cachedDebugLine2 = '';
+        
+        // Judgment line animation
+        this.judgmentLineGlow = 0;
+        this.judgmentLinePulse = 0;
+        this.judgmentLineFlash = null;
+        
+        // Judgment statistics for clear screen
+        this.judgmentStats = {
+            perfect: 0,
+            good: 0,
+            poor: 0,
+            miss: 0
+        };
+        
+        // Media end tracking
+        this.mediaEnded = {
+            audio: false,
+            video: false
+        };
     }
     
     resizeCanvas() {
@@ -256,6 +272,13 @@ class RhythmGame {
             console.error('Invalid notes found:', invalidNotes);
         }
         
+        // Reset media end tracking and setup listeners
+        this.mediaEnded = {
+            audio: false,
+            video: false
+        };
+        this.setupMediaEndListeners();
+        
         // SKIP MEDIA SETUP - now handled by synchronized start system
         console.log('🎮 Game engine ready, media will be started by synchronization system');
         
@@ -421,6 +444,9 @@ class RhythmGame {
         // Add emergency speed correction
         this.addVideoSpeedCorrection();
         
+        // CRITICAL: Re-setup media end listeners for new video element
+        this.setupMediaEndListeners();
+        
         console.log('✅ New video element created and loaded');
     }
     
@@ -519,6 +545,14 @@ class RhythmGame {
         this.notes.forEach(note => note.hit = false);
         this.particles = [];
         
+        // Reset judgment statistics
+        this.judgmentStats = {
+            perfect: 0,
+            good: 0,
+            poor: 0,
+            miss: 0
+        };
+        
         console.log('Game stopped and reset');
     }
     
@@ -559,30 +593,11 @@ class RhythmGame {
         // Ensure time never goes backwards
         this.gameTime = Math.max(this.gameTime || 0, 0);
         
-        // Reduced debug frequency to avoid performance impact
-        if (Math.floor(this.gameTime) % 10 === 0 && Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            console.log(`Timing debug: gameTime=${this.gameTime.toFixed(3)}, audioTime=${this.audio.currentTime.toFixed(3)}, deltaTime=${deltaTime.toFixed(3)}`);
-        }
-        
         try {
             this.update(deltaTime);
             this.render();
         } catch (error) {
             console.error('Error in game loop:', error);
-        }
-        
-        // Log frame timing every second with performance metrics
-        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            const fps = (1/deltaTime).toFixed(1);
-            const noteCount = this.notes.filter(n => !n.hit && n.y > -100 && n.y < this.canvas.height + 100).length;
-            const particleCount = this.particles.length;
-            
-            console.log(`🎮 Performance - FPS: ${fps}, Notes: ${noteCount}, Particles: ${particleCount}, δt: ${deltaTime.toFixed(4)}s`);
-            
-            // Performance warning
-            if (fps < 30) {
-                console.log(`⚠️ Low FPS detected (${fps}). Video playback may be affected.`);
-            }
         }
         
         requestAnimationFrame((time) => this.gameLoop(time));
@@ -599,66 +614,9 @@ class RhythmGame {
                 // When timeUntilHit = 0, note is at judgment line
                 note.y = this.judgmentLine - (timeUntilHit * this.noteSpeed);
                 
-                // Debug early notes specifically
-                if (note.originalTime <= 5 && this.gameTime <= 6) {
-                    console.log(`🔍 Early note debug: time=${note.originalTime.toFixed(3)}, gameTime=${this.gameTime.toFixed(3)}, timeUntilHit=${timeUntilHit.toFixed(3)}, y=${note.y.toFixed(1)}, judgmentLine=${this.judgmentLine}`);
-                }
             }
         });
         
-        // Debug: Log visible notes every second
-        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - deltaTime)) {
-            const allNotes = this.notes.filter(n => !n.hit);
-            const upcomingNotes = allNotes.filter(n => n.originalTime > this.gameTime && n.originalTime < this.gameTime + 10);
-            const visibleNotes = allNotes.filter(n => n.y > -100 && n.y < this.canvas.height + 100);
-            
-            // Enhanced debugging for early notes
-            if (this.gameTime <= 6) {
-                const earlyNotes = allNotes.filter(n => n.originalTime <= 5);
-                console.log(`🔍 Early notes analysis at ${this.gameTime.toFixed(2)}s:`);
-                console.log(`  - Total notes: ${allNotes.length}`);
-                console.log(`  - Early notes (≤5s): ${earlyNotes.length}`);
-                console.log(`  - First 5 notes times:`, allNotes.slice(0, 5).map(n => n.originalTime?.toFixed(3) || 'undefined'));
-                
-                earlyNotes.slice(0, 3).forEach((note, i) => {
-                    const timeUntilHit = note.originalTime - this.gameTime;
-                    console.log(`  - Early note ${i}: time=${note.originalTime.toFixed(3)}s, y=${note.y.toFixed(1)}, timeUntilHit=${timeUntilHit.toFixed(3)}, visible=${note.y > -100 && note.y < this.canvas.height + 100}`);
-                });
-            }
-            
-            console.log(`Game time: ${this.gameTime.toFixed(2)}s, Visible notes: ${visibleNotes.length}, Total active: ${allNotes.length}, Upcoming (next 10s): ${upcomingNotes.length}`);
-            
-            // EMERGENCY DEBUG: Show current chart info every 5 seconds
-            if (Math.floor(this.gameTime) % 5 === 0 && this.gameTime < 20) {
-                console.log('🚨 EMERGENCY DEBUG:');
-                console.log('  - Chart title:', this.currentChart?.title, 'difficulty:', this.currentChart?.difficulty);
-                console.log('  - Original chart notes count:', this.currentChart?.notes?.length);
-                console.log('  - Current game notes count:', this.notes?.length);
-                if (this.currentChart?.notes) {
-                    console.log('  - Original chart first 3:', this.currentChart.notes.slice(0, 3).map(n => `time=${n.time}, lane=${n.lane}`));
-                }
-            }
-            
-            // Enhanced debugging for troubleshooting
-            if (allNotes.length === 0) {
-                console.error('🚨 NO ACTIVE NOTES! Total notes array length:', this.notes.length);
-                console.log('Chart title:', this.currentChart?.title);
-                console.log('Chart notes count:', this.currentChart?.notes?.length);
-            }
-            
-            if (upcomingNotes.length > 0) {
-                const next = upcomingNotes[0];
-                console.log(`Next note: lane=${next.lane}, time=${next.originalTime.toFixed(2)}`);
-            }
-            
-            // Minimal early notes debug (only when there are issues)
-            if (this.gameTime < 10 && Math.floor(this.gameTime) % 5 === 0) {
-                const visibleNotesCount = allNotes.filter(n => n.y > -100 && n.y < this.canvas.height + 100).length;
-                if (visibleNotesCount === 0 && upcomingNotes.length > 0) {
-                    console.log(`⚠️  No visible notes detected at ${this.gameTime.toFixed(1)}s despite ${upcomingNotes.length} upcoming notes`);
-                }
-            }
-        }
         
         // DISABLE miss checking during sync/loading period  
         // Only start checking misses after game has been running stably
@@ -674,6 +632,9 @@ class RhythmGame {
         
         // Update particles
         this.updateParticles(deltaTime);
+        
+        // Update judgment line animation
+        this.updateJudgmentLineAnimation(deltaTime);
         
         // No monitoring or corrections - let media play naturally
         
@@ -702,23 +663,6 @@ class RhythmGame {
         // Draw particles
         this.drawParticles();
         
-        // OPTIMIZED DEBUG: Only update debug text once per second to reduce rendering load
-        if (Math.floor(this.gameTime) !== Math.floor(this.gameTime - 0.016)) {
-            // Cache debug strings to avoid recalculating every frame
-            const activeNotes = this.notes.filter(n => !n.hit);
-            const visibleNotes = this.notes.filter(n => !n.hit && n.y > -50 && n.y < this.canvas.height + 50);
-            
-            this.cachedDebugLine1 = `Time: ${this.gameTime.toFixed(2)}s`;
-            this.cachedDebugLine2 = `Total: ${this.notes.length} | Active: ${activeNotes.length} | Visible: ${visibleNotes.length}`;
-        }
-        
-        // Draw cached debug info (much faster than recalculating every frame)
-        if (this.cachedDebugLine1) {
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.font = '16px monospace';
-            this.ctx.fillText(this.cachedDebugLine1, 10, 30);
-            this.ctx.fillText(this.cachedDebugLine2, 10, 50);
-        }
     }
     
     drawLanes() {
@@ -776,10 +720,6 @@ class RhythmGame {
         
         this.ctx.restore();
         
-        // Debug: Show note count in top-right corner
-        this.ctx.fillStyle = '#ffffff';
-        this.ctx.font = '16px monospace';
-        this.ctx.fillText(`Rendered: ${renderedCount}`, this.canvas.width - 150, 30);
     }
     
     getNoteColor(lane) {
@@ -788,14 +728,79 @@ class RhythmGame {
     }
     
     drawJudgmentLine() {
-        this.ctx.strokeStyle = '#00ffff';
-        this.ctx.lineWidth = 4;
+        const centerY = this.judgmentLine;
+        const width = this.canvas.width;
+        
+        // Calculate animation values
+        const glowIntensity = (Math.sin(this.judgmentLineGlow) + 1) * 0.5; // 0-1
+        const pulseScale = 1 + Math.sin(this.judgmentLinePulse) * 0.1; // 0.9-1.1
+        
+        this.ctx.save();
+        
+        // Main gradient line
+        const gradient = this.ctx.createLinearGradient(0, centerY - 10, 0, centerY + 10);
+        gradient.addColorStop(0, `rgba(0, 255, 255, ${0.3 + glowIntensity * 0.7})`);
+        gradient.addColorStop(0.3, `rgba(0, 255, 255, ${0.8 + glowIntensity * 0.2})`);
+        gradient.addColorStop(0.5, '#00ffff');
+        gradient.addColorStop(0.7, `rgba(0, 255, 255, ${0.8 + glowIntensity * 0.2})`);
+        gradient.addColorStop(1, `rgba(0, 255, 255, ${0.3 + glowIntensity * 0.7})`);
+        
+        // Outer glow
+        this.ctx.shadowColor = '#00ffff';
+        this.ctx.shadowBlur = 20 + glowIntensity * 30;
+        this.ctx.strokeStyle = gradient;
+        this.ctx.lineWidth = 8 * pulseScale;
         this.ctx.beginPath();
-        this.ctx.moveTo(0, this.judgmentLine);
-        this.ctx.lineTo(this.canvas.width, this.judgmentLine);
+        this.ctx.moveTo(0, centerY);
+        this.ctx.lineTo(width, centerY);
         this.ctx.stroke();
         
-        // SKIP GLOW - Performance optimization
+        // Inner bright line
+        this.ctx.shadowBlur = 5 + glowIntensity * 10;
+        this.ctx.strokeStyle = '#ffffff';
+        this.ctx.lineWidth = 2;
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, centerY);
+        this.ctx.lineTo(width, centerY);
+        this.ctx.stroke();
+        
+        // Animated light streaks
+        if (glowIntensity > 0.7) {
+            this.ctx.strokeStyle = `rgba(255, 255, 255, ${glowIntensity * 0.8})`;
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            const streakOffset = this.judgmentLineGlow * 200 % width;
+            this.ctx.moveTo(streakOffset, centerY - 5);
+            this.ctx.lineTo(streakOffset + 50, centerY + 5);
+            this.ctx.stroke();
+        }
+        
+        // PERFECT hit flash effect
+        if (this.judgmentLineFlash) {
+            const flashIntensity = this.judgmentLineFlash.intensity;
+            const flashSize = this.judgmentLineFlash.size;
+            
+            // Screen flash for PERFECT hits
+            this.ctx.shadowColor = '#ffffff';
+            this.ctx.shadowBlur = 50 * flashIntensity;
+            this.ctx.strokeStyle = `rgba(255, 255, 255, ${flashIntensity * 0.9})`;
+            this.ctx.lineWidth = 15 * flashSize;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, centerY);
+            this.ctx.lineTo(width, centerY);
+            this.ctx.stroke();
+            
+            // Additional bright core
+            this.ctx.shadowBlur = 80 * flashIntensity;
+            this.ctx.strokeStyle = `rgba(0, 255, 255, ${flashIntensity})`;
+            this.ctx.lineWidth = 8 * flashSize;
+            this.ctx.beginPath();
+            this.ctx.moveTo(0, centerY);
+            this.ctx.lineTo(width, centerY);
+            this.ctx.stroke();
+        }
+        
+        this.ctx.restore();
     }
     
     checkNoteHit(key) {
@@ -840,6 +845,9 @@ class RhythmGame {
         
         this.score += finalScore;
         
+        // Update judgment statistics
+        this.judgmentStats[judgment]++;
+        
         if (judgment === 'miss') {
             this.combo = 0;
         } else {
@@ -847,8 +855,17 @@ class RhythmGame {
             this.maxCombo = Math.max(this.maxCombo, this.combo);
         }
         
+        // Enhanced judgment line effects
+        if (judgment === 'perfect') {
+            this.judgmentLinePulse += 2; // Strong pulse for perfect
+            this.createJudgmentLineFlash();
+        } else if (judgment === 'good') {
+            this.judgmentLinePulse += 1; // Medium pulse for good
+        }
+        
         this.showJudgment(judgment);
         this.updateUI();
+        this.checkGameComplete();
     }
     
     showJudgment(judgment) {
@@ -879,18 +896,52 @@ class RhythmGame {
             miss: '#ff0000'
         };
         
-        // Reduced particle count for better performance
-        const particleCount = judgment === 'perfect' ? 8 : judgment === 'good' ? 5 : 3;
-        for (let i = 0; i < particleCount; i++) {
-            this.particles.push({
-                x: x + (Math.random() - 0.5) * 20,
-                y: y + (Math.random() - 0.5) * 20,
-                vx: (Math.random() - 0.5) * 200,
-                vy: (Math.random() - 0.5) * 200 - 100,
-                color: colors[judgment],
-                life: 1.0,
-                decay: 0.025 // Slightly faster decay
-            });
+        // Enhanced particle system for different judgments
+        if (judgment === 'perfect') {
+            // PERFECT hits get dramatic effects
+            const particleCount = 15;
+            for (let i = 0; i < particleCount; i++) {
+                // Main perfect particles (bright green)
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 30,
+                    y: y + (Math.random() - 0.5) * 30,
+                    vx: (Math.random() - 0.5) * 300,
+                    vy: (Math.random() - 0.5) * 300 - 150,
+                    color: colors[judgment],
+                    life: 1.5, // Longer lasting
+                    decay: 0.02,
+                    size: Math.random() * 4 + 2 // Larger particles
+                });
+                
+                // Additional sparkle particles (white/cyan)
+                if (i < 8) {
+                    this.particles.push({
+                        x: x + (Math.random() - 0.5) * 50,
+                        y: y + (Math.random() - 0.5) * 20,
+                        vx: (Math.random() - 0.5) * 400,
+                        vy: (Math.random() - 0.5) * 200 - 200,
+                        color: Math.random() > 0.5 ? '#ffffff' : '#00ffff',
+                        life: 1.2,
+                        decay: 0.025,
+                        size: Math.random() * 3 + 1
+                    });
+                }
+            }
+        } else {
+            // Regular particles for other judgments
+            const particleCount = judgment === 'good' ? 5 : 3;
+            for (let i = 0; i < particleCount; i++) {
+                this.particles.push({
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y + (Math.random() - 0.5) * 20,
+                    vx: (Math.random() - 0.5) * 200,
+                    vy: (Math.random() - 0.5) * 200 - 100,
+                    color: colors[judgment],
+                    life: 1.0,
+                    decay: 0.025,
+                    size: 3
+                });
+            }
         }
     }
     
@@ -903,6 +954,31 @@ class RhythmGame {
         });
         
         this.particles = this.particles.filter(particle => particle.life > 0);
+    }
+    
+    updateJudgmentLineAnimation(deltaTime) {
+        // Continuous glow animation
+        this.judgmentLineGlow += deltaTime * 3;
+        
+        // Pulse animation (slower)
+        this.judgmentLinePulse += deltaTime * 2;
+        
+        // Handle judgment line flash effects
+        if (this.judgmentLineFlash) {
+            this.judgmentLineFlash.intensity -= deltaTime * 6; // Flash fades over ~0.17 seconds
+            if (this.judgmentLineFlash.intensity <= 0) {
+                this.judgmentLineFlash = null;
+            }
+        }
+    }
+    
+    createJudgmentLineFlash() {
+        // Create intense flash effect for PERFECT hits
+        this.judgmentLineFlash = {
+            intensity: 1.0,
+            color: '#ffffff',
+            size: 1.5
+        };
     }
     
     drawParticles() {
@@ -920,11 +996,118 @@ class RhythmGame {
             this.ctx.globalAlpha = particle.life;
             this.ctx.fillStyle = particle.color;
             this.ctx.beginPath();
-            this.ctx.arc(particle.x, particle.y, 3, 0, Math.PI * 2);
+            const radius = particle.size || 3;
+            this.ctx.arc(particle.x, particle.y, radius, 0, Math.PI * 2);
             this.ctx.fill();
         });
         
         this.ctx.restore();
+    }
+    
+    setupMediaEndListeners() {
+        // Setup audio end listener
+        if (this.audio) {
+            this.audio.addEventListener('ended', () => {
+                console.log('🎵 Audio ended naturally');
+                this.mediaEnded.audio = true;
+            });
+        }
+        
+        // Setup video end listener
+        if (this.video) {
+            this.video.addEventListener('ended', () => {
+                console.log('📹 Video ended naturally');
+                this.mediaEnded.video = true;
+            });
+        }
+    }
+    
+    checkGameComplete() {
+        // Use our tracked media end states
+        const audioEnded = this.mediaEnded.audio || this.audio?.ended || false;
+        const videoEnded = this.mediaEnded.video || this.video?.ended || false;
+        
+        // Game completes ONLY when both audio AND video have ended naturally
+        // This ensures the game always waits for the music to finish completely
+        const gameComplete = audioEnded && videoEnded;
+        
+        if (gameComplete) {
+            console.log('Game completed! Music and video finished naturally.', {
+                audioEnded: this.mediaEnded.audio, 
+                videoEnded: this.mediaEnded.video,
+                audioEndedNative: this.audio?.ended,
+                videoEndedNative: this.video?.ended,
+                gameTime: this.gameTime.toFixed(2),
+                audioDuration: this.audio?.duration?.toFixed(2),
+                videoDuration: this.video?.duration?.toFixed(2)
+            });
+            this.completeGame();
+        }
+    }
+    
+    completeGame() {
+        console.log('🎉 Game Complete! Showing clear screen...');
+        
+        // Stop the game
+        this.isPlaying = false;
+        
+        // Stop media
+        if (this.audio) {
+            this.audio.pause();
+        }
+        if (this.video) {
+            this.video.pause();
+        }
+        
+        // Calculate accuracy
+        const totalNotes = Object.values(this.judgmentStats).reduce((a, b) => a + b, 0);
+        const perfectAndGood = this.judgmentStats.perfect + this.judgmentStats.good;
+        const accuracy = totalNotes > 0 ? (perfectAndGood / totalNotes) * 100 : 0;
+        
+        // Show clear screen with results
+        this.showClearScreen({
+            score: this.score,
+            maxCombo: this.maxCombo,
+            accuracy: accuracy,
+            judgmentStats: { ...this.judgmentStats }
+        });
+    }
+    
+    showClearScreen(results) {
+        // Update clear screen elements
+        document.getElementById('finalScore').textContent = results.score.toLocaleString();
+        document.getElementById('finalMaxCombo').textContent = results.maxCombo;
+        document.getElementById('finalAccuracy').textContent = results.accuracy.toFixed(2) + '%';
+        
+        document.getElementById('perfectCount').textContent = results.judgmentStats.perfect;
+        document.getElementById('goodCount').textContent = results.judgmentStats.good;
+        document.getElementById('poorCount').textContent = results.judgmentStats.poor;
+        document.getElementById('missCount').textContent = results.judgmentStats.miss;
+        
+        // Play clear sound effect
+        const clearAudio = document.getElementById('clearAudio');
+        if (clearAudio) {
+            clearAudio.currentTime = 0;
+            clearAudio.play().catch(e => console.log('Clear audio play failed:', e));
+        }
+        
+        // Switch to clear screen
+        this.switchToScreen('gameClear');
+    }
+    
+    switchToScreen(screenId) {
+        // Hide all screens
+        document.querySelectorAll('.screen').forEach(screen => {
+            screen.classList.remove('active');
+            screen.style.display = 'none';
+        });
+        
+        // Show target screen
+        const targetScreen = document.getElementById(screenId);
+        if (targetScreen) {
+            targetScreen.classList.add('active');
+            targetScreen.style.display = 'block';
+        }
     }
 }
 

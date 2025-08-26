@@ -12,8 +12,8 @@
       "year": 2024,
       "description": "心に響く美しいメロディーの電子音楽",
       "audio": "assets/audio/cryinggirl.mp3",
-      "video": "assets/video/cryinggirl.mp4",
-      "backgroundVideo": "assets/video/cryinggirl.mp4",
+      "video": "assets/video/cryinggirl_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/cryinggirl_bgv_24fps.mp4",
       "jacket": "",
       "color": {
         "primary": "#ff6b9d",
@@ -30,6 +30,120 @@
         "normal": "assets/chart/cryinggirl_normal.json",
         "hard": "assets/chart/cryinggirl_hard.json",
         "extreme": "assets/chart/cryinggirl_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      }
+    },
+    {
+      "id": "hatsukoi",
+      "title": "初恋",
+      "displayName": "初恋",
+      "artist": "Music Artist",
+      "artistDisplayName": "Music Artist",
+      "bpm": 120,
+      "duration": 240,
+      "genre": "J-Pop",
+      "year": 2024,
+      "description": "甘酸っぱい初恋の想いを歌った美しいバラード",
+      "audio": "assets/audio/hatsukoi.mp3",
+      "video": "assets/video/hatsukoi_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/hatsukoi_bgv_24fps.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#ffb3d9",
+        "secondary": "#ffe6f2",
+        "accent": "#ff80c7"
+      },
+      "preview": {
+        "start": 45,
+        "duration": 20,
+        "videoStart": 40
+      },
+      "charts": {
+        "easy": "assets/chart/hatsukoi_easy.json",
+        "normal": "assets/chart/hatsukoi_normal.json",
+        "hard": "assets/chart/hatsukoi_hard.json",
+        "extreme": "assets/chart/hatsukoi_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      }
+    },
+    {
+      "id": "es",
+      "title": "電気羊",
+      "displayName": "電気羊 -Electric Sheep-",
+      "artist": "Music Artist",
+      "artistDisplayName": "Music Artist",
+      "difficulty": 3,
+      "duration": 180,
+      "genre": "Electronic",
+      "year": 2024,
+      "description": "サイバーパンクな世界観を表現したエレクトロニック楽曲",
+      "audio": "assets/audio/es.mp3",
+      "video": "assets/video/es_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/es_bgv_24fps.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#00ffff",
+        "secondary": "#0080ff",
+        "accent": "#ff00ff"
+      },
+      "preview": {
+        "start": 40,
+        "duration": 15,
+        "videoStart": 35
+      },
+      "charts": {
+        "easy": "assets/chart/es_easy.json",
+        "normal": "assets/chart/es_normal.json",
+        "hard": "assets/chart/es_hard.json",
+        "extreme": "assets/chart/es_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      }
+    },
+    {
+      "id": "kuroneko",
+      "title": "kuroneko",
+      "displayName": "黒猫",
+      "artist": "Music Artist",
+      "artistDisplayName": "Music Artist",
+      "bpm": 140,
+      "duration": 229,
+      "genre": "Electronic",
+      "year": 2024,
+      "description": "ミステリアスで美しいエレクトロニック楽曲",
+      "audio": "assets/audio/kuroneko.mp3",
+      "video": "assets/video/kuroneko_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/kuroneko_bgv_24fps.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#1a1a1a",
+        "secondary": "#333333",
+        "accent": "#8a2be2"
+      },
+      "preview": {
+        "start": 35,
+        "duration": 20,
+        "videoStart": 30
+      },
+      "charts": {
+        "easy": "assets/chart/kuroneko_easy.json",
+        "normal": "assets/chart/kuroneko_normal.json",
+        "hard": "assets/chart/kuroneko_hard.json",
+        "extreme": "assets/chart/kuroneko_extreme.json"
       },
       "ui": {
         "showBackgroundVideo": true,

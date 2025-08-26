@@ -67,7 +67,7 @@
         </div>
 
         <div id="game" class="screen">
-            <video id="bgVideo" muted loop tabindex="-1" playsinline disablePictureInPicture></video>
+            <video id="bgVideo" muted tabindex="-1" playsinline disablePictureInPicture preload="auto"></video>
             <canvas id="gameCanvas"></canvas>
             <audio id="gameAudio"></audio>
             
@@ -88,6 +88,62 @@
             
             <button id="backToMenu">メニューに戻る</button>
         </div>
+    </div>
+
+    <!-- Game Clear Screen -->
+    <div id="gameClear" class="screen">
+        <div class="clear-content">
+            <div class="clear-title">
+                <h1>GAME CLEAR!</h1>
+            </div>
+            
+            <div class="clear-results">
+                <div class="score-display">
+                    <div class="score-item">
+                        <span class="score-label">SCORE</span>
+                        <span id="finalScore" class="score-value">0</span>
+                    </div>
+                    <div class="score-item">
+                        <span class="score-label">MAX COMBO</span>
+                        <span id="finalMaxCombo" class="score-value">0</span>
+                    </div>
+                </div>
+                
+                <div class="judgment-stats">
+                    <div class="judgment-row perfect">
+                        <span class="judgment-label">PERFECT</span>
+                        <span id="perfectCount" class="judgment-count">0</span>
+                    </div>
+                    <div class="judgment-row good">
+                        <span class="judgment-label">GOOD</span>
+                        <span id="goodCount" class="judgment-count">0</span>
+                    </div>
+                    <div class="judgment-row poor">
+                        <span class="judgment-label">POOR</span>
+                        <span id="poorCount" class="judgment-count">0</span>
+                    </div>
+                    <div class="judgment-row miss">
+                        <span class="judgment-label">MISS</span>
+                        <span id="missCount" class="judgment-count">0</span>
+                    </div>
+                </div>
+                
+                <div class="accuracy-display">
+                    <span class="accuracy-label">ACCURACY</span>
+                    <span id="finalAccuracy" class="accuracy-value">0.00%</span>
+                </div>
+            </div>
+            
+            <div class="clear-controls">
+                <button id="retryBtn" class="clear-btn retry-btn">もう一度</button>
+                <button id="backToMenuFromClear" class="clear-btn menu-btn">メニューに戻る</button>
+            </div>
+        </div>
+        
+        <!-- Clear audio effect -->
+        <audio id="clearAudio" preload="auto">
+            <source src="gameclear.mp3" type="audio/mpeg">
+        </audio>
     </div>
 
     <script src="game.js"></script>
