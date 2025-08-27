@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楽曲を投稿する - Beat Diffusion</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .submit-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            padding: 2rem;
+        }
+        
+        .submit-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .submit-title {
+            text-align: center;
+            color: #00ffff;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border-left: 4px solid #00ffff;
+        }
+        
+        .section h2 {
+            color: #00ffff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .section p, .section li {
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section ul {
+            margin-left: 1.5rem;
+        }
+        
+        .highlight {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .link {
+            color: #00ffff;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .link:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.8);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, #00ffff, #0080ff);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-left-color: #ffc107;
+            color: #ffc107;
+        }
+        
+        .warning p {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="submit-page">
+        <div class="submit-container">
+            <h1 class="submit-title">楽曲を投稿する</h1>
+            
+            <div class="section">
+                <h2>🎵 投稿条件</h2>
+                <p><span class="highlight">AI音楽サロン</span>への加入が必須条件となります。</p>
+                <p><a href="https://aimusic.salon/" target="_blank" class="link">👉 AI音楽サロン https://aimusic.salon/</a></p>
+            </div>
+            
+            <div class="section">
+                <h2>📁 提出ファイル</h2>
+                <p>以下のファイルをご用意ください：</p>
+                <ul>
+                    <li><span class="highlight">MP4ファイル</span>：背景動画用</li>
+                    <li><span class="highlight">MP3ファイル</span>：音楽ファイル</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🎼 譜面について</h2>
+                <p>譜面の作成方法は以下の通りです：</p>
+                <ul>
+                    <li>譜面はこちらでも作成可能です</li>
+                    <li>専用の譜面システムもご利用いただけます：<br>
+                        <a href="https://otogame2.vercel.app/chart-editor.html" target="_blank" class="link">
+                            👉 譜面エディタ https://otogame2.vercel.app/chart-editor.html
+                        </a>
+                    </li>
+                    <li>ただし、譜面システムではテストができないため、基本的にはこちらで譜面を作成します</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>🛠️ 技術者向け</h2>
+                <p>システムに詳しい方は、以下のGitHubリポジトリをフォークしてテストしていただくことも可能です：</p>
+                <p><a href="https://github.com/ihayato/musicgame" target="_blank" class="link">
+                    👉 GitHub https://github.com/ihayato/musicgame
+                </a></p>
+            </div>
+            
+            <div class="section warning">
+                <h2>⚠️ 注意事項</h2>
+                <p>開発中のため、仕様はけっこう変わる可能性があります。ご容赦ください。</p>
+            </div>
+            
+            <a href="index.html" class="back-btn">← ゲームに戻る</a>
+        </div>
+    </div>
+</body>
+</html>
