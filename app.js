@@ -445,6 +445,11 @@ class App {
         
         console.log('Game engine ready:', this.game);
         
+        // Stop any existing game to reset stats
+        if (this.game.isPlaying) {
+            console.log('Stopping existing game to reset stats');
+            this.game.stop();
+        }
         
         try {
             console.log('Loading chart for difficulty:', this.selectedDifficulty);
