@@ -2,15 +2,15 @@
   "songs": [
     {
       "id": "cryinggirl",
-      "title": "Crying Girl",
-      "displayName": "Crying Girl",
-      "artist": "Music Artist",
-      "artistDisplayName": "Music Artist",
+      "title": "クライングガール",
+      "displayName": "クライングガール",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
       "bpm": 128,
       "duration": 210,
-      "genre": "Electronic",
-      "year": 2024,
-      "description": "心に響く美しいメロディーの電子音楽",
+      "genre": "J-POP",
+      "year": 2025,
+      "description": "かわいい咲耶てんこもりのMVです！",
       "audio": "assets/audio/cryinggirl.mp3",
       "video": "assets/video/cryinggirl_bgv_24fps.mp4",
       "backgroundVideo": "assets/video/cryinggirl_bgv_24fps.mp4",
@@ -36,18 +36,19 @@
         "showPreviewOnHover": true,
         "animationStyle": "fade",
         "cardSize": "large"
-      }
+      },
+      "difficulty": 3
     },
     {
       "id": "hatsukoi",
       "title": "初恋",
       "displayName": "初恋",
-      "artist": "Music Artist",
-      "artistDisplayName": "Music Artist",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
       "bpm": 120,
       "duration": 240,
       "genre": "J-Pop",
-      "year": 2024,
+      "year": 2025,
       "description": "甘酸っぱい初恋の想いを歌った美しいバラード",
       "audio": "assets/audio/hatsukoi.mp3",
       "video": "assets/video/hatsukoi_bgv_24fps.mp4",
@@ -74,18 +75,19 @@
         "showPreviewOnHover": true,
         "animationStyle": "fade",
         "cardSize": "large"
-      }
+      },
+      "difficulty": 3
     },
     {
       "id": "es",
       "title": "電気羊",
       "displayName": "電気羊 -Electric Sheep-",
-      "artist": "Music Artist",
-      "artistDisplayName": "Music Artist",
-      "difficulty": 3,
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
+      "difficulty": 4,
       "duration": 180,
       "genre": "Electronic",
-      "year": 2024,
+      "year": 2025,
       "description": "サイバーパンクな世界観を表現したエレクトロニック楽曲",
       "audio": "assets/audio/es.mp3",
       "video": "assets/video/es_bgv_24fps.mp4",
@@ -116,15 +118,15 @@
     },
     {
       "id": "kuroneko",
-      "title": "kuroneko",
+      "title": "黒猫",
       "displayName": "黒猫",
-      "artist": "Music Artist",
-      "artistDisplayName": "Music Artist",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
       "bpm": 140,
       "duration": 229,
-      "genre": "Electronic",
-      "year": 2024,
-      "description": "ミステリアスで美しいエレクトロニック楽曲",
+      "genre": "Gothic Horror",
+      "year": 2025,
+      "description": "ミステリアスで美しいゴシックホラーな一曲",
       "audio": "assets/audio/kuroneko.mp3",
       "video": "assets/video/kuroneko_bgv_24fps.mp4",
       "backgroundVideo": "assets/video/kuroneko_bgv_24fps.mp4",
@@ -150,7 +152,8 @@
         "showPreviewOnHover": true,
         "animationStyle": "fade",
         "cardSize": "large"
-      }
+      },
+      "difficulty": 3
     }
   ]
 }

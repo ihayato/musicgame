@@ -759,7 +759,7 @@ class RhythmGame {
     }
     
     getNoteColor(lane) {
-        const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3'];
+        const colors = ['#ff4444', '#00ff44', '#4488ff', '#ff8800', '#bb44ff', '#ff0088'];
         return colors[lane % colors.length];
     }
     

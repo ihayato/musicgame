@@ -93,6 +93,19 @@ class App {
         });
     }
     
+    getDifficultyStars(difficulty) {
+        const maxStars = 5;
+        const filledStars = Math.min(Math.max(1, Math.round(difficulty)), maxStars);
+        const emptyStars = maxStars - filledStars;
+        
+        let stars = '★'.repeat(filledStars);
+        if (emptyStars > 0) {
+            stars += '☆'.repeat(emptyStars);
+        }
+        
+        return `<span class="difficulty-stars-display">${stars}</span>`;
+    }
+    
     renderSongList() {
         const songList = document.getElementById('songList');
         songList.innerHTML = '';
@@ -147,6 +160,10 @@ class App {
                         <div class="stat">
                             <span class="stat-label">時間</span>
                             <span class="stat-value duration-loading">読み込み中...</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">難易度</span>
+                            <span class="stat-value difficulty-stars">${this.getDifficultyStars(song.difficulty || 3)}</span>
                         </div>
                     </div>
                 </div>
