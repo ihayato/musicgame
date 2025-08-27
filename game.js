@@ -906,12 +906,21 @@ class RhythmGame {
     
     showJudgment(judgment) {
         const judgmentElement = document.getElementById('judgment');
+        
+        // Clear any existing timeout
+        if (this.judgmentTimeout) {
+            clearTimeout(this.judgmentTimeout);
+        }
+        
+        // Set new judgment
         judgmentElement.textContent = judgment.toUpperCase();
         judgmentElement.className = `judgment-${judgment}`;
         
-        setTimeout(() => {
+        // Clear after display time
+        this.judgmentTimeout = setTimeout(() => {
             judgmentElement.textContent = '';
             judgmentElement.className = '';
+            this.judgmentTimeout = null;
         }, 800); // Extended display time for better visibility
     }
     
