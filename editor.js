@@ -58,7 +58,26 @@ class SongsEditor {
     }
     
     async loadSongsData() {
-        // Show initial empty state or instructions
+        try {
+            // Try to load songs.json automatically
+            const response = await fetch('songs.json');
+            if (response.ok) {
+                const data = await response.json();
+                
+                if (data.songs && Array.isArray(data.songs)) {
+                    this.songsData = data;
+                    this.hasUnsavedChanges = false;
+                    this.renderSongList();
+                    this.updateJSONPreview();
+                    this.showNotification('songs.jsonを自動読み込みしました', 'success');
+                    return;
+                }
+            }
+        } catch (error) {
+            console.log('Auto-load failed, showing manual load instructions');
+        }
+        
+        // Fallback: Show initial empty state or instructions
         this.showNotification('「JSONファイルを開く」ボタンからsongs.jsonを読み込んでください', 'info');
         
         // Create empty structure
@@ -394,15 +413,20 @@ class SongsEditor {
             
             <!-- アクション -->
             <div class="form-actions">
-                <button class="btn btn-success" onclick="editor.updateSong()">更新</button>
+                <div class="auto-save-indicator">
+                    <span class="status-icon">💾</span>
+                    <span>変更は自動的に反映されます</span>
+                </div>
                 <button class="btn btn-danger" onclick="editor.deleteSong(${this.selectedSongIndex})">削除</button>
             </div>
         `;
         
-        // Add input event listeners
+        // Add input event listeners for real-time updates
         detailForm.querySelectorAll('input, textarea').forEach(input => {
             input.addEventListener('input', () => {
                 this.hasUnsavedChanges = true;
+                this.updateSongFromForm(); // Real-time update
+                this.updateJSONPreview(); // Update JSON preview immediately
             });
             
             // Color preview update
@@ -430,6 +454,8 @@ class SongsEditor {
                 this.updateStarDisplay(stars, value);
                 difficultyValue.textContent = value;
                 this.hasUnsavedChanges = true;
+                this.updateSongFromForm(); // Real-time update
+                this.updateJSONPreview(); // Update JSON preview immediately
             });
             
             star.addEventListener('mouseenter', (e) => {
@@ -456,8 +482,10 @@ class SongsEditor {
         });
     }
     
-    updateSong() {
+    updateSongFromForm() {
         if (this.selectedSongIndex === null) return;
+        
+        try {
         
         const song = this.songsData.songs[this.selectedSongIndex];
         
@@ -502,10 +530,12 @@ class SongsEditor {
         };
         
         this.hasUnsavedChanges = true;
-        this.renderSongList();
-        this.updateJSONPreview();
+        this.renderSongList(); // Update song list to show changes
         
-        this.showNotification('楽曲情報を更新しました', 'success');
+        } catch (error) {
+            console.error('Error updating song from form:', error);
+            // Silently fail for real-time updates to avoid spam
+        }
     }
     
     updateJSONPreview() {
@@ -579,3 +609,10 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// Initialize editor when page loads
+let editor;
+document.addEventListener('DOMContentLoaded', () => {
+    editor = new SongsEditor();
+    window.editor = editor; // Make it globally accessible
+});
