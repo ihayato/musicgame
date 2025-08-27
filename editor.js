@@ -17,12 +17,39 @@ class SongsEditor {
         const fileInput = document.getElementById('fileInput');
         const uploadBtn = document.getElementById('uploadBtn');
         
-        uploadBtn.addEventListener('click', () => fileInput.click());
+        if (!fileInput || !uploadBtn) {
+            console.error('Required elements not found:', { fileInput, uploadBtn });
+            return;
+        }
+        
+        uploadBtn.addEventListener('click', () => {
+            console.log('Upload button clicked');
+            fileInput.click();
+        });
         
         fileInput.addEventListener('change', (e) => {
+            console.log('File input changed:', e.target.files);
             const file = e.target.files[0];
             if (file) {
+                console.log('Loading file:', file.name, file.type, file.size);
                 this.loadFromFile(file);
+            }
+        });
+        
+        // Alternative: Add drag and drop support
+        document.body.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+        
+        document.body.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type === 'application/json') {
+                console.log('File dropped:', files[0].name);
+                this.loadFromFile(files[0]);
             }
         });
         
@@ -87,24 +114,36 @@ class SongsEditor {
     }
     
     async loadFromFile(file) {
+        console.log('loadFromFile called with:', file);
         try {
             const text = await file.text();
+            console.log('File text loaded, length:', text.length);
+            console.log('First 100 chars:', text.substring(0, 100));
+            
             const data = JSON.parse(text);
+            console.log('JSON parsed successfully:', data);
             
             // Validate JSON structure
             if (!data.songs || !Array.isArray(data.songs)) {
-                throw new Error('Invalid songs.json format');
+                console.error('Invalid structure:', { hasSongs: !!data.songs, isArray: Array.isArray(data.songs) });
+                throw new Error('Invalid songs.json format: songs array not found');
             }
+            
+            console.log('Songs found:', data.songs.length);
             
             this.songsData = data;
             this.hasUnsavedChanges = false;
             this.renderSongList();
             this.updateJSONPreview();
             
-            this.showNotification(`${file.name}を読み込みました`, 'success');
+            this.showNotification(`${file.name}を読み込みました（${data.songs.length}曲）`, 'success');
         } catch (error) {
             console.error('Error loading file:', error);
-            this.showNotification('ファイルの読み込みに失敗しました。正しいJSONファイルか確認してください。', 'error');
+            console.error('Error stack:', error.stack);
+            const errorMessage = error instanceof SyntaxError 
+                ? 'JSONの形式が正しくありません。構文エラーがあります。' 
+                : `ファイルの読み込みに失敗しました: ${error.message}`;
+            this.showNotification(errorMessage, 'error');
         }
     }
     
@@ -580,8 +619,7 @@ class SongsEditor {
     }
 }
 
-// Initialize editor
-const editor = new SongsEditor();
+// Editor will be initialized after DOMContentLoaded
 
 // Add animation keyframes
 const style = document.createElement('style');
@@ -613,6 +651,34 @@ document.head.appendChild(style);
 // Initialize editor when page loads
 let editor;
 document.addEventListener('DOMContentLoaded', () => {
-    editor = new SongsEditor();
-    window.editor = editor; // Make it globally accessible
+    try {
+        console.log('Initializing SongsEditor...');
+        editor = new SongsEditor();
+        window.editor = editor; // Make it globally accessible
+        console.log('SongsEditor initialized successfully');
+    } catch (error) {
+        console.error('Failed to initialize SongsEditor:', error);
+        console.error('Stack:', error.stack);
+        
+        // Show error message to user
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #f44336;
+            color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            z-index: 10000;
+        `;
+        errorDiv.innerHTML = `
+            <h2>エディタの初期化に失敗しました</h2>
+            <p>コンソールでエラーの詳細を確認してください。</p>
+            <p>Error: ${error.message}</p>
+        `;
+        document.body.appendChild(errorDiv);
+    }
 });
