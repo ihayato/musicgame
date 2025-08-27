@@ -912,7 +912,7 @@ class RhythmGame {
         setTimeout(() => {
             judgmentElement.textContent = '';
             judgmentElement.className = '';
-        }, 500);
+        }, 800); // Extended display time for better visibility
     }
     
     updateUI() {

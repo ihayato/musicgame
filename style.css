@@ -1027,7 +1027,7 @@ body {
     font-weight: bold;
     text-align: center;
     position: absolute;
-    bottom: 140px; /* Position near judgment line */
+    bottom: 160px; /* Position near judgment line (judgment line is at 120px) */
     left: 50%;
     transform: translateX(-50%);
     text-shadow: 0 0 20px rgba(255,255,255,0.8), 0 0 40px currentColor, 2px 2px 8px rgba(0,0,0,0.9);
@@ -1035,7 +1035,7 @@ body {
     z-index: 10;
     letter-spacing: 3px;
     text-transform: uppercase;
-    animation: judmentPulse 0.3s ease-out;
+    animation: judgmentPulse 0.3s ease-out;
     border-radius: 15px;
     padding: 8px 16px;
     backdrop-filter: blur(5px);
@@ -1816,6 +1816,20 @@ body {
 }
 
 /* Judgment Display Animations */
+@keyframes judgmentPulse {
+    0% { 
+        transform: translateX(-50%) scale(0.9); 
+        opacity: 0; 
+    }
+    50% { 
+        transform: translateX(-50%) scale(1.1); 
+    }
+    100% { 
+        transform: translateX(-50%) scale(1); 
+        opacity: 1; 
+    }
+}
+
 @keyframes perfectPulse {
     0% { 
         transform: translateX(-50%) scale(0.8); 
