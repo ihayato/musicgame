@@ -1,7 +1,7 @@
 {
-  "name": "beat-diffusion",
+  "name": "ai-pop-beat",
   "version": "1.0.0",
-  "description": "Beat Diffusion - ビートマニア風音楽ゲーム",
+  "description": "AI-POP Beat - AIポップリズムゲーム",
   "main": "index.html",
   "scripts": {
     "dev": "npx http-server . -p 3000 -o",
@@ -11,7 +11,7 @@
   "devDependencies": {
     "http-server": "^14.1.1"
   },
-  "keywords": ["beat-diffusion", "rhythm-game", "beatmania", "music-game"],
+  "keywords": ["ai-pop-beat", "rhythm-game", "ai-pop", "music-game"],
   "author": "",
   "license": "MIT"
 }

@@ -1,0 +1,4159 @@
+{
+  "title": "Untitled",
+  "difficulty": "hard",
+  "notes": [
+    {
+      "time": 9.338972,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 0
+    },
+    {
+      "time": 9.338972,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 0
+    },
+    {
+      "time": 12.993585,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 13.855661,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 14.336923,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 17.478943,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 1
+    },
+    {
+      "time": 17.478943,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 1
+    },
+    {
+      "time": 20.975972,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 2
+    },
+    {
+      "time": 20.975972,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 2
+    },
+    {
+      "time": 24.21654,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 24.544416,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 26.537537,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 28.033496,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 35.058125,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 35.73586,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 36.472102,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 37.187907,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 38.594686,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 40.068524,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 40.770424,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 41.52798,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 42.185742,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 3
+    },
+    {
+      "time": 42.185742,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 3
+    },
+    {
+      "time": 42.185742,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 3
+    },
+    {
+      "time": 43.59348,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 45.038123,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 45.749829,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 46.486269,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 4
+    },
+    {
+      "time": 46.486269,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 4
+    },
+    {
+      "time": 47.199154,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 47.914182,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 5
+    },
+    {
+      "time": 47.914182,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 5
+    },
+    {
+      "time": 47.914182,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 5
+    },
+    {
+      "time": 48.626798,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 6
+    },
+    {
+      "time": 48.626798,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 6
+    },
+    {
+      "time": 49.331785,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 50.038418,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 51.454371,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 52.189862,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 52.921059,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 7
+    },
+    {
+      "time": 52.921059,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 7
+    },
+    {
+      "time": 52.921059,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 7
+    },
+    {
+      "time": 53.669521,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 8
+    },
+    {
+      "time": 53.669521,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 8
+    },
+    {
+      "time": 53.669521,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 8
+    },
+    {
+      "time": 54.339444,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 56.485977,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 57.222723,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 57.935775,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 62.216891,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 62.816258,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 9
+    },
+    {
+      "time": 62.816258,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 9
+    },
+    {
+      "time": 62.816258,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 9
+    },
+    {
+      "time": 65.892354,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 66.129546,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 66.382328,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 10
+    },
+    {
+      "time": 66.382328,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 10
+    },
+    {
+      "time": 66.653334,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 66.931137,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 67.2362,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 67.876125,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 70.786664,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 11
+    },
+    {
+      "time": 70.786664,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 11
+    },
+    {
+      "time": 70.786664,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 11
+    },
+    {
+      "time": 74.322942,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 12
+    },
+    {
+      "time": 74.322942,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 12
+    },
+    {
+      "time": 75.055845,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 75.38063,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 13
+    },
+    {
+      "time": 75.38063,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 13
+    },
+    {
+      "time": 75.770473,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 14
+    },
+    {
+      "time": 75.770473,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 14
+    },
+    {
+      "time": 75.770473,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 14
+    },
+    {
+      "time": 76.10429,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 76.657551,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 76.838093,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 15
+    },
+    {
+      "time": 76.838093,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 15
+    },
+    {
+      "time": 77.01795,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 16
+    },
+    {
+      "time": 77.01795,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 16
+    },
+    {
+      "time": 77.373686,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 77.549324,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 77.715293,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 77.880356,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 79.353178,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 79.891919,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 17
+    },
+    {
+      "time": 79.891919,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 17
+    },
+    {
+      "time": 80.356878,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 80.734076,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 81.280517,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 81.997496,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 82.601701,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 83.106613,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 83.433504,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 83.65406,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 84.015682,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 84.186904,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 84.691955,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 18
+    },
+    {
+      "time": 84.691955,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 18
+    },
+    {
+      "time": 84.691955,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 18
+    },
+    {
+      "time": 85.066059,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 19
+    },
+    {
+      "time": 85.066059,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 19
+    },
+    {
+      "time": 86.523626,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 20
+    },
+    {
+      "time": 86.523626,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 20
+    },
+    {
+      "time": 86.523626,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 20
+    },
+    {
+      "time": 87.036794,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 21
+    },
+    {
+      "time": 87.036794,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 21
+    },
+    {
+      "time": 87.914876,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 88.990967,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 89.333418,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 89.805606,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 90.369572,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 90.78393,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 22
+    },
+    {
+      "time": 90.78393,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 22
+    },
+    {
+      "time": 91.120305,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 91.82253,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 92.176727,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 92.521514,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 92.898841,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 93.26847,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 93.636418,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 93.978192,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 94.322878,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 23
+    },
+    {
+      "time": 94.322878,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 23
+    },
+    {
+      "time": 94.322878,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 23
+    },
+    {
+      "time": 94.666306,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 95.371037,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 24
+    },
+    {
+      "time": 95.371037,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 24
+    },
+    {
+      "time": 95.371037,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 24
+    },
+    {
+      "time": 95.736819,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 96.103248,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 96.464251,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 96.81674,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 97.187856,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 97.542909,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 97.927831,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 98.254144,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 98.936639,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 25
+    },
+    {
+      "time": 98.936639,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 25
+    },
+    {
+      "time": 98.936639,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 25
+    },
+    {
+      "time": 99.316387,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 99.680148,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 100.024843,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 100.381618,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 26
+    },
+    {
+      "time": 100.381618,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 26
+    },
+    {
+      "time": 100.381618,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 26
+    },
+    {
+      "time": 100.73938,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 27
+    },
+    {
+      "time": 100.73938,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 27
+    },
+    {
+      "time": 101.101909,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 101.464621,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 101.809295,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 28
+    },
+    {
+      "time": 101.809295,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 28
+    },
+    {
+      "time": 101.809295,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 28
+    },
+    {
+      "time": 102.898881,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 103.595033,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 104.356385,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 105.062691,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 107.89378,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 108.250067,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 29
+    },
+    {
+      "time": 108.250067,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 29
+    },
+    {
+      "time": 108.595912,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 108.930421,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 109.293121,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 110.023097,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 30
+    },
+    {
+      "time": 110.023097,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 30
+    },
+    {
+      "time": 110.399721,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 110.810717,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 111.10388,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 31
+    },
+    {
+      "time": 111.10388,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 31
+    },
+    {
+      "time": 111.458362,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 32
+    },
+    {
+      "time": 111.458362,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 32
+    },
+    {
+      "time": 111.816279,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 33
+    },
+    {
+      "time": 111.816279,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 33
+    },
+    {
+      "time": 112.187937,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 112.550254,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 34
+    },
+    {
+      "time": 112.550254,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 34
+    },
+    {
+      "time": 112.891691,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 35
+    },
+    {
+      "time": 112.891691,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 35
+    },
+    {
+      "time": 112.891691,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 35
+    },
+    {
+      "time": 113.605867,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 113.981383,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 114.360914,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 36
+    },
+    {
+      "time": 114.360914,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 36
+    },
+    {
+      "time": 114.682283,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 115.053914,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 115.42064,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 37
+    },
+    {
+      "time": 115.42064,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 37
+    },
+    {
+      "time": 115.42064,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 37
+    },
+    {
+      "time": 115.787103,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 116.138827,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 116.475366,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 117.182515,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 117.534877,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 38
+    },
+    {
+      "time": 117.534877,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 38
+    },
+    {
+      "time": 117.9038,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 118.253071,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 118.605817,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 39
+    },
+    {
+      "time": 118.605817,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 39
+    },
+    {
+      "time": 118.605817,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 39
+    },
+    {
+      "time": 118.977257,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 119.372567,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 120.050122,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 120.747105,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 122.212927,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 122.90277,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 123.592474,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 124.323392,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 125.07089,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 125.762503,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 40
+    },
+    {
+      "time": 125.762503,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 40
+    },
+    {
+      "time": 126.467235,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 127.18243,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 127.924804,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 129.275821,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 130.00912,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 130.716021,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 131.426104,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 132.164884,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 132.887263,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 133.590947,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 134.32109,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 41
+    },
+    {
+      "time": 134.32109,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 41
+    },
+    {
+      "time": 134.32109,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 41
+    },
+    {
+      "time": 135.049025,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 42
+    },
+    {
+      "time": 135.049025,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 42
+    },
+    {
+      "time": 136.443478,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 137.174379,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 43
+    },
+    {
+      "time": 137.174379,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 43
+    },
+    {
+      "time": 137.174379,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 43
+    },
+    {
+      "time": 137.919277,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 44
+    },
+    {
+      "time": 137.919277,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 44
+    },
+    {
+      "time": 140.699984,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 141.78458,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 45
+    },
+    {
+      "time": 141.78458,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 45
+    },
+    {
+      "time": 142.115564,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 147.801888,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 149.318574,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 150.752933,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 46
+    },
+    {
+      "time": 150.752933,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 46
+    },
+    {
+      "time": 155.062384,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 47
+    },
+    {
+      "time": 155.062384,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 47
+    },
+    {
+      "time": 156.443168,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 157.889439,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 159.287827,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 160.774279,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 169.003227,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 48
+    },
+    {
+      "time": 169.003227,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 48
+    },
+    {
+      "time": 169.003227,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 48
+    },
+    {
+      "time": 169.506518,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 170.021771,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 170.407675,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 49
+    },
+    {
+      "time": 170.407675,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 49
+    },
+    {
+      "time": 170.957889,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 171.299523,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 50
+    },
+    {
+      "time": 171.299523,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 50
+    },
+    {
+      "time": 171.299523,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 50
+    },
+    {
+      "time": 171.675645,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 172.184591,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 172.380092,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 172.715446,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 173.071608,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 174.700498,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 51
+    },
+    {
+      "time": 174.700498,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 51
+    },
+    {
+      "time": 174.936988,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 175.939163,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 176.147147,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 52
+    },
+    {
+      "time": 176.147147,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 52
+    },
+    {
+      "time": 176.147147,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 52
+    },
+    {
+      "time": 176.462493,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 176.635708,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 177.008766,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 177.187525,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 177.364619,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 177.555687,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 178.025272,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 179.713173,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 53
+    },
+    {
+      "time": 179.713173,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 53
+    },
+    {
+      "time": 180.041562,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 180.393869,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 180.731146,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 54
+    },
+    {
+      "time": 180.731146,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 54
+    },
+    {
+      "time": 180.731146,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 54
+    },
+    {
+      "time": 181.091401,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 181.445004,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 181.837761,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 182.195752,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 182.567813,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 55
+    },
+    {
+      "time": 182.567813,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 55
+    },
+    {
+      "time": 182.567813,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 55
+    },
+    {
+      "time": 183.285742,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 183.631576,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 183.989123,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 184.345161,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 184.697886,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 185.042751,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 56
+    },
+    {
+      "time": 185.042751,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 56
+    },
+    {
+      "time": 185.388267,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 57
+    },
+    {
+      "time": 185.388267,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 57
+    },
+    {
+      "time": 185.388267,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 57
+    },
+    {
+      "time": 185.709969,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 186.070832,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 58
+    },
+    {
+      "time": 186.070832,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 58
+    },
+    {
+      "time": 186.070832,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 58
+    },
+    {
+      "time": 186.810486,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 187.160611,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 187.507941,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 187.834697,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 188.204922,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 188.56779,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 188.945749,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 189.33006,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 189.696656,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 59
+    },
+    {
+      "time": 189.696656,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 59
+    },
+    {
+      "time": 189.696656,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 59
+    },
+    {
+      "time": 190.387824,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 190.741688,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 60
+    },
+    {
+      "time": 190.741688,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 60
+    },
+    {
+      "time": 190.741688,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 60
+    },
+    {
+      "time": 191.102518,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 191.470332,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 191.854853,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 61
+    },
+    {
+      "time": 191.854853,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 61
+    },
+    {
+      "time": 193.262241,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 194.653627,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 197.53551,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 62
+    },
+    {
+      "time": 197.53551,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 62
+    },
+    {
+      "time": 198.974085,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 204.676726,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 63
+    },
+    {
+      "time": 204.676726,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 63
+    },
+    {
+      "time": 204.676726,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 63
+    },
+    {
+      "time": 206.115697,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 208.93454,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 64
+    },
+    {
+      "time": 208.93454,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 64
+    },
+    {
+      "time": 208.93454,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 64
+    },
+    {
+      "time": 210.424524,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 210.753488,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 211.080754,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 211.441629,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 211.804594,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 214.673742,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 65
+    },
+    {
+      "time": 214.673742,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 65
+    },
+    {
+      "time": 214.673742,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 65
+    },
+    {
+      "time": 215.217436,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 215.398624,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 215.760229,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 216.015563,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 216.304008,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 216.480949,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 216.821915,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 217.073673,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 217.389827,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 217.899251,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 218.138285,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 218.43467,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 66
+    },
+    {
+      "time": 218.43467,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 66
+    },
+    {
+      "time": 218.605352,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 67
+    },
+    {
+      "time": 218.605352,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 67
+    },
+    {
+      "time": 218.605352,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 67
+    },
+    {
+      "time": 218.951335,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 68
+    },
+    {
+      "time": 218.951335,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 68
+    },
+    {
+      "time": 219.214166,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 219.520893,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 219.685449,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 220.060214,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 220.313073,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 69
+    },
+    {
+      "time": 220.313073,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 69
+    },
+    {
+      "time": 220.313073,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 69
+    },
+    {
+      "time": 220.754434,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 221.122398,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 221.36025,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 221.832792,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 70
+    },
+    {
+      "time": 221.832792,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 70
+    },
+    {
+      "time": 221.832792,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 70
+    },
+    {
+      "time": 222.192639,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 71
+    },
+    {
+      "time": 222.192639,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 71
+    },
+    {
+      "time": 222.437658,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 72
+    },
+    {
+      "time": 222.437658,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 72
+    },
+    {
+      "time": 222.737016,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 73
+    },
+    {
+      "time": 222.737016,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 73
+    },
+    {
+      "time": 222.925118,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 223.252744,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 223.788197,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 223.973686,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 224.360593,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 224.583374,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 224.852528,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 225.039669,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 225.415824,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 225.666446,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 225.939672,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 226.480382,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 226.725056,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 227.022296,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 227.200538,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 227.554164,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 227.806079,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 228.23385,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 228.623366,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 228.855695,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 74
+    },
+    {
+      "time": 228.855695,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 74
+    },
+    {
+      "time": 229.692287,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 229.936385,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 230.394817,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 230.772055,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 230.977101,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 231.47103,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 231.875556,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 232.391294,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 232.913307,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 233.760852,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 234.357217,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 235.037093,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 235.220547,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 235.759848,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 236.105682,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 75
+    },
+    {
+      "time": 236.105682,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 75
+    },
+    {
+      "time": 236.831097,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 237.183661,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 237.713933,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 76
+    },
+    {
+      "time": 237.713933,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 76
+    },
+    {
+      "time": 237.713933,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 76
+    },
+    {
+      "time": 238.091137,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 238.273953,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 77
+    },
+    {
+      "time": 238.273953,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 77
+    },
+    {
+      "time": 238.458286,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 238.633718,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 238.823494,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 238.99309,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 239.179251,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 239.357846,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 239.525207,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 239.875459,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 240.044066,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 240.206171,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 240.394823,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 240.732836,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 241.105285,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 78
+    },
+    {
+      "time": 241.105285,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 78
+    },
+    {
+      "time": 241.105285,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 78
+    },
+    {
+      "time": 241.461453,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 241.817488,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 79
+    },
+    {
+      "time": 241.817488,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 79
+    },
+    {
+      "time": 242.167099,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 80
+    },
+    {
+      "time": 242.167099,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 80
+    },
+    {
+      "time": 242.167099,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 80
+    },
+    {
+      "time": 242.887794,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 243.217355,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 81
+    },
+    {
+      "time": 243.217355,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 81
+    },
+    {
+      "time": 248.961858,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 249.502029,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 82
+    },
+    {
+      "time": 249.502029,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 82
+    },
+    {
+      "time": 250.007986,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 250.402981,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 250.934655,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 251.310327,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 251.681389,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 83
+    },
+    {
+      "time": 251.681389,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 83
+    },
+    {
+      "time": 252.715808,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 84
+    },
+    {
+      "time": 252.715808,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 84
+    },
+    {
+      "time": 253.057605,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 254.691917,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 255.404846,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 256.051144,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 256.779398,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 257.549591,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 258.286167,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 258.952857,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 259.655739,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 260.017549,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 260.408328,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 85
+    },
+    {
+      "time": 260.408328,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 85
+    },
+    {
+      "time": 260.761022,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 261.125342,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 261.467716,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 261.811438,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 262.175603,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 86
+    },
+    {
+      "time": 262.175603,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 86
+    },
+    {
+      "time": 262.175603,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 86
+    },
+    {
+      "time": 262.521792,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 263.245389,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 263.609827,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 263.937642,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 264.284386,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 264.642504,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 264.994318,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 265.363032,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 265.7249,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 266.068074,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 266.818496,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 267.172994,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 267.544129,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 87
+    },
+    {
+      "time": 267.544129,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 87
+    },
+    {
+      "time": 267.893098,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 268.246914,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 268.597811,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 88
+    },
+    {
+      "time": 268.597811,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 88
+    },
+    {
+      "time": 268.95261,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 269.304266,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 89
+    },
+    {
+      "time": 269.304266,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 89
+    },
+    {
+      "time": 269.662607,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 90
+    },
+    {
+      "time": 269.662607,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 90
+    },
+    {
+      "time": 269.662607,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 90
+    },
+    {
+      "time": 270.360691,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 270.726047,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 271.097817,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 271.457973,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 271.833656,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 272.186431,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 272.55651,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 272.898855,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 273.251305,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 273.950162,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 274.301548,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 274.67144,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 275.024618,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 275.391947,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 91
+    },
+    {
+      "time": 275.391947,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 91
+    },
+    {
+      "time": 275.391947,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 91
+    },
+    {
+      "time": 275.754367,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 92
+    },
+    {
+      "time": 275.754367,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 92
+    },
+    {
+      "time": 276.12912,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 276.475569,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 276.818629,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 93
+    },
+    {
+      "time": 276.818629,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 93
+    },
+    {
+      "time": 276.818629,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 93
+    },
+    {
+      "time": 277.530632,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 278.048329,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 278.598704,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 278.973652,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 279.507335,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 280.042957,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 94
+    },
+    {
+      "time": 280.042957,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 94
+    },
+    {
+      "time": 280.042957,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 94
+    },
+    {
+      "time": 280.412128,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 280.735354,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 280.926009,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 95
+    },
+    {
+      "time": 280.926009,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 95
+    },
+    {
+      "time": 280.926009,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 95
+    },
+    {
+      "time": 281.80291,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 282.161604,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 282.341593,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 282.867933,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 96
+    },
+    {
+      "time": 282.867933,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 96
+    },
+    {
+      "time": 283.266301,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 283.977642,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 284.639744,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 285.353207,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 97
+    },
+    {
+      "time": 285.353207,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 97
+    },
+    {
+      "time": 285.353207,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 97
+    },
+    {
+      "time": 286.111479,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 287.523661,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 288.235806,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 288.97474,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 289.653444,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 290.384101,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 291.087801,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 291.800898,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 292.512666,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 98
+    },
+    {
+      "time": 292.512666,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 98
+    },
+    {
+      "time": 292.512666,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 98
+    },
+    {
+      "time": 293.259832,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 99
+    },
+    {
+      "time": 293.259832,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 99
+    },
+    {
+      "time": 294.648663,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 306.095763,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 311.776417,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 100
+    },
+    {
+      "time": 311.776417,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 100
+    },
+    {
+      "time": 313.309694,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 314.72173,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 316.109399,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 317.587137,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 319.019598,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 320.398752,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 323.27242,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 101
+    },
+    {
+      "time": 323.27242,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 101
+    },
+    {
+      "time": 324.658114,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 326.105643,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 102
+    },
+    {
+      "time": 326.105643,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 102
+    },
+    {
+      "time": 326.105643,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 102
+    },
+    {
+      "time": 327.522508,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 329.017818,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 329.269435,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 329.701148,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 330.432551,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 330.681918,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 331.136824,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 331.865269,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 332.112877,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 332.403047,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 332.570947,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 333.279366,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 333.521983,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 333.767423,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 333.973269,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 334.974032,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 335.220648,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 103
+    },
+    {
+      "time": 335.220648,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 103
+    },
+    {
+      "time": 335.220648,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 103
+    },
+    {
+      "time": 335.414375,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 336.126524,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 336.383449,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 336.642241,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 336.858626,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 337.544901,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 337.809196,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 338.254618,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 104
+    },
+    {
+      "time": 338.254618,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 104
+    },
+    {
+      "time": 338.970453,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 339.243124,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 339.537608,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 339.725906,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 340.437393,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 105
+    },
+    {
+      "time": 340.437393,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 105
+    },
+    {
+      "time": 340.692309,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 340.961594,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 341.163161,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 342.104639,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 106
+    },
+    {
+      "time": 342.104639,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 106
+    },
+    {
+      "time": 342.104639,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 106
+    },
+    {
+      "time": 342.375682,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 342.56606,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 343.271548,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 343.539507,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 343.813977,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 107
+    },
+    {
+      "time": 343.813977,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 107
+    },
+    {
+      "time": 343.813977,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 107
+    },
+    {
+      "time": 344.027106,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 344.667316,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 344.943324,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 345.455291,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 346.125546,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 346.408765,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 346.6738,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 346.85662,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 347.566628,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 347.841597,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 108
+    },
+    {
+      "time": 347.841597,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 108
+    },
+    {
+      "time": 347.841597,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 108
+    },
+    {
+      "time": 348.12416,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 109
+    },
+    {
+      "time": 348.12416,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 109
+    },
+    {
+      "time": 348.12416,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 109
+    },
+    {
+      "time": 348.307132,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 349.242244,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 349.708104,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 350.379112,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 110
+    },
+    {
+      "time": 350.379112,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 110
+    },
+    {
+      "time": 350.657396,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 350.967528,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 111
+    },
+    {
+      "time": 350.967528,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 111
+    },
+    {
+      "time": 350.967528,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 111
+    },
+    {
+      "time": 351.162852,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 351.846365,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 352.123316,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 352.393341,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 112
+    },
+    {
+      "time": 352.393341,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 112
+    },
+    {
+      "time": 353.30338,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 353.567295,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 113
+    },
+    {
+      "time": 353.567295,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 113
+    },
+    {
+      "time": 354.031816,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 354.714952,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 354.981179,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 355.435638,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 356.12876,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 356.401897,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 356.860603,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 357.858517,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 358.285776,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 114
+    },
+    {
+      "time": 358.285776,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 114
+    },
+    {
+      "time": 358.285776,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 114
+    },
+    {
+      "time": 359.01036,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 359.262896,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 359.726762,
+      "lane": 2,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 360.411886,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 360.688025,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 360.979642,
+      "lane": 3,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 361.138063,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 115
+    },
+    {
+      "time": 361.138063,
+      "lane": 2,
+      "isChord": true,
+      "chordGroup": 115
+    },
+    {
+      "time": 361.138063,
+      "lane": 4,
+      "isChord": true,
+      "chordGroup": 115
+    },
+    {
+      "time": 362.116435,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 362.561758,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 363.270255,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 363.525781,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 116
+    },
+    {
+      "time": 363.525781,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 116
+    },
+    {
+      "time": 363.817491,
+      "lane": 4,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 364.011059,
+      "lane": 5,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 364.711925,
+      "lane": 1,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 364.994525,
+      "lane": 0,
+      "isChord": false,
+      "chordGroup": null
+    },
+    {
+      "time": 365.422653,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 117
+    },
+    {
+      "time": 365.422653,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 117
+    },
+    {
+      "time": 365.783295,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 118
+    },
+    {
+      "time": 365.783295,
+      "lane": 5,
+      "isChord": true,
+      "chordGroup": 118
+    },
+    {
+      "time": 365.942429,
+      "lane": 0,
+      "isChord": true,
+      "chordGroup": 119
+    },
+    {
+      "time": 365.942429,
+      "lane": 1,
+      "isChord": true,
+      "chordGroup": 119
+    },
+    {
+      "time": 365.942429,
+      "lane": 3,
+      "isChord": true,
+      "chordGroup": 119
+    }
+  ],
+  "metadata": {
+    "totalNotes": 691,
+    "chordNotes": 295,
+    "generatedAt": "2025-08-28T01:35:02.853Z",
+    "originalTimestamps": 573,
+    "filteredTimestamps": 516
+  }
+}

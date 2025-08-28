@@ -1,5 +1,11 @@
 class App {
     constructor() {
+        // Prevent multiple instantiation
+        if (window.appInstance) {
+            console.warn('App already initialized, returning existing instance');
+            return window.appInstance;
+        }
+        
         this.currentScreen = 'menu';
         this.currentStep = 'song'; // 'song' or 'difficulty'
         this.game = null;
@@ -7,39 +13,80 @@ class App {
         this.selectedSong = null;
         this.selectedDifficulty = null;
         this.isPreviewPlaying = false;
+        this.isTestMode = false;
+        this.isInitialized = false;
+        this.youtubePopupListenersSetup = false;
         
+        window.appInstance = this;
         this.initializeApp();
     }
     
     async initializeApp() {
-        await this.loadSongs();
-        this.setupEventListeners();
-        this.renderSongList();
-        this.checkTestMode();
-        
-        // Initialize game engine
-        console.log('Checking if initGame exists:', typeof initGame);
-        if (typeof initGame === 'function') {
-            console.log('Calling initGame...');
-            initGame();
-            this.game = game;
-            console.log('Game initialized:', this.game);
-        } else {
-            console.error('initGame function not found!');
+        if (this.isInitialized) {
+            console.log('App already initialized, skipping...');
+            return;
         }
         
-        console.log('App initialized with', this.songs.length, 'songs');
+        try {
+            console.log('Starting app initialization...');
+            
+            await this.loadSongs();
+            this.setupEventListeners();
+            this.renderSongList();
+            this.checkTestMode();
+            
+            // Initialize game engine
+            console.log('Checking if initGame exists:', typeof initGame);
+            if (typeof initGame === 'function') {
+                console.log('Calling initGame...');
+                initGame();
+                this.game = game;
+                console.log('Game initialized:', this.game);
+            } else {
+                console.error('initGame function not found!');
+            }
+            
+            this.isInitialized = true;
+            console.log('App initialized successfully with', this.songs.length, 'songs');
+        } catch (error) {
+            console.error('App initialization failed:', error);
+            throw error;
+        }
     }
     
     async loadSongs() {
         try {
+            console.log('Loading songs.json...');
             const response = await fetch('songs.json');
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
             const data = await response.json();
+            
+            if (!data || !Array.isArray(data.songs)) {
+                throw new Error('Invalid songs.json format');
+            }
+            
             this.songs = data.songs;
+            console.log('Songs loaded successfully:', this.songs.length, 'songs');
         } catch (error) {
             console.error('Error loading songs:', error);
             // Fallback to empty array
             this.songs = [];
+            
+            // Show user-friendly error message
+            const songList = document.getElementById('songList');
+            if (songList) {
+                songList.innerHTML = `
+                    <div class="error-message" style="color: #ff6b6b; padding: 20px; text-align: center;">
+                        <h3>楽曲データの読み込みに失敗しました</h3>
+                        <p>ページをリロードしてもう一度お試しください</p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px;">リロード</button>
+                    </div>
+                `;
+            }
         }
     }
     
@@ -81,6 +128,12 @@ class App {
             this.backToMenu();
         });
         
+        
+        document.getElementById('backToEditorBtn').addEventListener('click', () => {
+            console.log('Back to editor clicked');
+            window.location.href = 'chart-editor.html';
+        });
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -106,6 +159,39 @@ class App {
         return `<span class="difficulty-stars-display">${stars}</span>`;
     }
     
+    categorizeByDifficulty() {
+        const categories = [
+            { id: 'featured', title: 'FEATURED', songs: [] },
+            { id: 'easy', title: 'EASY ⭐', songs: [] },
+            { id: 'normal', title: 'NORMAL ⭐⭐', songs: [] },
+            { id: 'hard', title: 'HARD ⭐⭐⭐', songs: [] },
+            { id: 'expert', title: 'EXPERT ⭐⭐⭐⭐+', songs: [] }
+        ];
+        
+        this.songs.forEach(song => {
+            const difficulty = song.difficulty || 3;
+            
+            // Featured楽曲はFEATUREDカテゴリにも追加
+            if (song.featured) {
+                categories[0].songs.push(song);
+            }
+            
+            // すべての楽曲を難易度による分類に追加
+            if (difficulty === 1) {
+                categories[1].songs.push(song);
+            } else if (difficulty === 2) {
+                categories[2].songs.push(song);
+            } else if (difficulty === 3) {
+                categories[3].songs.push(song);
+            } else if (difficulty >= 4) {
+                categories[4].songs.push(song);
+            }
+        });
+        
+        return categories;
+    }
+    
+    
     renderSongList() {
         const songList = document.getElementById('songList');
         songList.innerHTML = '';
@@ -120,9 +206,31 @@ class App {
             return;
         }
         
-        this.songs.forEach(song => {
+        // カテゴリ別に楽曲を分類
+        const categories = this.categorizeByDifficulty();
+        
+        // カテゴリごとに表示
+        categories.forEach(category => {
+            if (category.songs.length > 0) {
+                // カテゴリヘッダー
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'category-header';
+                categoryHeader.innerHTML = `
+                    <h2 class="category-title">${category.title}</h2>
+                    <span class="category-count">${category.songs.length}曲</span>
+                `;
+                songList.appendChild(categoryHeader);
+                
+                // カテゴリコンテナ
+                const categoryContainer = document.createElement('div');
+                categoryContainer.className = 'category-container';
+                categoryContainer.dataset.category = category.id;
+                
+                category.songs.forEach(song => {
             const songItem = document.createElement('div');
-            songItem.className = 'song-item';
+            // FEATUREDカテゴリ以外では、featuredでも通常のスタイル
+            const shouldShowFeatured = song.featured && category.id === 'featured';
+            songItem.className = shouldShowFeatured ? 'song-item featured' : 'song-item';
             songItem.dataset.songId = song.id;
             
             // カスタムカラー適用
@@ -146,6 +254,7 @@ class App {
             
             songItem.innerHTML = `
                 ${videoElement}
+                ${shouldShowFeatured ? '<div class="featured-badge">FEATURED</div>' : ''}
                 <div class="song-content">
                     <div class="song-header">
                         <h3>${song.displayName || song.title}</h3>
@@ -174,25 +283,62 @@ class App {
                 this.selectSong(song, e);
             });
             
-            // ホバー時のプレビュー再生
+            // ホバー時のプレビュー再生 - 改善版
             if (song.ui?.showPreviewOnHover && song.backgroundVideo) {
                 const video = songItem.querySelector('.song-bg-video');
                 if (video) {
-                    songItem.addEventListener('mouseenter', () => {
-                        video.currentTime = song.preview?.videoStart || 0;
-                        video.play().catch(e => console.log('Video autoplay blocked:', e));
+                    let isPlaying = false;
+                    let playPromise = null;
+                    
+                    songItem.addEventListener('mouseenter', async () => {
+                        if (isPlaying) return;
+                        
+                        try {
+                            // 他の動画を停止
+                            document.querySelectorAll('.song-bg-video').forEach(v => {
+                                if (v !== video && !v.paused) {
+                                    v.pause();
+                                }
+                            });
+                            
+                            video.currentTime = song.preview?.videoStart || 0;
+                            playPromise = video.play();
+                            await playPromise;
+                            isPlaying = true;
+                            console.log('Preview video started successfully');
+                        } catch (e) {
+                            console.log('Video autoplay blocked:', e.name, e.message);
+                            isPlaying = false;
+                            playPromise = null;
+                        }
                     });
                     
-                    songItem.addEventListener('mouseleave', () => {
-                        video.pause();
+                    songItem.addEventListener('mouseleave', async () => {
+                        if (playPromise) {
+                            try {
+                                await playPromise;
+                            } catch (e) {
+                                // Ignore play promise rejection
+                            }
+                        }
+                        
+                        if (!video.paused) {
+                            video.pause();
+                        }
+                        isPlaying = false;
+                        playPromise = null;
                     });
                 }
             }
             
-            songList.appendChild(songItem);
+            categoryContainer.appendChild(songItem);
             
             // 実際のMP3ファイルから時間を取得
             this.loadActualDuration(song, songItem);
+                });
+                
+                songList.appendChild(categoryContainer);
+            }
         });
     }
     
@@ -270,6 +416,17 @@ class App {
         }
         
         this.showDifficultySelection();
+        
+        // 難易度選択セクションまで自動スクロール
+        setTimeout(() => {
+            const difficultySection = document.getElementById('difficultySelection');
+            if (difficultySection) {
+                difficultySection.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }
+        }, 100);
     }
     
     showSongSelection() {
@@ -313,6 +470,9 @@ class App {
         this.selectedSong = null;
         this.selectedDifficulty = null;
         this.currentStep = 'song';
+        
+        // Reset test mode flag
+        this.isTestMode = false;
         
         // Clear UI selections
         document.querySelectorAll('.song-item').forEach(item => {
@@ -363,12 +523,76 @@ class App {
         // BPM表示を削除
         document.getElementById('bannerDuration').textContent = `${Math.floor(song.duration / 60)}:${(song.duration % 60).toString().padStart(2, '0')}`;
         
-        // Setup banner video
+        // Setup banner video - 改善版
         const bannerVideo = document.getElementById('bannerVideo');
         if (song.backgroundVideo) {
-            bannerVideo.src = song.backgroundVideo;
-            bannerVideo.currentTime = song.preview?.videoStart || 0;
-            bannerVideo.play().catch(e => console.log('Banner video autoplay blocked:', e));
+            console.log('Setting banner video:', song.backgroundVideo);
+            
+            // 既存の再生を確実に停止
+            if (!bannerVideo.paused) {
+                bannerVideo.pause();
+            }
+            
+            // 全てのイベントリスナーをクリア（重複を防ぐ）
+            const newBannerVideo = bannerVideo.cloneNode();
+            bannerVideo.parentNode.replaceChild(newBannerVideo, bannerVideo);
+            
+            // 新しい動画要素を使用
+            const freshBannerVideo = document.getElementById('bannerVideo');
+            
+            // プリロードとミュート設定
+            freshBannerVideo.muted = true; // 自動再生のため必須
+            freshBannerVideo.preload = 'metadata';
+            
+            // ソース設定後に再生を試行
+            const setupVideoPlayback = () => {
+                return new Promise((resolve, reject) => {
+                    freshBannerVideo.currentTime = song.preview?.videoStart || 0;
+                    
+                    const playPromise = freshBannerVideo.play();
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('Banner video autoplay successful');
+                                resolve();
+                            })
+                            .catch(e => {
+                                console.log('Banner video autoplay blocked:', e.name);
+                                reject(e);
+                            });
+                    } else {
+                        resolve();
+                    }
+                });
+            };
+            
+            // メタデータ読み込み完了後に再生
+            freshBannerVideo.addEventListener('loadedmetadata', () => {
+                setupVideoPlayback().catch(e => {
+                    console.log('Banner video play after metadata load failed:', e.name);
+                });
+            }, { once: true });
+            
+            // 待機中のフィードバック（頻度を制限）
+            let bufferingCount = 0;
+            freshBannerVideo.addEventListener('waiting', () => {
+                if (bufferingCount++ < 5) { // 最初の5回のみログ
+                    console.log('Video buffering...');
+                }
+            });
+            
+            freshBannerVideo.addEventListener('canplay', () => {
+                console.log('Video ready to play');
+                bufferingCount = 0; // リセット
+            }, { once: true });
+            
+            // エラーハンドリング
+            freshBannerVideo.addEventListener('error', (e) => {
+                console.error('Banner video error:', e.target.error);
+            }, { once: true });
+            
+            // ソース設定
+            freshBannerVideo.src = song.backgroundVideo;
         }
         
         // Apply custom colors
@@ -381,7 +605,7 @@ class App {
         
         // Setup preview audio
         
-        // Hide song selection, show difficulty selection
+        // Hide song selection, show difficulty selection immediately
         document.getElementById('songSelection').classList.remove('active');
         document.getElementById('difficultySelection').classList.add('active');
         
@@ -591,41 +815,85 @@ class App {
     
     checkTestMode() {
         const urlParams = new URLSearchParams(window.location.search);
+        console.log('Checking test mode. URL params:', urlParams.toString());
+        
         if (urlParams.get('test') === 'true') {
+            console.log('Test mode detected in URL');
             const testChart = localStorage.getItem('testChart');
             const testAudio = localStorage.getItem('testAudio');
+            
+            console.log('Test data found:', { 
+                hasChart: !!testChart, 
+                hasAudio: !!testAudio, 
+                chartLength: testChart ? testChart.length : 0,
+                audioSrc: testAudio 
+            });
             
             if (testChart && testAudio) {
                 try {
                     const chartData = JSON.parse(testChart);
+                    console.log('Parsed chart data:', {
+                        title: chartData.title,
+                        difficulty: chartData.difficulty,
+                        noteCount: chartData.notes ? chartData.notes.length : 0,
+                        firstNote: chartData.notes ? chartData.notes[0] : null
+                    });
+                    
                     this.loadTestChart(chartData, testAudio);
                     
                     localStorage.removeItem('testChart');
                     localStorage.removeItem('testAudio');
                     
-                    console.log('Test mode activated');
+                    console.log('✅ Test mode activated successfully');
                 } catch (error) {
-                    console.error('Error loading test data:', error);
+                    console.error('❌ Error loading test data:', error);
+                    alert('テストデータの読み込みに失敗しました: ' + error.message);
                 }
+            } else {
+                console.error('❌ Test mode requested but no test data found');
+                alert('テストデータが見つかりません。譜面エディタから再度テストプレイを選択してください。');
             }
+        } else {
+            console.log('Normal mode (not test mode)');
         }
     }
     
     loadTestChart(chartData, audioSrc) {
+        console.log('🎮 Loading test chart:', {
+            chartTitle: chartData.title,
+            audioSrc: audioSrc,
+            gameExists: !!this.game
+        });
+        
+        // Mark as test mode
+        this.isTestMode = true;
+        
         const gameAudio = document.getElementById('gameAudio');
         gameAudio.src = audioSrc;
         gameAudio.load();
         
+        console.log('🎵 Audio source set, switching to game screen');
         this.showScreen('game');
         
         gameAudio.addEventListener('loadeddata', () => {
+            console.log('🎵 Audio loaded successfully');
             if (this.game) {
+                console.log('🎮 Loading chart into game engine');
                 this.game.loadChart(chartData);
                 setTimeout(() => {
+                    console.log('🚀 Starting test game');
                     this.game.start();
                 }, 1000);
+            } else {
+                console.error('❌ Game engine not available for test mode');
+                alert('ゲームエンジンが初期化されていません。ページを再読み込みしてください。');
             }
         }, { once: true });
+        
+        gameAudio.addEventListener('error', (e) => {
+            console.error('❌ Audio loading error:', e);
+            alert('音声ファイルの読み込みに失敗しました。');
+        });
     }
     
     showLoadingScreen() {
@@ -961,22 +1229,57 @@ class App {
         // Small delay to ensure game engine is ready
         await this.delay(50);
         
-        // Start media simultaneously with explicit timing
+        // Start media simultaneously with improved error handling
         console.log('🚀 Starting media playback...');
-        const audioPromise = audio.play().then(() => {
-            console.log(`🎵 Audio started at: ${audio.currentTime}`);
-        });
-        const videoPromise = video.play().then(() => {
-            console.log(`📹 Video started at: ${video.currentTime}`);
+        
+        // 他の動画要素を停止（競合を避ける）
+        document.querySelectorAll('video').forEach(v => {
+            if (v !== video && !v.paused) {
+                v.pause();
+            }
         });
         
+        const audioPromise = audio.play()
+            .then(() => {
+                console.log(`🎵 Audio started at: ${audio.currentTime}`);
+                return true;
+            })
+            .catch(e => {
+                console.error('🔴 Audio play failed:', e.name);
+                return false;
+            });
+            
+        const videoPromise = video.play()
+            .then(() => {
+                console.log(`📹 Video started at: ${video.currentTime}`);
+                return true;
+            })
+            .catch(e => {
+                console.error('🔴 Video play failed:', e.name);
+                // ビデオが失敗してもゲームを続行
+                return false;
+            });
+        
         try {
-            await Promise.all([audioPromise, videoPromise]);
-            console.log('✅ Synchronized playback started successfully!');
+            const [audioSuccess, videoSuccess] = await Promise.all([audioPromise, videoPromise]);
+            
+            if (audioSuccess) {
+                console.log('✅ Audio playback started successfully!');
+            } else {
+                console.log('⚠️ Audio playback failed - game may not have sound');
+            }
+            
+            if (videoSuccess) {
+                console.log('✅ Video playback started successfully!');
+            } else {
+                console.log('⚠️ Video playback failed - game will continue without background video');
+            }
             
             // Verify timing after start
             setTimeout(() => {
-                console.log(`🔍 Post-start verification - Audio: ${audio.currentTime.toFixed(3)}s, Video: ${video.currentTime.toFixed(3)}s, Game: ${this.game.gameTime.toFixed(3)}s`);
+                const audioTime = audioSuccess ? audio.currentTime.toFixed(3) : 'N/A';
+                const videoTime = videoSuccess ? video.currentTime.toFixed(3) : 'N/A';
+                console.log(`🔍 Post-start verification - Audio: ${audioTime}s, Video: ${videoTime}s, Game: ${this.game.gameTime.toFixed(3)}s`);
             }, 100);
             
         } catch (error) {
@@ -1066,8 +1369,9 @@ class App {
             document.body.classList.remove('game-active');
         }
         
-        // Double check that the game screen is visible
+        // Handle special screen logic
         if (screenName === 'game') {
+            // Double check that the game screen is visible
             setTimeout(() => {
                 const gameScreen = document.getElementById('game');
                 console.log('Game screen final state:', {
@@ -1075,13 +1379,136 @@ class App {
                     hasActive: gameScreen.classList.contains('active')
                 });
             }, 50);
+        } else if (screenName === 'gameClear') {
+            // Show/hide editor button based on test mode
+            const editorBtn = document.getElementById('backToEditorBtn');
+            if (this.isTestMode) {
+                console.log('Test mode: showing editor button');
+                editorBtn.style.display = 'inline-block';
+            } else {
+                console.log('Normal mode: hiding editor button');
+                editorBtn.style.display = 'none';
+            }
+            
+            // Show YouTube popup if song has YouTube URL
+            this.showYouTubePopupIfAvailable();
         }
+    }
+    
+    // YouTube popup methods
+    showYouTubePopupIfAvailable() {
+        if (!this.selectedSong || !this.selectedSong.youtubeUrl) {
+            console.log('No YouTube URL available for this song');
+            return;
+        }
+        
+        console.log('Showing YouTube popup for song:', this.selectedSong.title);
+        
+        // Delay popup to let clear screen animation settle
+        setTimeout(() => {
+            this.showYouTubePopup(this.selectedSong.youtubeUrl, this.selectedSong.title);
+        }, 1500); // 1.5 seconds delay
+    }
+    
+    showYouTubePopup(youtubeUrl, songTitle) {
+        const popup = document.getElementById('youtubePopup');
+        const iframe = document.getElementById('youtubeIframe');
+        const titleElement = document.querySelector('.youtube-popup-title');
+        
+        // Convert YouTube URL to embed format
+        const embedUrl = this.convertToEmbedUrl(youtubeUrl);
+        
+        // Set iframe source and title
+        iframe.src = embedUrl;
+        titleElement.textContent = `${songTitle} - YouTubeで高画質・高音質版を視聴する`;
+        
+        // Show popup
+        popup.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        
+        // Setup event listeners if not already setup
+        if (!this.youtubePopupListenersSetup) {
+            this.setupYouTubePopupListeners(youtubeUrl);
+            this.youtubePopupListenersSetup = true;
+        } else {
+            // Update the URL for the "Watch on YouTube" button
+            document.getElementById('youtubePopupWatch').onclick = () => {
+                window.open(youtubeUrl, '_blank');
+                this.hideYouTubePopup();
+            };
+        }
+    }
+    
+    hideYouTubePopup() {
+        const popup = document.getElementById('youtubePopup');
+        const iframe = document.getElementById('youtubeIframe');
+        
+        // Hide popup with fade out animation
+        popup.style.animation = 'fadeOut 0.3s ease-out';
+        
+        setTimeout(() => {
+            popup.style.display = 'none';
+            popup.style.animation = ''; // Reset animation
+            iframe.src = ''; // Stop video playback
+            document.body.style.overflow = ''; // Restore scrolling
+        }, 300);
+    }
+    
+    convertToEmbedUrl(youtubeUrl) {
+        // Extract video ID from various YouTube URL formats
+        let videoId = '';
+        
+        // Handle youtu.be format
+        if (youtubeUrl.includes('youtu.be/')) {
+            videoId = youtubeUrl.split('youtu.be/')[1].split('?')[0];
+        }
+        // Handle youtube.com/watch format
+        else if (youtubeUrl.includes('youtube.com/watch')) {
+            const urlParams = new URLSearchParams(youtubeUrl.split('?')[1]);
+            videoId = urlParams.get('v');
+        }
+        // Handle youtube.com/embed format (already embed)
+        else if (youtubeUrl.includes('youtube.com/embed/')) {
+            return youtubeUrl;
+        }
+        
+        return `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    }
+    
+    setupYouTubePopupListeners(youtubeUrl) {
+        // Close button
+        document.getElementById('youtubePopupClose').addEventListener('click', () => {
+            this.hideYouTubePopup();
+        });
+        
+        // Watch on YouTube button
+        document.getElementById('youtubePopupWatch').addEventListener('click', () => {
+            window.open(youtubeUrl, '_blank');
+            this.hideYouTubePopup();
+        });
+        
+        // Later button
+        document.getElementById('youtubePopupLater').addEventListener('click', () => {
+            this.hideYouTubePopup();
+        });
+        
+        // Close on overlay click
+        document.querySelector('.youtube-popup-overlay').addEventListener('click', () => {
+            this.hideYouTubePopup();
+        });
+        
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && document.getElementById('youtubePopup').style.display === 'flex') {
+                this.hideYouTubePopup();
+            }
+        });
     }
 }
 
 // Initialize app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new App();
+    window.app = new App();
     console.log('Application started');
 });
 

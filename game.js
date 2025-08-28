@@ -308,13 +308,17 @@ class RhythmGame {
         // CRITICAL: Force both audio AND video to start from exactly 0
         this.audio.pause();
         this.video.pause();
+        
+        // Account for MP3 start offset (0.023021 seconds)
+        // Set video slightly ahead to compensate for audio encoding offset
         this.audio.currentTime = 0;
-        this.video.currentTime = 0;
+        this.video.currentTime = 0.023;  // Compensate for MP3 start offset
+        
         this.audio.playbackRate = 1.0;
         this.audio.defaultPlaybackRate = 1.0;
         this.video.playbackRate = 1.0;
         this.video.defaultPlaybackRate = 1.0;
-        console.log('🎵 Audio and Video reset to currentTime=0');
+        console.log('🎵 Audio and Video reset with sync compensation (video: +0.023s)');
         
         // Debug video state before starting
         console.log('📹 Pre-start video state:', {
@@ -1163,8 +1167,13 @@ class RhythmGame {
             clearAudio.play().catch(e => console.log('Clear audio play failed:', e));
         }
         
-        // Switch to clear screen
-        this.switchToScreen('gameClear');
+        // Switch to clear screen using app's method
+        if (window.app && typeof window.app.showScreen === 'function') {
+            window.app.showScreen('gameClear');
+        } else {
+            // Fallback to direct method
+            this.switchToScreen('gameClear');
+        }
     }
     
     switchToScreen(screenId) {

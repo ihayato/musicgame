@@ -400,17 +400,51 @@ class ChartEditor {
     }
     
     testChart(difficulty) {
+        console.log('🧪 Test chart requested for difficulty:', difficulty);
+        
         if (!this.generatedCharts || !this.generatedCharts[difficulty]) {
-            alert('譜面が生成されていません。');
+            console.error('❌ No chart generated for difficulty:', difficulty);
+            alert('譜面が生成されていません。まず「譜面生成」ボタンを押してください。');
+            return;
+        }
+        
+        const chartData = this.generatedCharts[difficulty];
+        const audioSrc = this.audio.src;
+        
+        console.log('📊 Test data prepared:', {
+            difficulty: difficulty,
+            chartTitle: chartData.title,
+            noteCount: chartData.notes ? chartData.notes.length : 0,
+            audioSrc: audioSrc,
+            audioExists: !!audioSrc
+        });
+        
+        if (!audioSrc) {
+            console.error('❌ No audio file loaded');
+            alert('音声ファイルが読み込まれていません。先に音楽ファイルを選択してください。');
+            return;
+        }
+        
+        if (!chartData.notes || chartData.notes.length === 0) {
+            console.error('❌ Chart has no notes');
+            alert('譜面にノーツがありません。記録を開始して譜面を作成してください。');
             return;
         }
         
         // Store chart data for the main game to use
-        localStorage.setItem('testChart', JSON.stringify(this.generatedCharts[difficulty]));
-        localStorage.setItem('testAudio', this.audio.src);
+        localStorage.setItem('testChart', JSON.stringify(chartData));
+        localStorage.setItem('testAudio', audioSrc);
         
-        // Redirect to main game
-        window.location.href = 'index.html?test=true';
+        console.log('✅ Test data stored in localStorage, redirecting to game');
+        
+        // Show feedback
+        this.showEditFeedback('テストプレイを開始します...', 'edit-playing');
+        
+        // Small delay to show feedback before redirect
+        setTimeout(() => {
+            // Redirect to main game
+            window.location.href = 'index.html?test=true';
+        }, 500);
     }
     
     saveRawData() {

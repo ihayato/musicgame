@@ -1,9 +1,50 @@
 {
   "songs": [
     {
+      "id": "akunohana",
+      "title": "悪の華",
+      "displayName": "悪の華",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
+      "bpm": 140,
+      "duration": 368,
+      "genre": "Gothic Rock",
+      "year": 2025,
+      "description": "耽美的なプログレ楽曲。難易度高めです。",
+      "audio": "assets/audio/akunohana.mp3",
+      "video": "assets/video/akunohana_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/akunohana_bgv_24fps.mp4",
+      "jacket": "",
+      "featured": true,
+      "color": {
+        "primary": "#8b0000",
+        "secondary": "#4b0082",
+        "accent": "#dc143c"
+      },
+      "preview": {
+        "start": 45,
+        "duration": 20,
+        "videoStart": 40
+      },
+      "charts": {
+        "easy": "assets/chart/akunohana_easy.json",
+        "normal": "assets/chart/akunohana_normal.json",
+        "hard": "assets/chart/akunohana_hard.json",
+        "extreme": "assets/chart/akunohana_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      },
+      "difficulty": 5,
+      "youtubeUrl": "https://youtu.be/al4mZSOxBMg"
+    },
+    {
       "id": "cryinggirl",
-      "title": "クライングガール",
-      "displayName": "クライングガール",
+      "title": "クライング・ガール",
+      "displayName": "クライング・ガール",
       "artist": "咲耶 - Sakuya",
       "artistDisplayName": "咲耶 - Sakuya",
       "bpm": 128,
@@ -37,7 +78,8 @@
         "animationStyle": "fade",
         "cardSize": "large"
       },
-      "difficulty": 3
+      "difficulty": 2,
+      "youtubeUrl": "https://youtu.be/Vq0iTy_hxGY"
     },
     {
       "id": "hatsukoi",
@@ -76,7 +118,8 @@
         "animationStyle": "fade",
         "cardSize": "large"
       },
-      "difficulty": 3
+      "difficulty": 1,
+      "youtubeUrl": "https://youtu.be/QDGvxswCX-A"
     },
     {
       "id": "es",
@@ -114,7 +157,8 @@
         "showPreviewOnHover": true,
         "animationStyle": "fade",
         "cardSize": "large"
-      }
+      },
+      "youtubeUrl": "https://youtu.be/SgoJwQBOcLU"
     },
     {
       "id": "kuroneko",
@@ -153,7 +197,86 @@
         "animationStyle": "fade",
         "cardSize": "large"
       },
+      "difficulty": 3,
+      "youtubeUrl": "https://youtu.be/Exp-E5AOwes"
+    },
+    {
+      "id": "giocconda",
+      "title": "モナ・リザ（イタリア語カバー）",
+      "displayName": "モナ・リザ（イタリア語カバー）",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
+      "bpm": 120,
+      "duration": 172,
+      "genre": "Italian Cover",
+      "year": 2025,
+      "description": "Pondalarさんによるイタリア語カバー版です",
+      "audio": "assets/audio/giocconda.mp3",
+      "video": "assets/video/giocconda_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/giocconda_bgv_24fps.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#d4af37",
+        "secondary": "#f4e4bc",
+        "accent": "#8b4513"
+      },
+      "preview": {
+        "start": 30,
+        "duration": 20,
+        "videoStart": 25
+      },
+      "charts": {
+        "easy": "assets/chart/giocconda_easy.json",
+        "normal": "assets/chart/giocconda_normal.json",
+        "hard": "assets/chart/giocconda_hard.json",
+        "extreme": "assets/chart/giocconda_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      },
       "difficulty": 3
+    },
+    {
+      "id": "snails",
+      "title": "カタツムリの燐光に導かれし夜の人物たち",
+      "displayName": "カタツムリの燐光に導かれし夜の人物たち",
+      "artist": "咲耶 - Sakuya",
+      "artistDisplayName": "咲耶 - Sakuya",
+      "bpm": 120,
+      "duration": 201,
+      "genre": "Mystical",
+      "year": 2025,
+      "description": "幻想的で神秘的な夜の世界を描いた楽曲",
+      "audio": "assets/audio/snails.mp3",
+      "video": "assets/video/snalis_monalisa_bgv_24fps.mp4",
+      "backgroundVideo": "assets/video/snalis_monalisa_bgv_24fps.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#4a6741",
+        "secondary": "#7d8471",
+        "accent": "#b4c7a9"
+      },
+      "preview": {
+        "start": 30,
+        "duration": 20,
+        "videoStart": 25
+      },
+      "charts": {
+        "easy": "assets/chart/snails_easy.json",
+        "normal": "assets/chart/snails_normal.json",
+        "hard": "assets/chart/snails_hard.json",
+        "extreme": "assets/chart/snails_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      },
+      "difficulty": 2
     }
   ]
 }

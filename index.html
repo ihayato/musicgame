@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beat Diffusion</title>
+    <title>AI-POP Beat</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="apple-touch-icon" href="favicon.png">
     
     <!-- OGP Meta Tags -->
-    <meta property="og:title" content="Beat Diffusion">
-    <meta property="og:description" content="リズムに合わせて鍵盤を叩く本格的な音楽ゲーム。4楽曲収録、難易度選択可能！">
+    <meta property="og:title" content="AI-POP Beat">
+    <meta property="og:description" content="AIポップメロディに合わせて鍵盤を叩く音楽ゲーム。6楽曲収録、難易度選択可能！">
     <meta property="og:image" content="https://otogame2.vercel.app/ogp.png">
     <meta property="og:url" content="https://otogame2.vercel.app/">
     <meta property="og:type" content="website">
-    <meta property="og:site_name" content="Beat Diffusion">
+    <meta property="og:site_name" content="AI-POP Beat">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Beat Diffusion">
-    <meta name="twitter:description" content="リズムに合わせて鍵盤を叩く本格的な音楽ゲーム。4楽曲収録、難易度選択可能！">
+    <meta name="twitter:title" content="AI-POP Beat">
+    <meta name="twitter:description" content="AIポップメロディに合わせて鍵盤を叩く音楽ゲーム。6楽曲収録、難易度選択可能！">
     <meta name="twitter:image" content="https://otogame2.vercel.app/ogp.png">
     
     <!-- Additional Meta -->
-    <meta name="description" content="Beat Diffusion - リズムゲーム。4楽曲収録、リアルタイム譜面エディタ機能付き。">
-    <meta name="keywords" content="音楽ゲーム,リズムゲーム,Beat Diffusion,譜面エディタ">
-    <meta name="author" content="Beat Diffusion Team">
+    <meta name="description" content="AI-POP Beat - AIポップリズムゲーム。6楽曲収録、リアルタイム譜面エディタ機能付き。">
+    <meta name="keywords" content="音楽ゲーム,リズムゲーム,AI-POP Beat,AIポップ,譜面エディタ">
+    <meta name="author" content="AI-POP Beat Team">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -38,7 +38,8 @@
     
     <div id="app">
         <div id="menu" class="screen active">
-            <h1>Beat Diffusion</h1>
+            <h1>AI-POP Beat</h1>
+            <p class="game-catchphrase">全曲ミュージックビデオ付き。新しいポップカルチャー「AI-POP」を音ゲーで楽しもう！PCキーボードでお楽しみください</p>
             <div id="songSelection" class="selection-step active">
                 <h2>楽曲選択</h2>
                 <div id="songList" class="song-list"></div>
@@ -47,7 +48,7 @@
             <div id="difficultySelection" class="selection-step">
                 <div id="selectedSongDisplay">
                     <div id="songBanner">
-                        <video id="bannerVideo" muted loop></video>
+                        <video id="bannerVideo" muted loop preload="metadata"></video>
                         <div class="banner-overlay"></div>
                         <div class="banner-content">
                             <h2 id="bannerSongTitle"></h2>
@@ -159,6 +160,7 @@
             
             <div class="clear-controls">
                 <button id="retryBtn" class="clear-btn retry-btn">もう一度</button>
+                <button id="backToEditorBtn" class="clear-btn editor-btn" style="display: none;">譜面エディタに戻る</button>
                 <button id="backToMenuFromClear" class="clear-btn menu-btn">メニューに戻る</button>
             </div>
         </div>
@@ -169,15 +171,72 @@
         </audio>
     </div>
 
+    <!-- YouTube Popup -->
+    <div id="youtubePopup" class="youtube-popup" style="display: none;">
+        <div class="youtube-popup-overlay"></div>
+        <div class="youtube-popup-content">
+            <button class="youtube-popup-close" id="youtubePopupClose">❌</button>
+            <h3 class="youtube-popup-title">YouTubeで高画質・高音質版を視聴する</h3>
+            <div class="youtube-popup-video">
+                <iframe id="youtubeIframe" 
+                        width="560" 
+                        height="315" 
+                        src="" 
+                        title="YouTube video player" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+            <div class="youtube-popup-actions">
+                <button class="youtube-popup-btn primary" id="youtubePopupWatch">YouTubeで視聴</button>
+                <button class="youtube-popup-btn secondary" id="youtubePopupLater">後で見る</button>
+            </div>
+        </div>
+    </div>
+
     <script src="game.js"></script>
     <script src="chart-generator.js"></script>
     <script src="app.js"></script>
     <script>
-        // Debug: Check if all functions are loaded
-        console.log('Scripts loaded check:');
-        console.log('- initGame:', typeof initGame);
-        console.log('- game variable:', typeof game);
-        console.log('- RhythmGame class:', typeof RhythmGame);
+        // Auto-initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
+            
+            // Simple initialization with error handling
+            try {
+                if (!window.app) {
+                    window.app = new App();
+                    console.log('App instance created successfully');
+                }
+            } catch (error) {
+                console.error('Failed to initialize app:', error);
+                
+                // Show error message to user
+                const errorDiv = document.createElement('div');
+                errorDiv.innerHTML = `
+                    <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                                background: rgba(0,0,0,0.9); color: white; padding: 20px; border-radius: 10px; 
+                                text-align: center; z-index: 10000;">
+                        <h3>アプリの初期化に失敗しました</h3>
+                        <p>ページをリロードしてください</p>
+                        <button onclick="location.reload()" style="padding: 10px 20px; margin-top: 10px;">リロード</button>
+                    </div>
+                `;
+                document.body.appendChild(errorDiv);
+            }
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (window.app && window.app.game) {
+                try {
+                    window.app.game.stop();
+                } catch (e) {
+                    console.warn('Error during cleanup:', e);
+                }
+            }
+        });
     </script>
 </body>
 </html>
