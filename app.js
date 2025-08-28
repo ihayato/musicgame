@@ -352,7 +352,7 @@ class App {
             const loadPromise = new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
                     reject(new Error('Timeout loading audio metadata'));
-                }, 5000); // 5秒でタイムアウト
+                }, 15000); // 15秒でタイムアウト（大きなファイルに対応）
                 
                 audio.addEventListener('loadedmetadata', () => {
                     clearTimeout(timeout);
@@ -362,6 +362,12 @@ class App {
                 audio.addEventListener('error', () => {
                     clearTimeout(timeout);
                     reject(new Error('Error loading audio file'));
+                }, { once: true });
+                
+                // 一部のブラウザでは canplaythrough イベントも必要
+                audio.addEventListener('canplaythrough', () => {
+                    clearTimeout(timeout);
+                    resolve();
                 }, { once: true });
             });
             
@@ -386,7 +392,8 @@ class App {
             song.actualDuration = duration;
             
         } catch (error) {
-            console.warn(`Failed to load duration for ${song.title}:`, error);
+            // メタデータ読み込みエラーは通常の動作なのでinfoレベルで記録
+            console.info(`📝 Using default duration for ${song.title} (metadata load skipped)`);
             
             // フォールバック: songs.jsonの時間を使用
             const duration = song.duration || 180; // デフォルト3分
@@ -719,8 +726,10 @@ class App {
                 bgVideo.loop = false; // Ensure no looping
                 bgVideo.currentTime = 0;
                 
-                bgVideo.src = this.selectedSong.video;
-                console.log('Video src set to:', this.selectedSong.video);
+                // Set video source with data attribute as backup
+                bgVideo.src = this.selectedSong.backgroundVideo || '';
+                bgVideo.dataset.videoSrc = this.selectedSong.backgroundVideo || '';
+                console.log('Video src set to:', this.selectedSong.backgroundVideo);
                 console.log('Video properties reset: playbackRate=1.0, loop=false');
             }
             
@@ -1047,7 +1056,17 @@ class App {
     recreateVideoElement(oldVideo) {
         console.log('🔄 NUCLEAR OPTION: Completely recreating video element from scratch');
         
-        const videoSrc = oldVideo.src;
+        // Get video source from data attribute or src, fallback to selectedSong
+        const videoSrc = oldVideo.src || oldVideo.dataset.videoSrc || 
+            (this.selectedSong && this.selectedSong.backgroundVideo) || '';
+            
+        if (!videoSrc) {
+            console.error('❌ No video source available!');
+            throw new Error('No video source found');
+        }
+        
+        console.log('🎬 Video source:', videoSrc);
+        
         const gameContainer = oldVideo.parentNode || document.getElementById('game');
         
         if (!gameContainer) {
