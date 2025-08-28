@@ -276,7 +276,8 @@
         "animationStyle": "fade",
         "cardSize": "large"
       },
-      "difficulty": 2
+      "difficulty": 2,
+      "youtubeUrl": "https://www.youtube.com/watch?v=jJwOfds5Tf4"
     }
   ]
 }
