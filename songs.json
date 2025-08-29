@@ -278,6 +278,45 @@
       },
       "difficulty": 2,
       "youtubeUrl": "https://www.youtube.com/watch?v=jJwOfds5Tf4"
+    },
+    {
+      "id": "adhd",
+      "title": "誰だってSick〜ADHDですけどなにか？〜",
+      "displayName": "誰だってSick〜ADHDですけどなにか？〜",
+      "artist": "からすい",
+      "artistDisplayName": "からすい",
+      "bpm": 130,
+      "duration": 241,
+      "genre": "Alternative Rock",
+      "year": 2025,
+      "description": "ADHDをテーマにした力強いロック楽曲",
+      "audio": "assets/audio/adhd.mp3",
+      "video": "assets/video/adhd_bgv_360p.mp4",
+      "backgroundVideo": "assets/video/adhd_bgv_360p.mp4",
+      "jacket": "",
+      "color": {
+        "primary": "#ff4444",
+        "secondary": "#ff8888",
+        "accent": "#ffaaaa"
+      },
+      "preview": {
+        "start": 40,
+        "duration": 20,
+        "videoStart": 35
+      },
+      "charts": {
+        "easy": "assets/chart/adhd_easy.json",
+        "normal": "assets/chart/adhd_normal.json",
+        "hard": "assets/chart/adhd_hard.json",
+        "extreme": "assets/chart/adhd_extreme.json"
+      },
+      "ui": {
+        "showBackgroundVideo": true,
+        "showPreviewOnHover": true,
+        "animationStyle": "fade",
+        "cardSize": "large"
+      },
+      "difficulty": 3
     }
   ]
 }
